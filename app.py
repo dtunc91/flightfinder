@@ -60,7 +60,7 @@ def index():
                     depart_str = datetime.strptime(departure_date, '%Y-%m-%d').strftime('%d%m')
                     search_code = f"{origin_code}{depart_str}{dest_code}1"
 
-                booking_url = f"https://www.aviasales.com/search/{search_code}?adults={passengers}"
+                booking_url = f"https://www.aviasales.com/search/{search_code}?adults={passengers}&marker=617752"
 
                 flights.append({
                     'destination_code': dest_code,
