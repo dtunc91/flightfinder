@@ -70,6 +70,11 @@ def index():
                 })
 
     return render_template('index.html', flights=flights, origin_label=origin_label, date=date)
+from flask import send_from_directory
+
+@app.route('/google48b33f47cd3a277e.html')
+def serve_verification_file():
+    return send_from_directory('.', 'google48b33f47cd3a277e.html')
 
 if __name__ == '__main__':
     app.run(debug=True)
