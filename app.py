@@ -1,23 +1,38 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, jsonify
+from markupsafe import Markup
 import requests
 import json
 from datetime import datetime, timedelta
+from amadeus import Client
 
 app = Flask(__name__)
 
 API_TOKEN = "8d7038ac3e129418d7b8f9e827db1cd0"
 
-def load_airport_names():
-    with open("static/airports.json") as f:
-        airports = json.load(f)
-        return {a['code']: a['label'] for a in airports}
+# Add your Amadeus client credentials
+AMADEUS_CLIENT_ID = "LGJVRcjkGHj2MCA09MMszzqyAuABZHCh"  # Replace with your actual client ID
+AMADEUS_CLIENT_SECRET = "1gL3WMAs4hKlH8pF"  # Replace with your actual client secret
+
+amadeus = Client(
+    client_id=AMADEUS_CLIENT_ID,
+    client_secret=AMADEUS_CLIENT_SECRET
+)
+
+def load_airport_names(query):
+    response = amadeus.reference_data.locations.get(
+        keyword=query,
+        subType="AIRPORT"
+    )
+    print(response.data)
+    airports = response.data if response.data else []
+    return {airport['iataCode']: airport['name'] for airport in airports}
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
     flights = []
     origin_label = ""
     date = ""
-    airport_names = load_airport_names()
+    airport_names = {}
 
     if request.method == 'POST':
         origin_label_input = request.form.get('origin')
@@ -26,11 +41,13 @@ def index():
         trip_type = request.form.get('trip_type')
         passengers = request.form.get('passengers', '1')
 
+        airport_names = load_airport_names(origin_label_input)
+
         origin_code = None
-        for code, label in airport_names.items():
-            if label == origin_label_input:
-                origin_code = code
-                origin_label = label
+        for iataCode, name in airport_names.items():
+            if name == origin_label_input:
+                origin_code = iataCode
+                origin_label = name
                 break
 
         if not origin_code:
@@ -70,6 +87,17 @@ def index():
                 })
 
     return render_template('index.html', flights=flights, origin_label=origin_label, date=date)
+
+@app.route('/api/airports', methods=['GET'])
+def get_airports():
+    query = request.args.get('query', '')
+    if query:
+        airport_names = load_airport_names(query)  # Call the function to get airport names
+        # Format the response as an array of objects with code and name
+        airports_response = [{'code': code, 'name': str.capitalize(name)} for code, name in airport_names.items()]
+        return jsonify(airports_response)  # Return the formatted airport names as a JSON response
+    return jsonify([])  # Return an empty list if no query is provided
+
 from flask import send_from_directory
 
 @app.route('/google48b33f47cd3a277e.html')

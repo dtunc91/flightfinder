@@ -1,0 +1,76 @@
+/* 257180
+F2E5BF
+FD8B51
+CB6040 */
+.background {
+  background-color: #15424b;
+  color: #fff;
+}
+
+.container-border {
+  border: 1px solid #15424b;
+  /* background-color: #257180; */
+}
+
+:root {
+  --bs-primary-btn: #15424b; /* Custom primary color */
+  --bs-secondary: #44c18b; /* Custom secondary color */
+}
+
+.primary-color {
+  color: #eeeeee;
+}
+
+.title {
+  padding: 2rem;
+  text-align: center;
+}
+
+.rows {
+  place-content: flex-end;
+}
+
+.gap {
+  gap: 1.2rem;
+}
+
+.form-container {
+  border-radius: 25px;
+  border: 1px solid #fff;
+  padding: 3rem;
+}
+
+.search-btn {
+  background-color: #15424b;
+  outline: #fff;
+  border: 1px solid #fff;
+  color: #fff;
+  width: 90px;
+}
+
+.search-btn:hover {
+  background-color: #44c18b;
+  color: #000;
+  border: #15424b;
+  font-weight: bold;
+  box-shadow: 5px 5px 5px #182427;
+}
+
+.book-btn {
+  background-color: #44c18b;
+  color: #000;
+  border: #15424b;
+  font-weight: bold;
+  box-shadow: 5px 5px 5px #182427;
+}
+
+.book-btn:hover {
+  background-color: #15424b;
+  outline: #fff;
+  border: 1px solid #fff;
+  color: #fff;
+}
+
+/* .background {
+  background-image: url("./elena-mozhvilo-eA32JIBsSu8-unsplash.jpg");
+} */

@@ -8,7 +8,10 @@
     <meta name="author" content="Deniz Adilov">
     <title>Flight Finder</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="index.css" rel="stylesheet">
+    <!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"> -->
+    <link href="{{ url_for('static', filename='index.css') }}" rel="stylesheet">
+    <!-- <script src="https://kit.fontawesome.com/d466d92be3.js" crossorigin="anonymous"></script> -->
+    <script src="{{ url_for('static', filename='fontawesome-free-6.7.2-web/js/all.js') }}"></script>
     <style>
         .tooltip-icon {
             cursor: pointer;
@@ -16,15 +19,25 @@
         }
     </style>
 </head>
-<body class="bg-light p-4">
-    <div class="container">
-        <h1 class="mb-4">🌍 Find the Cheapest Flights</h1>
-        <form method="POST" class="mb-4">
-            <div class="mb-3">
-                <label for="origin" class="form-label">Fly from:</label>
-                <input type="text" id="origin" name="origin" class="form-control" placeholder="Start typing a city or airport..." required>
+<!-- <body class="bg-light p-4 background" style="background-image: url('{{ url_for('static', filename='elena-mozhvilo-eA32JIBsSu8-unsplash.jpg') }}');"> -->
+<body class="background">
+    <div >
+        <header class="title">
+        <h1 class="primary-color container-border">Get Me Out of Here <i class="fa fa-plane fa-fade fa-rotate-by" style="font-size:28px; --fa-rotate-angle:320deg; --fa-animation-duration: 2s; --fa-fade-opacity: 0.6;  animation-duration: 1s; animation-iteration-count: 2;"></i></h1>
+        <p>Find the Cheapest Flights</p>
+        </header>
+        <form method="POST" class="mb-4 p-8 container form-container">
+            <div class="row mb-3 gap">
+                <div class="col-sm rows">
+                    <label for="origin" class="form-label"><i class="fa fa-paper-plane" style="font-size:24px"></i> Fly from </label>
+                    <input type="text" id="origin" name="origin" class="form-control" placeholder="Start typing a city or airport..." required>
+                </div>
+                <div class="col-sm rows">
+                    <label for="departure_date" class="form-label">Departure date:</label>
+                    <input type="date" id="departure_date" name="departure_date" class="form-control" required>
+                </div>
             </div>
-            <div class="mb-3">
+            <div class="mb-3 col-sm rows">
                 <label class="form-label me-3">Trip type:</label>
                 <div class="form-check form-check-inline">
                     <input class="form-check-input" type="radio" name="trip_type" id="oneway" value="oneway" checked>
@@ -35,36 +48,40 @@
                     <label class="form-check-label" for="roundtrip">Round-trip</label>
                 </div>
             </div>
-            <div class="mb-3">
-                <label for="departure_date" class="form-label">Departure date:</label>
-                <input type="date" id="departure_date" name="departure_date" class="form-control" required>
-            </div>
             <div class="mb-3" id="return_date_group" style="display: none;">
                 <label for="return_date" class="form-label">Return date:</label>
                 <input type="date" id="return_date" name="return_date" class="form-control">
             </div>
-            <div class="mb-3">
-                <label for="passengers" class="form-label">Passengers:</label>
-                <input type="number" id="passengers" name="passengers" class="form-control" min="1" value="1">
+            <div class="row mb-3 gap">
+                <div class="col-sm rows">
+                    <label for="passengers" class="form-label">Passengers:</label>
+                    <input type="number" id="passengers" name="passengers" class="form-control" min="1" value="1">
+                </div>
+
+                <div class="col-sm rows">
+                    <button type="submit" class="btn search-btn">Search</button>
+                </div>
             </div>
-            <button type="submit" class="btn btn-primary">Search</button>
+         
         </form>
 
+        <div class="container mb-4">
         {% if flights %}
-            <h5 class="mb-3">Showing results from <strong>{{ origin_label }}</strong>{% if date %} on <strong>{{ date }}</strong>{% endif %}:</h5>
+            <h5 class="mb-3">Showing results from <strong>{{ origin_label }}</strong>{% if date %} on <strong>{{ date }}</strong>{% endif %}</h5>
             <ul class="list-group">
                 {% for flight in flights %}
                 <li class="list-group-item d-flex justify-content-between align-items-center">
                     <div>
                         ✈️ To: <strong>{{ flight.destination_label or flight.destination_code }}</strong>
                         – £{{ flight.price }}
-                        <span class="ms-2 text-muted tooltip-icon" data-bs-toggle="tooltip" title="Click ‘Book Now’ to see even lower prices — these are just estimates.">ℹ️</span>
+                        <span class="ms-2 text-muted tooltip-icon" data-bs-toggle="tooltip" title="Click 'Book Now' to see even lower prices — these are just estimates.">ℹ️</span>
                     </div>
-                    <a href="{{ flight.booking_url }}" target="_blank" class="btn btn-success">Book Now</a>
+                    <a href="{{ flight.booking_url }}" target="_blank" class="btn btn-success book-btn ">Book Now</a>
                 </li>
                 {% endfor %}
             </ul>
         {% endif %}
+    </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
@@ -82,46 +99,54 @@
                 });
             });
 
-            // Autocomplete
-            fetch("/static/airports.json")
-                .then(response => response.json())
-                .then(airports => {
-                    const input = document.getElementById("origin");
-                    input.addEventListener("input", function () {
-                        const val = this.value.toLowerCase();
-                        closeAllLists();
-                        if (!val) return false;
+            // Debounce function
+            function debounce(func, delay) {
+                let timeout;
+                return function(...args) {
+                    const context = this;
+                    clearTimeout(timeout);
+                    timeout = setTimeout(() => func.apply(context, args), delay);
+                };
+            }
 
-                        const list = document.createElement("div");
-                        list.setAttribute("id", this.id + "autocomplete-list");
-                        list.setAttribute("class", "autocomplete-items list-group");
-                        this.parentNode.appendChild(list);
+            // Update the autocomplete functionality to fetch from the server
+            const input = document.getElementById("origin");
+            input.addEventListener("input", debounce(function () {
+                const val = this.value;
+                closeAllLists();
+                if (!val) return false;
 
+                const list = document.createElement("div");
+                list.setAttribute("id", this.id + "autocomplete-list");
+                list.setAttribute("class", "autocomplete-items list-group");
+                this.parentNode.appendChild(list);
+
+                fetch(`/api/airports?query=${val}`)  // Call the new endpoint
+                    .then(response => response.json())
+                    .then(airports => {
                         airports.forEach(airport => {
-                            if (airport.label.toLowerCase().includes(val)) {
-                                const item = document.createElement("div");
-                                item.classList.add("list-group-item", "list-group-item-action");
-                                item.innerHTML = airport.label;
-                                item.addEventListener("click", () => {
-                                    input.value = airport.label;
-                                    closeAllLists();
-                                });
-                                list.appendChild(item);
-                            }
+                            const item = document.createElement("div");
+                            item.classList.add("list-group-item", "list-group-item-action");
+                            item.innerHTML = airport.name;  // Use the airport name
+                            item.addEventListener("click", () => {
+                                input.value = airport.name;  // Set the input value to the selected airport name
+                                closeAllLists();
+                            });
+                            list.appendChild(item);
                         });
                     });
+            }, 500));  // 2 seconds debounce delay
 
-                    function closeAllLists() {
-                        const items = document.getElementsByClassName("autocomplete-items");
-                        for (let i = 0; i < items.length; i++) {
-                            items[i].parentNode.removeChild(items[i]);
-                        }
-                    }
+            function closeAllLists() {
+                const items = document.getElementsByClassName("autocomplete-items");
+                for (let i = 0; i < items.length; i++) {
+                    items[i].parentNode.removeChild(items[i]);
+                }
+            }
 
-                    document.addEventListener("click", function (e) {
-                        closeAllLists(e.target);
-                    });
-                });
+            document.addEventListener("click", function (e) {
+                closeAllLists(e.target);
+            });
         });
     </script>
 </body>
