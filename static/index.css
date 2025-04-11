@@ -1,0 +1,81 @@
+/* 257180
+F2E5BF
+FD8B51
+CB6040 */
+.background {
+  color: #fff;
+  background-image: url("md-arafat-ul-alam-bnrouu6uqaM-unsplash.jpg");
+  background-repeat: no-repeat;
+  background-size: cover;
+  min-height: 100vh;
+}
+
+.container-border {
+  /* border: 1px solid #15424b; */
+}
+
+.primary-color {
+  color: #eeeeee;
+}
+
+.title {
+  padding: 2rem;
+  text-align: center;
+}
+
+.rows {
+  place-content: flex-end;
+}
+
+.gap {
+  gap: 1.2rem;
+}
+
+.form-container {
+  border-radius: 25px;
+  border: 1px solid #fff;
+  padding: 3rem;
+}
+
+.search-btn {
+  background-color: #15424b;
+  outline: #fff;
+  color: #fff;
+  width: 90px;
+}
+
+.search-btn:hover {
+  background-color: #44c18b;
+  color: #000;
+  border: #15424b;
+  font-weight: bold;
+  box-shadow: 5px 5px 5px #182427;
+}
+
+.book-btn {
+  background-color: #44c18b;
+  color: #000;
+  border: #15424b;
+  font-weight: bold;
+  box-shadow: 5px 5px 5px #182427;
+}
+
+.book-btn:hover {
+  background-color: #15424b;
+  outline: #fff;
+  border: 1px solid #fff;
+  color: #fff;
+}
+
+#overlay {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.3);
+  z-index: 2;
+  overflow-y: scroll;
+}
