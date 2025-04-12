@@ -1,17 +1,15 @@
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request, jsonify, send_from_directory
 from markupsafe import Markup
 import requests
 import json
-from datetime import datetime, timedelta
+from datetime import datetime
 from amadeus import Client
 
 app = Flask(__name__)
 
 API_TOKEN = "8d7038ac3e129418d7b8f9e827db1cd0"
-
-# Add your Amadeus client credentials
-AMADEUS_CLIENT_ID = "LGJVRcjkGHj2MCA09MMszzqyAuABZHCh"  # Replace with your actual client ID
-AMADEUS_CLIENT_SECRET = "1gL3WMAs4hKlH8pF"  # Replace with your actual client secret
+AMADEUS_CLIENT_ID = "LGJVRcjkGHj2MCA09MMszzqyAuABZHCh"
+AMADEUS_CLIENT_SECRET = "1gL3WMAs4hKlH8pF"
 
 amadeus = Client(
     client_id=AMADEUS_CLIENT_ID,
@@ -23,7 +21,6 @@ def load_airport_names(query):
         keyword=query,
         subType="AIRPORT"
     )
-    print(response.data)
     airports = response.data if response.data else []
     return {airport['iataCode']: airport['name'] for airport in airports}
 
@@ -41,15 +38,15 @@ def index():
         trip_type = request.form.get('trip_type')
         passengers = request.form.get('passengers', '1')
 
-        airport_names = load_airport_names(origin_label_input)
-
-        origin_label_input = request.form.get('origin')
-origin_code = origin_label_input.split('(')[-1].replace(')', '').strip()
-origin_label = origin_label_input
-
-        if not origin_code:
-            origin_code = 'LON'
+        # Try to extract the IATA code from the selected input
+        if '(' in origin_label_input and ')' in origin_label_input:
+            origin_code = origin_label_input.split('(')[-1].replace(')', '').strip()
             origin_label = origin_label_input
+        else:
+            # fallback — attempt to find airport code via API
+            airport_names = load_airport_names(origin_label_input)
+            origin_code = list(airport_names.keys())[0] if airport_names else 'LON'
+            origin_label = airport_names.get(origin_code, origin_label_input)
 
         date = departure_date
 
@@ -66,12 +63,12 @@ origin_label = origin_label_input
                 dest_code = flight.get('destination', 'N/A')
                 price = flight.get('value', 'N/A')
 
+                # Format booking code depending on trip type
+                depart_str = datetime.strptime(departure_date, '%Y-%m-%d').strftime('%d%m')
                 if trip_type == 'roundtrip' and return_date:
-                    depart_str = datetime.strptime(departure_date, '%Y-%m-%d').strftime('%d%m')
                     return_str = datetime.strptime(return_date, '%Y-%m-%d').strftime('%d%m')
                     search_code = f"{origin_code}{depart_str}{dest_code}{return_str}"
                 else:
-                    depart_str = datetime.strptime(departure_date, '%Y-%m-%d').strftime('%d%m')
                     search_code = f"{origin_code}{depart_str}{dest_code}1"
 
                 booking_url = f"https://www.aviasales.com/search/{search_code}?adults={passengers}&marker=617752"
@@ -89,13 +86,10 @@ origin_label = origin_label_input
 def get_airports():
     query = request.args.get('query', '')
     if query:
-        airport_names = load_airport_names(query)  # Call the function to get airport names
-        # Format the response as an array of objects with code and name
+        airport_names = load_airport_names(query)
         airports_response = [{'code': code, 'name': f"{name} ({code})"} for code, name in airport_names.items()]
-        return jsonify(airports_response)  # Return the formatted airport names as a JSON response
-    return jsonify([])  # Return an empty list if no query is provided
-
-from flask import send_from_directory
+        return jsonify(airports_response)
+    return jsonify([])
 
 @app.route('/google48b33f47cd3a277e.html')
 def serve_verification_file():
