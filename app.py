@@ -94,9 +94,16 @@ def get_airports():
 @app.route('/google48b33f47cd3a277e.html')
 def serve_verification_file():
     return send_from_directory('.', 'google48b33f47cd3a277e.html')
+
 @app.route('/robots.txt')
 def robots_txt():
     return send_from_directory('.', 'robots.txt')
 
+@app.route('/debug-files')
+def debug_files():
+    import os
+    return '<br>'.join(os.listdir('.'))
+
 if __name__ == '__main__':
     app.run(debug=True)
+
