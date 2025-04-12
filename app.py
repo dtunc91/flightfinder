@@ -43,12 +43,9 @@ def index():
 
         airport_names = load_airport_names(origin_label_input)
 
-        origin_code = None
-        for iataCode, name in airport_names.items():
-            if name == origin_label_input:
-                origin_code = iataCode
-                origin_label = name
-                break
+        origin_label_input = request.form.get('origin')
+origin_code = origin_label_input.split('(')[-1].replace(')', '').strip()
+origin_label = origin_label_input
 
         if not origin_code:
             origin_code = 'LON'
@@ -94,7 +91,7 @@ def get_airports():
     if query:
         airport_names = load_airport_names(query)  # Call the function to get airport names
         # Format the response as an array of objects with code and name
-        airports_response = [{'code': code, 'name': str.capitalize(name)} for code, name in airport_names.items()]
+        airports_response = [{'code': code, 'name': f"{name} ({code})"} for code, name in airport_names.items()]
         return jsonify(airports_response)  # Return the formatted airport names as a JSON response
     return jsonify([])  # Return an empty list if no query is provided
 
