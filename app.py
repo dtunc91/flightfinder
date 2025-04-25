@@ -37,13 +37,29 @@ def index():
     origin_label = ""
     date = ""
     airport_names = {}
+    form_data = {
+        'trip_type': request.form.get('trip_type', 'oneway'),
+        'passengers': request.form.get('passengers', '1'),
+        'departure_date': request.form.get('departure_date', ''),
+        'return_date': request.form.get('return_date', ''),
+        'origin': request.form.get('origin', '')
+    }
 
     if request.method == 'POST':
         origin_label_input = request.form.get('origin')
         departure_date = request.form.get('departure_date')
         return_date = request.form.get('return_date')
-        trip_type = request.form.get('trip_type')
+        trip_type = request.form.get('trip_type', 'oneway')
         passengers = request.form.get('passengers', '1')
+
+        # Store form data
+        form_data = {
+            'trip_type': trip_type,
+            'passengers': passengers,
+            'departure_date': departure_date,
+            'return_date': return_date,
+            'origin': origin_label_input
+        }
 
         # Try to extract the IATA code from the selected input
         if '(' in origin_label_input and ')' in origin_label_input:
@@ -87,7 +103,7 @@ def index():
                     'booking_url': booking_url
                 })
 
-    return render_template('index.html', flights=flights, origin_label=origin_label, date=date)
+    return render_template('index.html', flights=flights, origin_label=origin_label, date=date, form_data=form_data)
 
 @app.route('/api/airports', methods=['GET'])
 def get_airports():
