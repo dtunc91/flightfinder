@@ -4,12 +4,19 @@ import requests
 import json
 from datetime import datetime
 from amadeus import Client
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 app = Flask(__name__)
 
-API_TOKEN = "8d7038ac3e129418d7b8f9e827db1cd0"
-AMADEUS_CLIENT_ID = "LGJVRcjkGHj2MCA09MMszzqyAuABZHCh"
-AMADEUS_CLIENT_SECRET = "1gL3WMAs4hKlH8pF"
+
+API_TOKEN = os.getenv('API_TOKEN')
+
+# Add your Amadeus client credentials
+AMADEUS_CLIENT_ID = os.getenv('AMADEUS_CLIENT_ID')
+AMADEUS_CLIENT_SECRET = os.getenv('AMADEUS_CLIENT_SECRET')
 
 amadeus = Client(
     client_id=AMADEUS_CLIENT_ID,
