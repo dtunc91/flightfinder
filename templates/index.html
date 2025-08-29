@@ -645,157 +645,159 @@
   <!-- Scripts -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   <script>
-    document.addEventListener('DOMContentLoaded', function () {
-      console.log('Starting autocomplete initialization...');
+  document.addEventListener('DOMContentLoaded', function () {
+    console.log('Script loaded successfully');
+    
+    // Background particles
+    function createBackgroundParticles() {
+      const container = document.getElementById('bgParticles');
       
-      // Create floating background particles
-      function createBackgroundParticles() {
-        const container = document.getElementById('bgParticles');
+      function addParticle() {
+        const particle = document.createElement('div');
+        particle.className = 'particle';
+        particle.style.left = Math.random() * 100 + '%';
+        particle.style.animationDelay = Math.random() * 2 + 's';
+        particle.style.animationDuration = (Math.random() * 10 + 10) + 's';
+        container.appendChild(particle);
         
-        function addParticle() {
-          const particle = document.createElement('div');
-          particle.className = 'particle';
-          particle.style.left = Math.random() * 100 + '%';
-          particle.style.animationDelay = Math.random() * 2 + 's';
-          particle.style.animationDuration = (Math.random() * 10 + 10) + 's';
-          container.appendChild(particle);
-          
-          setTimeout(() => {
-            if (container.contains(particle)) {
-              container.removeChild(particle);
-            }
-          }, 20000);
-        }
-        
-        // Create initial particles
-        for (let i = 0; i < 5; i++) {
-          setTimeout(addParticle, i * 2000);
-        }
-        
-        // Continue creating particles
-        setInterval(addParticle, 3000);
+        setTimeout(() => {
+          if (container.contains(particle)) {
+            container.removeChild(particle);
+          }
+        }, 20000);
       }
       
-      createBackgroundParticles();
-
-      // Trip type and date management
-      const tripTypeRadios = document.querySelectorAll('input[name="trip_type"]');
-      const returnDateGroup = document.getElementById('return_date_group');
-      const dep = document.getElementById('departure_date');
-      const ret = document.getElementById('return_date');
-
-      function fmt(d) { return d.toISOString().slice(0, 10); }
-      
-      function initDates() {
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
-        const d1 = new Date(today);
-        d1.setDate(d1.getDate() + 14);
-        const d2 = new Date(today);
-        d2.setDate(d2.getDate() + 21);
-        
-        dep.min = fmt(today);
-        if (ret) ret.min = fmt(today);
-        if (!dep.value) dep.value = fmt(d1);
-        if (ret && !ret.value) ret.value = fmt(d2);
+      for (let i = 0; i < 5; i++) {
+        setTimeout(addParticle, i * 2000);
       }
       
-      initDates();
+      setInterval(addParticle, 3000);
+    }
+    
+    createBackgroundParticles();
 
-      function syncReturnVisibility() {
-        const val = document.querySelector('input[name="trip_type"]:checked')?.value || 'oneway';
-        returnDateGroup.style.display = val === 'roundtrip' ? 'block' : 'none';
-      }
+    // Date and form management
+    const tripTypeRadios = document.querySelectorAll('input[name="trip_type"]');
+    const returnDateGroup = document.getElementById('return_date_group');
+    const dep = document.getElementById('departure_date');
+    const ret = document.getElementById('return_date');
+
+    function fmt(d) { return d.toISOString().slice(0, 10); }
+    
+    function initDates() {
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      const d1 = new Date(today);
+      d1.setDate(d1.getDate() + 14);
+      const d2 = new Date(today);
+      d2.setDate(d2.getDate() + 21);
       
-      tripTypeRadios.forEach(radio => radio.addEventListener('change', syncReturnVisibility));
-      syncReturnVisibility();
+      dep.min = fmt(today);
+      if (ret) ret.min = fmt(today);
+      if (!dep.value) dep.value = fmt(d1);
+      if (ret && !ret.value) ret.value = fmt(d2);
+    }
+    
+    initDates();
 
-      if (dep && ret) {
-        dep.addEventListener('change', () => {
-          if (ret.value && ret.value < dep.value) ret.value = dep.value;
-          ret.min = dep.value;
-        });
-      }
+    function syncReturnVisibility() {
+      const val = document.querySelector('input[name="trip_type"]:checked')?.value || 'oneway';
+      returnDateGroup.style.display = val === 'roundtrip' ? 'block' : 'none';
+    }
+    
+    tripTypeRadios.forEach(radio => radio.addEventListener('change', syncReturnVisibility));
+    syncReturnVisibility();
 
-      // SIMPLIFIED AUTOCOMPLETE SYSTEM
-      const input = document.getElementById('origin');
-      const list = document.getElementById('origin-autocomplete-list');
-      const helper = document.getElementById('origin-helper');
-      const originCodeHidden = document.getElementById('origin_code');
-      let acIndex = -1;
-      
-      console.log('Autocomplete elements found:', {
-        input: !!input,
-        list: !!list,
-        helper: !!helper,
-        originCodeHidden: !!originCodeHidden
+    if (dep && ret) {
+      dep.addEventListener('change', () => {
+        if (ret.value && ret.value < dep.value) ret.value = dep.value;
+        ret.min = dep.value;
       });
+    }
 
-      function debounce(fn, delay) { 
-        let t; 
-        return (...a) => { 
-          clearTimeout(t); 
-          t = setTimeout(() => fn(...a), delay); 
-        };
-      }
-
-      function openList() { 
-        list.classList.remove('d-none'); 
-        input.setAttribute('aria-expanded', 'true'); 
+    // AUTOCOMPLETE SYSTEM
+    const input = document.getElementById('origin');
+    const list = document.getElementById('origin-autocomplete-list');
+    const helper = document.getElementById('origin-helper');
+    const originCodeHidden = document.getElementById('origin_code');
+    
+    if (!input || !list || !helper || !originCodeHidden) {
+      console.error('Required elements not found');
+      return;
+    }
+    
+    console.log('All elements found, setting up autocomplete');
+    
+    let debounceTimer;
+    
+    // Simple autocomplete function
+    function searchAirports(query) {
+      console.log('Searching for:', query);
+      
+      if (query.length < 2) {
+        list.classList.add('d-none');
+        return;
       }
       
-      function closeList() { 
-        list.classList.add('d-none'); 
-        input.setAttribute('aria-expanded', 'false'); 
-        acIndex = -1; 
+      fetch('/api/airports?query=' + encodeURIComponent(query))
+        .then(response => {
+          console.log('API response status:', response.status);
+          return response.json();
+        })
+        .then(data => {
+          console.log('API data:', data);
+          showResults(data);
+        })
+        .catch(error => {
+          console.error('API error:', error);
+          list.classList.add('d-none');
+        });
+    }
+    
+    // Show results function
+    function showResults(airports) {
+      list.innerHTML = '';
+      
+      if (!airports || airports.length === 0) {
+        list.classList.add('d-none');
+        return;
       }
-
-      function renderResults(airports) {
-        console.log('Rendering results:', airports);
-        list.innerHTML = '';
+      
+      airports.slice(0, 8).forEach(airport => {
+        const div = document.createElement('div');
+        div.className = 'autocomplete-item';
+        div.innerHTML = '<div class="fw-semibold">' + (airport.label || airport.name) + ' (' + airport.code + ')</div><div class="airport-sub">' + (airport.city || '') + '</div>';
         
-        if (!airports || airports.length === 0) {
-          closeList();
-          return;
-        }
-        
-        airports.slice(0, 10).forEach((airport, index) => {
-          const item = document.createElement('div');
-          item.className = 'autocomplete-item';
-          item.setAttribute('role', 'option');
-          item.innerHTML = `
-            <div class="d-flex justify-content-between align-items-start">
-              <div>
-                <div class="fw-semibold">${airport.label || airport.name} (${airport.code})</div>
-                <div class="airport-sub">${airport.city || ''}</div>
-              </div>
-              <span class="badge bg-secondary">${airport.code}</span>
-            </div>
-          `;
-          
-          item.addEventListener('click', () => {
-            selectAirport(airport);
-          });
-          
-          list.appendChild(item);
+        div.addEventListener('click', function() {
+          input.value = airport.code;
+          originCodeHidden.value = airport.code;
+          helper.textContent = (airport.label || airport.name) + ' (' + airport.code + ')';
+          list.classList.add('d-none');
+          console.log('Selected:', airport);
         });
         
-        openList();
+        list.appendChild(div);
+      });
+      
+      list.classList.remove('d-none');
+    }
+    
+    // Input event listener
+    input.addEventListener('input', function() {
+      const query = this.value.trim();
+      
+      clearTimeout(debounceTimer);
+      helper.textContent = '';
+      originCodeHidden.value = '';
+      
+      debounceTimer = setTimeout(function() {
+        searchAirports(query);
+      }, 300);
+    });
+    
+    // Click outside to close
+    document.addEventListener('click', function(e) {
+      if (!input.contains(e.target) && !list.contains(e.target)) {
+        list.classList.add('d-none');
       }
-
-      function selectAirport(airport) {
-        console.log('Selected airport:', airport);
-        input.value = airport.code;
-        originCodeHidden.value = airport.code;
-        helper.textContent = `${airport.label || airport.name} (${airport.code})`;
-        
-        // Update page title
-        document.title = `Cheap flights from ${airport.label || airport.name} | GetMeOutOfHere.Live`;
-        
-        closeList();
-      }
-
-      function highlight(items) {
-        items.forEach((el, i) => el.classList.toggle('active', i === acIndex));
-        if (items[acIndex]) {
-          items[acIndex].scrollIntoView({ block: 'nearest' });
+    });
