@@ -1,185 +1,360 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="Get Me Out of Here helps you find the cheapest places to fly to from your location — no destination needed.">
-    <meta name="keywords" content="Cheap, Flight, Plane, Search, Travel, Escape">
-    <meta name="author" content="Deniz Adilov">
+  <!-- Charset & viewport -->
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-<link rel="icon" type="image/png" href="{{ url_for('static', filename='favicon.png') }}">
-    <title>Flight Finder</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"> -->
-    <link href="{{ url_for('static', filename='index.css') }}" rel="stylesheet">
-    <!-- <script src="https://kit.fontawesome.com/d466d92be3.js" crossorigin="anonymous"></script> -->
-    <script src="{{ url_for('static', filename='fontawesome-free-6.7.2-web/js/all.js') }}"></script>
-    <style>
-        .tooltip-icon {
-            cursor: pointer;
-            font-size: 0.9rem;
-        }
-    </style>
+  <!-- Primary SEO -->
+  <title>{% if origin_label %}Cheap flights from {{ origin_label }} | GetMeOutOfHere.Live{% else %}Find the cheapest places to fly from your airport | GetMeOutOfHere.Live{% endif %}</title>
+  <meta name="description" content="Get Me Out of Here shows the cheapest places you can fly to from your chosen airport — no destination needed. Fast, simple, book when you’re ready." />
+  <meta name="keywords" content="cheap flights, flight deals, travel, airfare, flight finder, last minute flights" />
+  <meta name="author" content="Deniz Adilov" />
+
+  <!-- Canonical -->
+  <link rel="canonical" href="https://getmeoutofhere.live/" />
+
+  <!-- Open Graph / Twitter -->
+  <meta property="og:title" content="{% if origin_label %}Cheap flights from {{ origin_label }} | GetMeOutOfHere.Live{% else %}Find the cheapest places to fly | GetMeOutOfHere.Live{% endif %}" />
+  <meta property="og:description" content="Search the cheapest places to fly from your airport. One search. Real prices. Easy booking." />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://getmeoutofhere.live/" />
+  <meta property="og:image" content="{{ url_for('static', filename='og-image.jpg') }}" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="{% if origin_label %}Cheap flights from {{ origin_label }}{% else %}Find the cheapest places to fly{% endif %}" />
+  <meta name="twitter:description" content="Find the cheapest flights from your airport — no destination needed." />
+  <meta name="twitter:image" content="{{ url_for('static', filename='og-image.jpg') }}" />
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="{{ url_for('static', filename='favicon.png') }}">
+  <link rel="apple-touch-icon" href="{{ url_for('static', filename='apple-touch-icon.png') }}">
+
+  <!-- CSS: Bootstrap + your stylesheet -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="{{ url_for('static', filename='index.css') }}" rel="stylesheet" />
+
+  <!-- Icons -->
+  <script src="{{ url_for('static', filename='fontawesome-free-6.7.2-web/js/all.js') }}"></script>
+
+  <!-- Plausible (replace domain if needed) -->
+  <script defer data-domain="getmeoutofhere.live" src="https://plausible.io/js/script.js"></script>
+  <!-- Optional: Google Analytics 4
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXX"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-XXXXXXX');
+  </script>
+  -->
+
+  <style>
+    /* Light polish on top of your existing CSS */
+    body.background{
+      min-height:100vh;
+      background: radial-gradient(1200px 600px at 80% -10%, rgba(130,255,210,0.12), transparent 60%),
+                  radial-gradient(1200px 600px at 10% 10%, rgba(110,168,255,0.14), transparent 60%),
+                  #0b1020;
+      color:#eaf0ff;
+    }
+    .title{ text-align:center; margin: 32px 0 16px; }
+    .title h1{ font-weight:800; letter-spacing:.2px }
+    .container-border{ display:inline-block; padding:6px 12px; border-radius:14px; border:1px solid rgba(255,255,255,.12)}
+    .primary-color{ color:#eaf0ff }
+    .form-container{
+      background: rgba(255,255,255,0.03);
+      border:1px solid rgba(255,255,255,0.12);
+      border-radius:16px;
+      backdrop-filter: blur(6px);
+    }
+    .rows{ margin-bottom: 12px; }
+    .gap{ row-gap:12px }
+    .search-btn{
+      width:100%;
+      background:linear-gradient(135deg,#6ea8ff,#7bb6ff);
+      border:none; font-weight:800;
+    }
+    .book-btn{ font-weight:700 }
+    .tooltip-icon{ cursor:pointer; font-size:0.95rem }
+    .trust-badges{ display:flex; flex-wrap:wrap; gap:8px; justify-content:center; margin:10px 0 0 }
+    .trust-badges .badge{
+      background:#10173b; border:1px solid rgba(255,255,255,.12);
+      color:#9fb0ff; padding:8px 10px; border-radius:10px; font-weight:600
+    }
+    /* Autocomplete dropdown */
+    .autocomplete-items{
+      position:absolute; z-index: 1000; width:100%;
+      max-height: 300px; overflow:auto;
+      background:#0e1430; border:1px solid rgba(255,255,255,.12); border-radius:12px;
+      box-shadow: 0 10px 24px rgba(0,0,0,.35); margin-top:4px;
+    }
+    .autocomplete-item{ padding:10px 12px; cursor:pointer }
+    .autocomplete-item:hover, .autocomplete-item.active{ background:#141c42 }
+    .airport-sub{ font-size:12px; opacity:.85; color:#9fb0ff }
+    .top-nav a{ color:#9fb0ff; text-decoration:none; font-weight:600 }
+    .top-nav a:hover{ color:#cfe0ff; text-decoration:underline }
+  </style>
 </head>
-<!-- <body class="bg-light p-4 background" style="background-image: url('{{ url_for('static', filename='elena-mozhvilo-eA32JIBsSu8-unsplash.jpg') }}');"> -->
+
 <body class="background">
-    <div id="overlay">
-    <div >
-     <header class="title">
+  <nav class="container d-flex justify-content-between align-items-center py-3 top-nav">
+    <div class="d-flex align-items-center gap-2">
+      <span class="fs-5 fw-bold">GetMeOutOfHere<span class="text-info">.Live</span></span>
+      <i class="fa fa-plane fa-fade fa-rotate-by ms-1" style="--fa-rotate-angle:320deg; --fa-animation-duration: 2s; --fa-fade-opacity: 0.6; animation-duration: 1s; animation-iteration-count: 2;"></i>
+    </div>
+    <div class="d-flex gap-3">
+      <a href="/about">About</a>
+      <a href="/faq">FAQ</a>
+      <a href="/privacy">Privacy</a>
+      <a href="/terms">Terms</a>
+      <a href="mailto:hello@getmeoutofhere.live">Contact</a>
+    </div>
+  </nav>
+
+  <header class="title">
     <h1 class="primary-color container-border">
-        Get Me Out of Here 
-        <i class="fa fa-plane fa-fade fa-rotate-by" style="font-size:28px; --fa-rotate-angle:320deg; --fa-animation-duration: 2s; --fa-fade-opacity: 0.6; animation-duration: 1s; animation-iteration-count: 2;"></i>
+      Get Me Out of Here
+      <i class="fa fa-plane ms-1" style="font-size:22px; opacity:.8"></i>
     </h1>
-    <p>The world's waiting. Not sure where to go? Check out the cheapest places you can fly to from where you are.</p>
-</header>
-        <form method="POST" class="mb-4 p-8 container form-container" id="searchForm">
-            <div class="row mb-3 gap">
-                <div class="col-sm rows">
-                    <label for="origin" class="form-label"><i class="fa fa-paper-plane" style="font-size:24px"></i> Fly from </label>
-                    <input type="text" id="origin" name="origin" class="form-control" placeholder="Start typing a city or airport..." required value="{{ form_data.origin }}">
-                </div>
-                <div class="col-sm rows">
-                    <label for="departure_date" class="form-label">Departure date:</label>
-                    <input type="date" id="departure_date" name="departure_date" class="form-control" required value="{{ form_data.departure_date }}">
-                </div>
-            </div>
-            <div class="mb-3 col-sm rows">
-                <label class="form-label me-3">Trip type:</label>
-                <div class="form-check form-check-inline">
-                    <input class="form-check-input" type="radio" name="trip_type" id="oneway" value="oneway" checked>
-                    <label class="form-check-label" for="oneway">One-way</label>
-                </div>
-                <div class="form-check form-check-inline">
-                    <input class="form-check-input" type="radio" name="trip_type" id="roundtrip" value="roundtrip"
-                           {% if form_data.trip_type == 'roundtrip' %}checked{% endif %}>
-                    <label class="form-check-label" for="roundtrip">Round-trip</label>
-                </div>
-            </div>
-            <div class="mb-3" id="return_date_group" style="display: none;">
-                <label for="return_date" class="form-label">Return date:</label>
-                <input type="date" id="return_date" name="return_date" class="form-control" value="{{ form_data.return_date }}">
-            </div>
-            <div class="row mb-3 gap">
-                <div class="col-sm rows">
-                    <label for="passengers" class="form-label">Passengers:</label>
-                    <input type="number" id="passengers" name="passengers" class="form-control" min="1" value="{{ form_data.passengers }}">
-                </div>
-
-                <div class="col-sm rows">
-                    <button type="button" class="btn search-btn" id="searchButton">Search</button>
-                </div>
-            </div>
-         
-        </form>
-
-        <div class="container mb-4" id="resultsContainer">
-        {% if flights %}
-            <h5 class="mb-3">Showing results from <strong>{{ origin_label }}</strong>{% if date %} on <strong>{{ date }}</strong>{% endif %}</h5>
-            <ul class="list-group" id="flightsList">
-                {% for flight in flights %}
-                <li class="list-group-item d-flex justify-content-between align-items-center">
-                    <div>
-                        ✈️ To: <strong>{{ flight.destination_label or flight.destination_code }}</strong>
-                        – £{{ flight.price }}
-                        <span class="ms-2 text-muted tooltip-icon" data-bs-toggle="tooltip" title="Click 'Book Now' to see even lower prices — these are just estimates.">ℹ️</span>
-                    </div>
-                    <a href="{{ flight.booking_url }}" target="_blank" class="btn btn-success book-btn">Book Now</a>
-                </li>
-                {% endfor %}
-            </ul>
-        {% endif %}
+    <p class="mt-2">The world's waiting. Not sure where to go? Check the cheapest places you can fly to from your airport.</p>
+    <div class="trust-badges">
+      <span class="badge">🔒 Secure</span>
+      <span class="badge">🤝 Affiliate partner: Travelpayouts</span>
+      <span class="badge">📱 Mobile-friendly</span>
+      <span class="badge">🛫 10k+ airports</span>
     </div>
+  </header>
+
+  <main class="container mb-5">
+    <form method="POST" class="mb-4 p-4 p-md-5 form-container position-relative" id="searchForm" autocomplete="off">
+      <div class="row mb-3 gap">
+        <!-- Origin -->
+        <div class="col-sm rows position-relative">
+          <label for="origin" class="form-label fw-semibold">
+            <i class="fa fa-paper-plane me-1"></i> Fly from
+          </label>
+          <!-- Visible input (shows label + code). We still POST the same 'origin' name to keep your backend happy -->
+          <input type="text" id="origin" name="origin" class="form-control" placeholder="Start typing a city or airport..." required
+                 value="{{ form_data.origin }}" aria-autocomplete="list" aria-expanded="false" aria-controls="origin-autocomplete-list">
+          <!-- Hidden code field (optional for your backend; ignore if not needed) -->
+          <input type="hidden" id="origin_code" name="origin_code" value="{{ form_data.origin_code }}">
+          <div id="origin-autocomplete-list" class="autocomplete-items d-none" role="listbox"></div>
+          <div id="origin-helper" class="form-text text-info"></div>
+        </div>
+
+        <!-- Departure -->
+        <div class="col-sm rows">
+          <label for="departure_date" class="form-label fw-semibold">Departure date</label>
+          <input type="date" id="departure_date" name="departure_date" class="form-control" required value="{{ form_data.departure_date }}">
+        </div>
+      </div>
+
+      <!-- Trip type -->
+      <div class="mb-3 col-sm rows">
+        <label class="form-label me-3 fw-semibold">Trip type</label>
+        <div class="form-check form-check-inline">
+          <input class="form-check-input" type="radio" name="trip_type" id="oneway" value="oneway"
+                 {% if form_data.trip_type != 'roundtrip' %}checked{% endif %}>
+          <label class="form-check-label" for="oneway">One-way</label>
+        </div>
+        <div class="form-check form-check-inline">
+          <input class="form-check-input" type="radio" name="trip_type" id="roundtrip" value="roundtrip"
+                 {% if form_data.trip_type == 'roundtrip' %}checked{% endif %}>
+          <label class="form-check-label" for="roundtrip">Round-trip</label>
+        </div>
+      </div>
+
+      <!-- Return date -->
+      <div class="mb-3" id="return_date_group" style="display: none;">
+        <label for="return_date" class="form-label fw-semibold">Return date</label>
+        <input type="date" id="return_date" name="return_date" class="form-control" value="{{ form_data.return_date }}">
+      </div>
+
+      <div class="row mb-3 gap">
+        <!-- Passengers -->
+        <div class="col-sm rows">
+          <label for="passengers" class="form-label fw-semibold">Passengers</label>
+          <input type="number" id="passengers" name="passengers" class="form-control" min="1" value="{{ form_data.passengers or 1 }}">
+        </div>
+
+        <!-- Search -->
+        <div class="col-sm rows d-grid">
+          <label class="form-label fw-semibold invisible">Search</label>
+          <button type="button" class="btn btn-primary search-btn" id="searchButton">Search</button>
+        </div>
+      </div>
+
+      <div class="small text-muted">
+        <span class="me-2">💡</span>
+        <span class="text-light">Click “Book Now” to see even lower prices — these are just estimates.</span>
+      </div>
+    </form>
+
+    <!-- Results -->
+    <div class="container mb-4" id="resultsContainer">
+      {% if flights %}
+        <h5 class="mb-3">Showing results from <strong>{{ origin_label }}</strong>{% if date %} on <strong>{{ date }}</strong>{% endif %}</h5>
+        <ul class="list-group" id="flightsList">
+          {% for flight in flights %}
+          <li class="list-group-item d-flex justify-content-between align-items-center">
+            <div>
+              ✈️ To: <strong>{{ flight.destination_label or flight.destination_code }}</strong>
+              – £{{ flight.price }}
+              <span class="ms-2 text-muted tooltip-icon" data-bs-toggle="tooltip" title="Click 'Book Now' to see even lower prices — these are just estimates.">ℹ️</span>
+            </div>
+            <a href="{{ flight.booking_url }}" target="_blank" rel="nofollow noopener" class="btn btn-success book-btn">Book Now</a>
+          </li>
+          {% endfor %}
+        </ul>
+      {% endif %}
     </div>
-</div>
+  </main>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
-            tooltipTriggerList.forEach(t => new bootstrap.Tooltip(t))
+  <footer class="container py-4 text-center text-secondary">
+    <div>© {{ current_year if current_year else 2025 }} GetMeOutOfHere.Live</div>
+  </footer>
 
-            const tripTypeRadios = document.querySelectorAll('input[name="trip_type"]');
-            const returnDateGroup = document.getElementById('return_date_group');
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      // Tooltips
+      const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+      tooltipTriggerList.forEach(t => new bootstrap.Tooltip(t));
 
-            tripTypeRadios.forEach(radio => {
-                radio.addEventListener('change', () => {
-                    returnDateGroup.style.display = radio.value === 'roundtrip' ? 'block' : 'none';
-                });
-            });
+      // Round-trip toggle
+      const tripTypeRadios = document.querySelectorAll('input[name="trip_type"]');
+      const returnDateGroup = document.getElementById('return_date_group');
+      function syncReturnVisibility() {
+        const val = document.querySelector('input[name="trip_type"]:checked')?.value || 'oneway';
+        returnDateGroup.style.display = val === 'roundtrip' ? 'block' : 'none';
+      }
+      tripTypeRadios.forEach(radio => radio.addEventListener('change', syncReturnVisibility));
+      syncReturnVisibility();
 
-            // Debounce function to delay calling endpoints immediately
-            function debounce(func, delay) {
-                let timeout;
-                return function(...args) {
-                    const context = this;
-                    clearTimeout(timeout);
-                    timeout = setTimeout(() => func.apply(context, args), delay);
-                };
-            }
+      // Min dates (no past dates)
+      const dep = document.getElementById('departure_date');
+      const ret = document.getElementById('return_date');
+      const today = new Date(); today.setHours(0,0,0,0);
+      const fmt = d => d.toISOString().slice(0,10);
+      dep.min = fmt(today); ret.min = fmt(today);
 
-            // Update the autocomplete functionality to fetch from the server
-            const input = document.getElementById("origin");
-            input.addEventListener("input", debounce(function () {
-                const val = this.value;
-                closeAllLists();
-                if (!val) return false;
+      // --- Autocomplete (server-powered: /api/airports?query=)
+      const input = document.getElementById('origin');
+      const list = document.getElementById('origin-autocomplete-list');
+      const helper = document.getElementById('origin-helper');
+      const originCodeHidden = document.getElementById('origin_code');
+      let acIndex = -1;
+      let lastResults = [];
 
-                const list = document.createElement("div");
-                list.setAttribute("id", this.id + "autocomplete-list");
-                list.setAttribute("class", "autocomplete-items list-group");
-                this.parentNode.appendChild(list);
+      function debounce(func, delay) {
+        let timeout; return function(...args){
+          clearTimeout(timeout); timeout = setTimeout(() => func.apply(this,args), delay);
+        }
+      }
 
-                fetch(`/api/airports?query=${val}`) 
-                    .then(response => response.json())
-                    .then(airports => {
-                        airports.forEach(airport => {
-                            const item = document.createElement("div");
-                            item.classList.add("list-group-item", "list-group-item-action");
-                            item.innerHTML = airport.name; 
-                            item.addEventListener("click", () => {
-                                input.value = airport.name;
-                                closeAllLists();
-                            });
-                            list.appendChild(item);
-                        });
-                    });
-            }, 200));
+      function openList(){ list.classList.remove('d-none'); input.setAttribute('aria-expanded','true'); }
+      function closeList(){ list.classList.add('d-none'); input.setAttribute('aria-expanded','false'); acIndex = -1; }
+      function highlight(items){
+        items.forEach((el,i)=> el.classList.toggle('active', i===acIndex));
+        if(items[acIndex]) items[acIndex].scrollIntoView({block:'nearest'});
+      }
 
-            function closeAllLists() {
-                const items = document.getElementsByClassName("autocomplete-items");
-                for (let i = 0; i < items.length; i++) {
-                    items[i].parentNode.removeChild(items[i]);
-                }
-            }
-
-            document.addEventListener("click", function (e) {
-                closeAllLists(e.target);
-            });
-
-            // Handle search button click
-            document.getElementById('searchButton').addEventListener('click', function() {
-                const form = document.getElementById('searchForm');
-                const formData = new FormData(form);
-                
-                fetch('/', {
-                    method: 'POST',
-                    body: formData
-                })
-                .then(response => response.text())
-                .then(html => {
-                    // Create a temporary div to parse the HTML
-                    const tempDiv = document.createElement('div');
-                    tempDiv.innerHTML = html;
-                    
-                    // Extract the results section
-                    const resultsContainer = tempDiv.querySelector('#resultsContainer');
-                    if (resultsContainer) {
-                        document.getElementById('resultsContainer').innerHTML = resultsContainer.innerHTML;
-                    }
-                })
-                .catch(error => console.error('Error:', error));
-            });
+      function render(results){
+        lastResults = results || [];
+        list.innerHTML = '';
+        if(!lastResults.length){ closeList(); return; }
+        lastResults.slice(0, 15).forEach((a, idx) => {
+          const label = a.label || a.name || a.code || '';
+          const city  = a.city || '';
+          const code  = a.code || '';
+          const item = document.createElement('div');
+          item.className = 'autocomplete-item';
+          item.setAttribute('role','option');
+          item.id = `origin-opt-${idx}`;
+          item.innerHTML = `
+            <div class="d-flex justify-content-between align-items-start">
+              <div>
+                <div class="fw-semibold">${label}${code ? ' ('+code+')' : ''}</div>
+                <div class="airport-sub">${city}${city && code ? ' · ' : ''}${!city && code ? code : ''}</div>
+              </div>
+              ${code ? '<span class="badge bg-secondary">' + code + '</span>' : ''}
+            </div>
+          `;
+          item.addEventListener('click', () => selectAirport({label, code}));
+          list.appendChild(item);
         });
-    </script>
+        openList();
+      }
+
+      function selectAirport(a){
+        // Keep your backend happy: 'origin' will be the code; show a helper with the pretty label.
+        const display = a.label && a.code ? `${a.label} (${a.code})` : (a.label || a.code || '');
+        input.value = a.code || display;
+        originCodeHidden.value = a.code || '';
+        helper.textContent = display;
+        // Update document title for nice dynamic SEO
+        document.title = `Cheap flights from ${display.replace(/\(.+\)/,'').trim()} | GetMeOutOfHere.Live`;
+        closeList();
+      }
+
+      // Keyboard navigation
+      input.addEventListener('keydown', (e) => {
+        const items = Array.from(list.querySelectorAll('.autocomplete-item'));
+        if(list.classList.contains('d-none') && (e.key === 'ArrowDown' || e.key === 'Enter')) return;
+        if(!items.length) return;
+
+        if(e.key === 'ArrowDown'){ e.preventDefault(); acIndex = (acIndex + 1) % items.length; highlight(items); }
+        if(e.key === 'ArrowUp'){ e.preventDefault(); acIndex = (acIndex - 1 + items.length) % items.length; highlight(items); }
+        if(e.key === 'Enter'){
+          if(acIndex >= 0){ e.preventDefault(); items[acIndex].click(); }
+        }
+        if(e.key === 'Escape'){ closeList(); }
+      });
+
+      // Fetch airports as the user types
+      input.addEventListener('input', debounce(function(){
+        const q = this.value.trim();
+        closeList();
+        if(!q) { helper.textContent = ''; originCodeHidden.value=''; return; }
+        fetch(`/api/airports?query=${encodeURIComponent(q)}`)
+          .then(r => r.json())
+          .then(airports => {
+            // Be resilient to different API shapes: [{name, code, city}] OR [{label, code}]
+            render(airports || []);
+          })
+          .catch(()=> render([]));
+      }, 180));
+
+      // Close list when clicking outside
+      document.addEventListener('click', (e) => {
+        if(!list.contains(e.target) && e.target !== input){ closeList(); }
+      });
+
+      // Handle search button click (AJAX POST, preserve your current behavior)
+      document.getElementById('searchButton').addEventListener('click', function() {
+        const form = document.getElementById('searchForm');
+
+        // If user picked from autocomplete, origin field already holds the code.
+        // If they typed free-text, keep as-is (your backend can parse/handle).
+        const formData = new FormData(form);
+
+        fetch('/', { method: 'POST', body: formData })
+          .then(response => response.text())
+          .then(html => {
+            const tempDiv = document.createElement('div'); tempDiv.innerHTML = html;
+            const resultsContainer = tempDiv.querySelector('#resultsContainer');
+            if (resultsContainer) {
+              document.getElementById('resultsContainer').innerHTML = resultsContainer.innerHTML;
+
+              // Re-bind tooltips for newly injected results
+              const tips = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+              tips.forEach(t => new bootstrap.Tooltip(t));
+            }
+          })
+          .catch(error => console.error('Error:', error));
+      });
+    });
+  </script>
 </body>
 </html>
