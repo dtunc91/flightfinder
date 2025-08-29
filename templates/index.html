@@ -715,76 +715,114 @@
       });
     }
 
-    // AUTOCOMPLETE SYSTEM
+    // HARDCODED AUTOCOMPLETE SYSTEM
     const input = document.getElementById('origin');
     const list = document.getElementById('origin-autocomplete-list');
     const helper = document.getElementById('origin-helper');
     const originCodeHidden = document.getElementById('origin_code');
+    
+    console.log('Elements found:', {
+      input: !!input,
+      list: !!list, 
+      helper: !!helper,
+      originCodeHidden: !!originCodeHidden
+    });
     
     if (!input || !list || !helper || !originCodeHidden) {
       console.error('Required elements not found');
       return;
     }
     
-    console.log('All elements found, setting up autocomplete');
+    // Hardcoded airport list
+    const airports = [
+      {code: "LHR", name: "London Heathrow Airport", city: "London"},
+      {code: "LGW", name: "London Gatwick Airport", city: "London"},
+      {code: "STN", name: "London Stansted Airport", city: "London"},
+      {code: "LTN", name: "London Luton Airport", city: "London"},
+      {code: "MAN", name: "Manchester Airport", city: "Manchester"},
+      {code: "BHX", name: "Birmingham Airport", city: "Birmingham"},
+      {code: "EDI", name: "Edinburgh Airport", city: "Edinburgh"},
+      {code: "GLA", name: "Glasgow Airport", city: "Glasgow"},
+      {code: "JFK", name: "John F. Kennedy International Airport", city: "New York"},
+      {code: "LAX", name: "Los Angeles International Airport", city: "Los Angeles"},
+      {code: "CDG", name: "Charles de Gaulle Airport", city: "Paris"},
+      {code: "AMS", name: "Amsterdam Airport Schiphol", city: "Amsterdam"},
+      {code: "FRA", name: "Frankfurt Airport", city: "Frankfurt"},
+      {code: "MAD", name: "Madrid-Barajas Airport", city: "Madrid"},
+      {code: "BCN", name: "Barcelona-El Prat Airport", city: "Barcelona"},
+      {code: "FCO", name: "Leonardo da Vinci Airport", city: "Rome"},
+      {code: "DUB", name: "Dublin Airport", city: "Dublin"},
+      {code: "BRU", name: "Brussels Airport", city: "Brussels"},
+      {code: "ZUR", name: "Zurich Airport", city: "Zurich"},
+      {code: "VIE", name: "Vienna International Airport", city: "Vienna"},
+      {code: "CPH", name: "Copenhagen Airport", city: "Copenhagen"},
+      {code: "ARN", name: "Stockholm Arlanda Airport", city: "Stockholm"},
+      {code: "OSL", name: "Oslo Airport", city: "Oslo"},
+      {code: "HEL", name: "Helsinki Airport", city: "Helsinki"},
+      {code: "SYD", name: "Sydney Airport", city: "Sydney"},
+      {code: "MEL", name: "Melbourne Airport", city: "Melbourne"},
+      {code: "NRT", name: "Narita International Airport", city: "Tokyo"},
+      {code: "ICN", name: "Incheon International Airport", city: "Seoul"},
+      {code: "SIN", name: "Singapore Changi Airport", city: "Singapore"},
+      {code: "DXB", name: "Dubai International Airport", city: "Dubai"}
+    ];
+    
+    console.log('Hardcoded airports loaded:', airports.length);
     
     let debounceTimer;
     
-    // Simple autocomplete function
     function searchAirports(query) {
-      console.log('Searching for:', query);
+      console.log('Searching hardcoded airports for:', query);
       
-      if (query.length < 2) {
+      if (query.length < 1) {
         list.classList.add('d-none');
         return;
       }
       
-      fetch('/api/airports?query=' + encodeURIComponent(query))
-        .then(response => {
-          console.log('API response status:', response.status);
-          return response.json();
-        })
-        .then(data => {
-          console.log('API data:', data);
-          showResults(data);
-        })
-        .catch(error => {
-          console.error('API error:', error);
-          list.classList.add('d-none');
-        });
+      const searchTerm = query.toLowerCase();
+      const results = airports.filter(airport => 
+        airport.code.toLowerCase().includes(searchTerm) ||
+        airport.name.toLowerCase().includes(searchTerm) ||
+        airport.city.toLowerCase().includes(searchTerm)
+      );
+      
+      console.log('Found results:', results.length);
+      showResults(results.slice(0, 8));
     }
     
-    // Show results function
-    function showResults(airports) {
+    function showResults(results) {
+      console.log('Showing results:', results);
       list.innerHTML = '';
       
-      if (!airports || airports.length === 0) {
+      if (!results || results.length === 0) {
         list.classList.add('d-none');
         return;
       }
       
-      airports.slice(0, 8).forEach(airport => {
+      results.forEach(airport => {
         const div = document.createElement('div');
         div.className = 'autocomplete-item';
-        div.innerHTML = '<div class="fw-semibold">' + (airport.label || airport.name) + ' (' + airport.code + ')</div><div class="airport-sub">' + (airport.city || '') + '</div>';
+        div.innerHTML = '<div class="fw-semibold">' + airport.name + ' (' + airport.code + ')</div><div class="airport-sub">' + airport.city + '</div>';
         
         div.addEventListener('click', function() {
           input.value = airport.code;
           originCodeHidden.value = airport.code;
-          helper.textContent = (airport.label || airport.name) + ' (' + airport.code + ')';
+          helper.textContent = airport.name + ' (' + airport.code + ')';
           list.classList.add('d-none');
-          console.log('Selected:', airport);
+          console.log('Selected airport:', airport);
         });
         
         list.appendChild(div);
       });
       
       list.classList.remove('d-none');
+      console.log('Dropdown opened with', results.length, 'items');
     }
     
     // Input event listener
     input.addEventListener('input', function() {
       const query = this.value.trim();
+      console.log('Input changed:', query);
       
       clearTimeout(debounceTimer);
       helper.textContent = '';
@@ -792,12 +830,15 @@
       
       debounceTimer = setTimeout(function() {
         searchAirports(query);
-      }, 300);
+      }, 200);
     });
     
     // Click outside to close
     document.addEventListener('click', function(e) {
       if (!input.contains(e.target) && !list.contains(e.target)) {
         list.classList.add('d-none');
+        console.log('Dropdown closed');
       }
     });
+    
+    console.log('Hardcoded autocomplete setup complete');
