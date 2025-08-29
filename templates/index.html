@@ -59,31 +59,12 @@
       pointer-events: none;
       z-index: -1;
     }
-
-    .particle {
-      position: absolute;
-      width: 2px;
-      height: 2px;
-      background: rgba(110, 168, 255, 0.6);
-      border-radius: 50%;
-      animation: float-up 15s infinite linear;
-    }
-
+    .particle { position:absolute; width:2px; height:2px; background:rgba(110,168,255,.6); border-radius:50%; animation: float-up 15s infinite linear; }
     @keyframes float-up {
-      0% {
-        transform: translateY(100vh) translateX(0px);
-        opacity: 0;
-      }
-      10% {
-        opacity: 1;
-      }
-      90% {
-        opacity: 1;
-      }
-      100% {
-        transform: translateY(-100px) translateX(50px);
-        opacity: 0;
-      }
+      0% { transform: translateY(100vh) translateX(0px); opacity: 0; }
+      10% { opacity: 1; }
+      90% { opacity: 1; }
+      100% { transform: translateY(-100px) translateX(50px); opacity: 0; }
     }
 
     /* Enhanced Navigation */
@@ -91,392 +72,109 @@
       background: rgba(11, 16, 32, 0.85);
       backdrop-filter: blur(12px);
       border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-      position: sticky;
-      top: 0;
-      z-index: 1000;
-      transition: all 0.3s ease;
+      position: sticky; top: 0; z-index: 1000; transition: all .3s ease;
     }
-
-    .top-nav a{ 
-      color:#9fb0ff; 
-      text-decoration:none; 
-      font-weight:600;
-      transition: all 0.3s ease;
-      padding: 8px 12px;
-      border-radius: 8px;
-    }
-    .top-nav a:hover{ 
-      color:#cfe0ff; 
-      background: rgba(255, 255, 255, 0.1);
-      transform: translateY(-1px);
-    }
+    .top-nav a{ color:#9fb0ff; text-decoration:none; font-weight:600; transition: all .3s ease; padding: 8px 12px; border-radius: 8px; }
+    .top-nav a:hover{ color:#cfe0ff; background: rgba(255,255,255,.1); transform: translateY(-1px); }
 
     /* Enhanced Header */
-    .hero-section {
-      text-align: center;
-      padding: 3rem 0;
-      position: relative;
-    }
-
+    .hero-section { text-align:center; padding:3rem 0; position:relative; }
     .main-title {
-      font-size: clamp(2rem, 5vw, 3.5rem);
-      font-weight: 800;
+      font-size: clamp(2rem, 5vw, 3.5rem); font-weight: 800;
       background: linear-gradient(135deg, #6ea8ff 0%, #82d7ff 50%, #7bb6ff 100%);
-      -webkit-background-clip: text;
-      background-clip: text;
-      -webkit-text-fill-color: transparent;
-      margin-bottom: 1rem;
-      animation: slideInUp 0.8s ease-out;
+      -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent;
+      margin-bottom:1rem; animation: slideInUp .8s ease-out;
     }
-
-    .hero-subtitle {
-      font-size: 1.25rem;
-      margin-bottom: 2rem;
-      opacity: 0.9;
-      animation: slideInUp 0.8s ease-out 0.2s both;
+    .hero-subtitle { font-size:1.25rem; margin-bottom:2rem; opacity:.9; animation: slideInUp .8s ease-out .2s both; }
+    .trust-badges { display:flex; flex-wrap:wrap; gap:12px; justify-content:center; margin-top:1.5rem; animation: slideInUp .8s ease-out .4s both; }
+    .trust-badges .badge{
+      background: rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.15); color:#cfe0ff;
+      padding:10px 16px; border-radius:12px; font-weight:600; backdrop-filter:blur(8px); transition: all .3s ease;
     }
-
-    .trust-badges { 
-      display: flex; 
-      flex-wrap: wrap; 
-      gap: 12px; 
-      justify-content: center; 
-      margin-top: 1.5rem;
-      animation: slideInUp 0.8s ease-out 0.4s both;
-    }
-
-    .trust-badges .badge {
-      background: rgba(255, 255, 255, 0.08);
-      border: 1px solid rgba(255, 255, 255, 0.15);
-      color: #cfe0ff;
-      padding: 10px 16px;
-      border-radius: 12px;
-      font-weight: 600;
-      backdrop-filter: blur(8px);
-      transition: all 0.3s ease;
-    }
-
-    .trust-badges .badge:hover {
-      background: rgba(255, 255, 255, 0.12);
-      transform: translateY(-2px);
-    }
+    .trust-badges .badge:hover{ background: rgba(255,255,255,.12); transform: translateY(-2px); }
 
     /* Enhanced Form Design */
-    .form-container {
-      background: rgba(255, 255, 255, 0.06);
-      border: 1px solid rgba(255, 255, 255, 0.15);
-      border-radius: 20px;
-      backdrop-filter: blur(16px);
-      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
-      position: relative;
-      overflow: hidden;
-      animation: slideInUp 0.8s ease-out 0.6s both;
+    .form-container{
+      background: rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.15); border-radius:20px;
+      backdrop-filter: blur(16px); box-shadow: 0 20px 40px rgba(0,0,0,.2); position:relative; overflow:hidden;
+      animation: slideInUp .8s ease-out .6s both;
     }
+    .form-container::before{
+      content:''; position:absolute; top:0; left:-100%; width:100%; height:100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,.05), transparent); transition:left .6s ease;
+    }
+    .form-container:hover::before{ left:100%; }
 
-    .form-container::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: -100%;
-      width: 100%;
-      height: 100%;
-      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.05), transparent);
-      transition: left 0.6s ease;
-    }
+    .form-control{ background: rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.2); border-radius:12px; color:#eaf0ff; transition: all .3s ease; }
+    .form-control:focus{ background: rgba(255,255,255,.12); border-color:#6ea8ff; box-shadow:0 0 0 3px rgba(110,168,255,.2); color:#fff; }
+    .form-control::placeholder{ color: rgba(234,240,255,.6); }
 
-    .form-container:hover::before {
-      left: 100%;
+    .search-btn{
+      width:100%; background: linear-gradient(135deg,#6ea8ff,#7bb6ff); border:none; font-weight:800;
+      border-radius:12px; padding:12px 24px; transition: all .3s ease; position:relative; overflow:hidden;
     }
+    .search-btn:hover{ transform: translateY(-2px); box-shadow: 0 8px 25px rgba(110,168,255,.4); }
+    .search-btn:active{ transform: translateY(0); }
+    .search-btn.loading{ pointer-events:none; }
+    .search-btn.loading::after{
+      content:''; position:absolute; top:50%; left:50%; width:20px; height:20px; margin:-10px 0 0 -10px;
+      border:2px solid rgba(255,255,255,.3); border-top:2px solid #fff; border-radius:50%; animation: spin 1s linear infinite;
+    }
+    @keyframes spin { to{ transform: rotate(360deg); } }
 
-    .form-control {
-      background: rgba(255, 255, 255, 0.08);
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      border-radius: 12px;
-      color: #eaf0ff;
-      transition: all 0.3s ease;
+    /* Autocomplete */
+    .autocomplete-items{
+      position:absolute; z-index:1000; width:100%; max-height:320px; overflow:auto;
+      background: rgba(14,20,48,.95); border:1px solid rgba(255,255,255,.15); border-radius:16px;
+      box-shadow: 0 15px 35px rgba(0,0,0,.4); margin-top:8px; backdrop-filter: blur(16px);
     }
+    .autocomplete-item{ padding:14px 16px; cursor:pointer; transition: all .2s ease; border-bottom:1px solid rgba(255,255,255,.05); }
+    .autocomplete-item:last-child{ border-bottom:none; }
+    .autocomplete-item:hover, .autocomplete-item.active{ background: rgba(110,168,255,.15); transform: translateX(4px); }
+    .airport-sub{ font-size:12px; opacity:.75; color:#9fb0ff; }
+    .sr-helper.small{ font-size:.9rem; color:#bcd0ff; }
 
-    .form-control:focus {
-      background: rgba(255, 255, 255, 0.12);
-      border-color: #6ea8ff;
-      box-shadow: 0 0 0 3px rgba(110, 168, 255, 0.2);
-      color: #ffffff;
+    /* Results */
+    .results-section{ animation: slideInUp .6s ease-out; }
+    .results-header{ background: rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.1); border-radius:16px; padding:1.5rem; margin-bottom:1.5rem; text-align:center; }
+    .flight-card{
+      background: rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.12); border-radius:16px; margin-bottom:12px; padding:20px; transition: all .3s ease; position:relative; overflow:hidden;
     }
+    .flight-card::before{
+      content:''; position:absolute; top:0; left:-100%; width:100%; height:100%;
+      background: linear-gradient(90deg, transparent, rgba(110,168,255,.1), transparent); transition:left .5s ease;
+    }
+    .flight-card:hover::before{ left:100%; }
+    .flight-card:hover{ transform: translateY(-4px); border-color: rgba(110,168,255,.3); box-shadow: 0 12px 30px rgba(0,0,0,.3); }
+    .flight-destination{ font-size:1.1rem; font-weight:600; color:#fff; margin-bottom:.5rem; }
+    .flight-price{
+      font-size:1.5rem; font-weight:800; background: linear-gradient(135deg,#6ea8ff,#82d7ff);
+      -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent;
+    }
+    .book-btn{
+      background: linear-gradient(135deg,#28a745,#20c997); border:none; border-radius:12px; padding:10px 20px; font-weight:600; transition: all .3s ease; min-width:120px;
+    }
+    .book-btn:hover{ transform: translateY(-2px); box-shadow: 0 6px 20px rgba(40,167,69,.4); }
 
-    .form-control::placeholder {
-      color: rgba(234, 240, 255, 0.6);
-    }
-
-    .search-btn {
-      width: 100%;
-      background: linear-gradient(135deg, #6ea8ff, #7bb6ff);
-      border: none;
-      font-weight: 800;
-      border-radius: 12px;
-      padding: 12px 24px;
-      transition: all 0.3s ease;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .search-btn:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 8px 25px rgba(110, 168, 255, 0.4);
-    }
-
-    .search-btn:active {
-      transform: translateY(0);
-    }
-
-    .search-btn.loading {
-      pointer-events: none;
-    }
-
-    .search-btn.loading::after {
-      content: '';
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      width: 20px;
-      height: 20px;
-      margin: -10px 0 0 -10px;
-      border: 2px solid rgba(255, 255, 255, 0.3);
-      border-top: 2px solid white;
-      border-radius: 50%;
-      animation: spin 1s linear infinite;
-    }
-
-    @keyframes spin {
-      to { transform: rotate(360deg); }
-    }
-
-    /* Enhanced Autocomplete */
-    .autocomplete-items {
-      position: absolute;
-      z-index: 1000;
-      width: 100%;
-      max-height: 320px;
-      overflow: auto;
-      background: rgba(14, 20, 48, 0.95);
-      border: 1px solid rgba(255, 255, 255, 0.15);
-      border-radius: 16px;
-      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
-      margin-top: 8px;
-      backdrop-filter: blur(16px);
-    }
-
-    .autocomplete-item {
-      padding: 14px 16px;
-      cursor: pointer;
-      transition: all 0.2s ease;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-    }
-
-    .autocomplete-item:last-child {
-      border-bottom: none;
-    }
-
-    .autocomplete-item:hover,
-    .autocomplete-item.active {
-      background: rgba(110, 168, 255, 0.15);
-      transform: translateX(4px);
-    }
-
-    .airport-sub {
-      font-size: 12px;
-      opacity: 0.75;
-      color: #9fb0ff;
-    }
-
-    /* Enhanced Results */
-    .results-section {
-      animation: slideInUp 0.6s ease-out;
-    }
-
-    .results-header {
-      background: rgba(255, 255, 255, 0.04);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      border-radius: 16px;
-      padding: 1.5rem;
-      margin-bottom: 1.5rem;
-      text-align: center;
-    }
-
-    .flight-card {
-      background: rgba(255, 255, 255, 0.06);
-      border: 1px solid rgba(255, 255, 255, 0.12);
-      border-radius: 16px;
-      margin-bottom: 12px;
-      padding: 20px;
-      transition: all 0.3s ease;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .flight-card::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: -100%;
-      width: 100%;
-      height: 100%;
-      background: linear-gradient(90deg, transparent, rgba(110, 168, 255, 0.1), transparent);
-      transition: left 0.5s ease;
-    }
-
-    .flight-card:hover::before {
-      left: 100%;
-    }
-
-    .flight-card:hover {
-      transform: translateY(-4px);
-      border-color: rgba(110, 168, 255, 0.3);
-      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.3);
-    }
-
-    .flight-destination {
-      font-size: 1.1rem;
-      font-weight: 600;
-      color: #ffffff;
-      margin-bottom: 0.5rem;
-    }
-
-    .flight-price {
-      font-size: 1.5rem;
-      font-weight: 800;
-      background: linear-gradient(135deg, #6ea8ff, #82d7ff);
-      -webkit-background-clip: text;
-      background-clip: text;
-      -webkit-text-fill-color: transparent;
-    }
-
-    .book-btn {
-      background: linear-gradient(135deg, #28a745, #20c997);
-      border: none;
-      border-radius: 12px;
-      padding: 10px 20px;
-      font-weight: 600;
-      transition: all 0.3s ease;
-      min-width: 120px;
-    }
-
-    .book-btn:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(40, 167, 69, 0.4);
-    }
-
-    /* Loading States */
-    .skeleton {
-      animation: pulse 1.5s ease-in-out infinite;
-      background: rgba(255, 255, 255, 0.1);
-      border-radius: 12px;
-    }
-
-    @keyframes pulse {
-      0% { opacity: 0.6; }
-      50% { opacity: 1; }
-      100% { opacity: 0.6; }
-    }
-
-    .loading-container {
-      text-align: center;
-      padding: 3rem;
-    }
-
-    .loading-spinner {
-      width: 40px;
-      height: 40px;
-      border: 4px solid rgba(110, 168, 255, 0.3);
-      border-top: 4px solid #6ea8ff;
-      border-radius: 50%;
-      animation: spin 1s linear infinite;
-      margin: 0 auto 1rem;
-    }
+    /* Loading / Alerts */
+    .skeleton{ animation: pulse 1.5s ease-in-out infinite; background: rgba(255,255,255,.1); border-radius:12px; }
+    @keyframes pulse { 0%{opacity:.6} 50%{opacity:1} 100%{opacity:.6} }
+    .alert{ border-radius:12px; border:none; backdrop-filter: blur(8px); }
+    .alert-warning{ background: rgba(255,193,7,.15); color:#fff3cd; border:1px solid rgba(255,193,7,.3); }
+    .alert-danger{ background: rgba(220,53,69,.15); color:#f8d7da; border:1px solid rgba(220,53,69,.3); }
 
     /* Animations */
-    @keyframes slideInUp {
-      from {
-        opacity: 0;
-        transform: translateY(30px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
+    @keyframes slideInUp { from{ opacity:0; transform: translateY(30px);} to{ opacity:1; transform: translateY(0);} }
 
-    /* Mobile Responsive Enhancements */
-    @media (max-width: 768px) {
-      .top-nav .d-flex:last-child {
-        flex-wrap: wrap;
-        gap: 0.5rem;
-      }
-
-      .top-nav a {
-        font-size: 0.9rem;
-        padding: 6px 8px;
-      }
-
-      .hero-section {
-        padding: 2rem 0;
-      }
-
-      .trust-badges {
-        gap: 8px;
-      }
-
-      .trust-badges .badge {
-        font-size: 0.8rem;
-        padding: 8px 12px;
-      }
-
-      .flight-card {
-        padding: 16px;
-      }
-
-      .flight-price {
-        font-size: 1.3rem;
-      }
-    }
-
-    /* Additional UX Enhancements */
-    .form-label {
-      color: #cfe0ff;
-      font-weight: 600;
-      margin-bottom: 0.75rem;
-    }
-
-    .form-check-label {
-      color: #eaf0ff;
-    }
-
-    .text-muted {
-      color: rgba(234, 240, 255, 0.7) !important;
-    }
-
-    .alert {
-      border-radius: 12px;
-      border: none;
-      backdrop-filter: blur(8px);
-    }
-
-    .alert-warning {
-      background: rgba(255, 193, 7, 0.15);
-      color: #fff3cd;
-      border: 1px solid rgba(255, 193, 7, 0.3);
-    }
-
-    .alert-danger {
-      background: rgba(220, 53, 69, 0.15);
-      color: #f8d7da;
-      border: 1px solid rgba(220, 53, 69, 0.3);
-    }
-
-    /* Footer Enhancement */
-    footer {
-      background: rgba(0, 0, 0, 0.3);
-      border-top: 1px solid rgba(255, 255, 255, 0.1);
-      backdrop-filter: blur(8px);
+    /* Mobile tweaks */
+    @media (max-width: 768px){
+      .top-nav .d-flex:last-child{ flex-wrap:wrap; gap:.5rem; }
+      .top-nav a{ font-size:.9rem; padding:6px 8px; }
+      .hero-section{ padding:2rem 0; }
+      .trust-badges{ gap:8px; }
+      .trust-badges .badge{ font-size:.8rem; padding:8px 12px; }
+      .flight-card{ padding:16px; }
+      .flight-price{ font-size:1.3rem; }
     }
   </style>
 </head>
@@ -485,11 +183,11 @@
   <!-- Animated background particles -->
   <div class="bg-particles" id="bgParticles"></div>
 
-  <!-- Enhanced Navigation -->
+  <!-- Navigation -->
   <nav class="container d-flex justify-content-between align-items-center py-3 top-nav">
     <div class="d-flex align-items-center gap-2">
       <span class="fs-5 fw-bold">GetMeOutOfHere<span class="text-info">.Live</span></span>
-      <i class="fa fa-plane fa-fade fa-rotate-by ms-1" style="--fa-rotate-angle:320deg; --fa-animation-duration: 2s; --fa-fade-opacity: 0.6; animation-duration: 1s; animation-iteration-count: 2;"></i>
+      <i class="fa fa-plane fa-fade fa-rotate-by ms-1" style="--fa-rotate-angle:320deg; --fa-animation-duration:2s; --fa-fade-opacity:.6; animation-duration:1s; animation-iteration-count:2;"></i>
     </div>
     <div class="d-flex gap-2">
       <a href="/about">About</a>
@@ -500,12 +198,10 @@
     </div>
   </nav>
 
-  <!-- Enhanced Hero Section -->
+  <!-- Hero -->
   <header class="hero-section">
     <div class="container">
-      <h1 class="main-title">
-        Get Me Out of Here <i class="fa fa-plane ms-2" style="font-size:0.8em; opacity:.8"></i>
-      </h1>
+      <h1 class="main-title">Get Me Out of Here <i class="fa fa-plane ms-2" style="font-size:.8em; opacity:.8"></i></h1>
       <p class="hero-subtitle">The world's waiting. Not sure where to go? Check the cheapest places you can fly to from your airport.</p>
       <div class="trust-badges">
         <span class="badge">🔒 Secure & Safe</span>
@@ -517,10 +213,10 @@
   </header>
 
   <main class="container mb-5">
-    <!-- Enhanced Search Form -->
+    <!-- Search Form -->
     <form method="POST" class="mb-4 p-4 p-md-5 form-container position-relative" id="searchForm" autocomplete="off">
       <div class="row mb-3 g-3">
-        <!-- Origin with enhanced autocomplete -->
+        <!-- Origin -->
         <div class="col-md position-relative">
           <label for="origin" class="form-label">
             <i class="fa fa-paper-plane me-2"></i>Fly from
@@ -532,7 +228,7 @@
           <div id="origin-helper" class="sr-helper small text-muted mt-1"></div>
         </div>
 
-        <!-- Departure Date -->
+        <!-- Departure -->
         <div class="col-sm">
           <label for="departure_date" class="form-label">
             <i class="fa fa-calendar me-2"></i>Departure date
@@ -543,45 +239,35 @@
 
       <!-- Trip Type -->
       <div class="mb-3">
-        <label class="form-label me-3">
-          <i class="fa fa-route me-2"></i>Trip type
-        </label>
+        <label class="form-label me-3"><i class="fa fa-route me-2"></i>Trip type</label>
         <div class="form-check form-check-inline">
-          <input class="form-check-input" type="radio" name="trip_type" id="oneway" value="oneway"
-                 {% if form_data.trip_type != 'roundtrip' %}checked{% endif %}>
+          <input class="form-check-input" type="radio" name="trip_type" id="oneway" value="oneway" {% if form_data.trip_type != 'roundtrip' %}checked{% endif %}>
           <label class="form-check-label" for="oneway">One-way</label>
         </div>
         <div class="form-check form-check-inline">
-          <input class="form-check-input" type="radio" name="trip_type" id="roundtrip" value="roundtrip"
-                 {% if form_data.trip_type == 'roundtrip' %}checked{% endif %}>
+          <input class="form-check-input" type="radio" name="trip_type" id="roundtrip" value="roundtrip" {% if form_data.trip_type == 'roundtrip' %}checked{% endif %}>
           <label class="form-check-label" for="roundtrip">Round-trip</label>
         </div>
       </div>
 
-      <!-- Return Date -->
+      <!-- Return -->
       <div class="mb-3" id="return_date_group" style="display:none;">
-        <label for="return_date" class="form-label">
-          <i class="fa fa-calendar-check me-2"></i>Return date
-        </label>
+        <label for="return_date" class="form-label"><i class="fa fa-calendar-check me-2"></i>Return date</label>
         <input type="date" id="return_date" name="return_date" class="form-control" value="{{ form_data.return_date }}">
       </div>
 
       <div class="row g-3">
         <!-- Passengers -->
         <div class="col-sm">
-          <label for="passengers" class="form-label">
-            <i class="fa fa-users me-2"></i>Passengers
-          </label>
+          <label for="passengers" class="form-label"><i class="fa fa-users me-2"></i>Passengers</label>
           <input type="number" id="passengers" name="passengers" class="form-control" min="1" max="9" value="{{ form_data.passengers or 1 }}">
         </div>
 
-        <!-- Search Button -->
+        <!-- Search -->
         <div class="col-sm d-grid">
           <label class="form-label invisible">Search</label>
           <button type="button" class="btn btn-primary search-btn" id="searchButton">
-            <span class="btn-text">
-              <i class="fa fa-search me-2"></i>Search Flights
-            </span>
+            <span class="btn-text"><i class="fa fa-search me-2"></i>Search Flights</span>
           </button>
         </div>
       </div>
@@ -592,46 +278,31 @@
       </div>
     </form>
 
-    <!-- Enhanced Results Section -->
+    <!-- Results -->
     <div class="results-section" id="resultsContainer">
       {% if flights %}
         <div class="results-header">
-          <h4 class="mb-2">
-            <i class="fa fa-plane-departure me-2"></i>
-            Flight Results from <strong>{{ origin_label }}</strong>
-          </h4>
-          {% if date %}
-            <p class="mb-0 text-muted">
-              <i class="fa fa-calendar me-2"></i>Departing on <strong>{{ date }}</strong>
-            </p>
-          {% endif %}
+          <h4 class="mb-2"><i class="fa fa-plane-departure me-2"></i>Flight Results from <strong>{{ origin_label }}</strong></h4>
+          {% if date %}<p class="mb-0 text-muted"><i class="fa fa-calendar me-2"></i>Departing on <strong>{{ date }}</strong></p>{% endif %}
         </div>
-
         <div id="flightsList">
           {% for flight in flights %}
-            <div class="flight-card">
-              <div class="d-flex justify-content-between align-items-center">
-                <div class="flex-grow-1">
-                  <div class="flight-destination">
-                    <i class="fa fa-map-marker-alt me-2 text-info"></i>
-                    {{ flight.destination_label or flight.destination_code }}
-                  </div>
-                  <div class="flight-price">£{{ flight.price }}</div>
-                  <div class="small text-muted mt-1">
-                    <i class="fa fa-info-circle me-1"></i>
-                    Estimate - click to see final price
-                  </div>
-                </div>
-                <div class="text-end">
-                  <a href="{{ flight.booking_url }}" target="_blank" rel="nofollow noopener" class="btn btn-success book-btn"
-                     data-analytics="book-now" data-origin="{{ origin_label }}" 
-                     data-destination="{{ flight.destination_label or flight.destination_code }}" 
-                     data-price="{{ flight.price }}">
-                    <i class="fa fa-external-link-alt me-2"></i>Book Now
-                  </a>
-                </div>
+          <div class="flight-card">
+            <div class="d-flex justify-content-between align-items-center">
+              <div class="flex-grow-1">
+                <div class="flight-destination"><i class="fa fa-map-marker-alt me-2 text-info"></i>{{ flight.destination_label or flight.destination_code }}</div>
+                <div class="flight-price">£{{ flight.price }}</div>
+                <div class="small text-muted mt-1"><i class="fa fa-info-circle me-1"></i>Estimate - click to see final price</div>
+              </div>
+              <div class="text-end">
+                <a href="{{ flight.booking_url }}" target="_blank" rel="nofollow noopener" class="btn btn-success book-btn"
+                   data-analytics="book-now" data-origin="{{ origin_label }}"
+                   data-destination="{{ flight.destination_label or flight.destination_code }}" data-price="{{ flight.price }}">
+                  <i class="fa fa-external-link-alt me-2"></i>Book Now
+                </a>
               </div>
             </div>
+          </div>
           {% endfor %}
         </div>
       {% endif %}
@@ -646,94 +317,129 @@
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   <script>
   document.addEventListener('DOMContentLoaded', function () {
-    console.log('Script loaded successfully');
-    
     // Background particles
-    function createBackgroundParticles() {
+    (function createBackgroundParticles(){
       const container = document.getElementById('bgParticles');
-      
-      function addParticle() {
-        const particle = document.createElement('div');
-        particle.className = 'particle';
-        particle.style.left = Math.random() * 100 + '%';
-        particle.style.animationDelay = Math.random() * 2 + 's';
-        particle.style.animationDuration = (Math.random() * 10 + 10) + 's';
-        container.appendChild(particle);
-        
-        setTimeout(() => {
-          if (container.contains(particle)) {
-            container.removeChild(particle);
-          }
-        }, 20000);
+      function addParticle(){
+        const p = document.createElement('div');
+        p.className = 'particle';
+        p.style.left = Math.random()*100 + '%';
+        p.style.animationDelay = Math.random()*2 + 's';
+        p.style.animationDuration = (Math.random()*10 + 10) + 's';
+        container.appendChild(p);
+        setTimeout(()=> container.contains(p) && container.removeChild(p), 20000);
       }
-      
-      for (let i = 0; i < 5; i++) {
-        setTimeout(addParticle, i * 2000);
-      }
-      
+      for (let i=0;i<5;i++) setTimeout(addParticle, i*2000);
       setInterval(addParticle, 3000);
-    }
-    
-    createBackgroundParticles();
+    })();
 
-    // Date and form management
+    // Dates & trip type
     const tripTypeRadios = document.querySelectorAll('input[name="trip_type"]');
     const returnDateGroup = document.getElementById('return_date_group');
     const dep = document.getElementById('departure_date');
     const ret = document.getElementById('return_date');
-
-    function fmt(d) { return d.toISOString().slice(0, 10); }
-    
-    function initDates() {
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
-      const d1 = new Date(today);
-      d1.setDate(d1.getDate() + 14);
-      const d2 = new Date(today);
-      d2.setDate(d2.getDate() + 21);
-      
-      dep.min = fmt(today);
-      if (ret) ret.min = fmt(today);
+    const fmt = d => d.toISOString().slice(0,10);
+    (function initDates(){
+      const today = new Date(); today.setHours(0,0,0,0);
+      const d1 = new Date(today); d1.setDate(d1.getDate()+14);
+      const d2 = new Date(today); d2.setDate(d2.getDate()+21);
+      dep.min = fmt(today); if (ret) ret.min = fmt(today);
       if (!dep.value) dep.value = fmt(d1);
       if (ret && !ret.value) ret.value = fmt(d2);
-    }
-    
-    initDates();
-
-    function syncReturnVisibility() {
+    })();
+    function syncReturnVisibility(){
       const val = document.querySelector('input[name="trip_type"]:checked')?.value || 'oneway';
       returnDateGroup.style.display = val === 'roundtrip' ? 'block' : 'none';
     }
-    
-    tripTypeRadios.forEach(radio => radio.addEventListener('change', syncReturnVisibility));
+    tripTypeRadios.forEach(r => r.addEventListener('change', syncReturnVisibility));
     syncReturnVisibility();
-
-    if (dep && ret) {
+    if (dep && ret){
       dep.addEventListener('change', () => {
         if (ret.value && ret.value < dep.value) ret.value = dep.value;
         ret.min = dep.value;
       });
     }
 
-    // HARDCODED AUTOCOMPLETE SYSTEM
+    // Autocomplete (fetches from /api/airports)
     const input = document.getElementById('origin');
     const list = document.getElementById('origin-autocomplete-list');
     const helper = document.getElementById('origin-helper');
     const originCodeHidden = document.getElementById('origin_code');
-    
-    console.log('Elements found:', {
-      input: !!input,
-      list: !!list, 
-      helper: !!helper,
-      originCodeHidden: !!originCodeHidden
-    });
-    
+
     if (!input || !list || !helper || !originCodeHidden) {
       console.error('Required elements not found');
       return;
-   
-  // Enhanced results analytics
-    function bindResultAnalytics(scope = document) {
+    }
+
+    let acIndex = -1;
+    const debounce = (fn, delay) => { let t; return (...a)=>{ clearTimeout(t); t=setTimeout(()=>fn.apply(this,a), delay); }; };
+    function openList(){ list.classList.remove('d-none'); input.setAttribute('aria-expanded','true'); }
+    function closeList(){ list.classList.add('d-none'); input.setAttribute('aria-expanded','false'); acIndex = -1; }
+    function highlight(items){
+      items.forEach((el,i)=> el.classList.toggle('active', i===acIndex));
+      if(items[acIndex]) items[acIndex].scrollIntoView({block:'nearest'});
+    }
+    function selectAirport(a){
+      const label = a.label || a.name || a.code || '';
+      const code  = a.code || '';
+      const display = label && code ? `${label} (${code})` : (label || code);
+      input.value = code || '';
+      originCodeHidden.value = code || '';
+      helper.textContent = display;
+      closeList();
+    }
+    function render(arr){
+      list.innerHTML = '';
+      if (!arr || !arr.length){
+        helper.textContent = "No matches. Try 'LHR', 'Heathrow', or 'Stansted'.";
+        closeList();
+        return;
+      }
+      helper.textContent = '';
+      arr.slice(0,15).forEach((a, idx)=>{
+        const label = a.label || a.name || a.code || '';
+        const code  = a.code || '';
+        const city  = a.city || '';
+        const item = document.createElement('div');
+        item.className = 'autocomplete-item';
+        item.setAttribute('role','option');
+        item.id = `origin-opt-${idx}`;
+        item.innerHTML = `
+          <div class="d-flex justify-content-between align-items-start">
+            <div>
+              <div class="fw-semibold">${label}${code ? ' ('+code+')' : ''}</div>
+              <div class="airport-sub">${city}${city && code ? ' · ' : ''}${!city && code ? code : ''}</div>
+            </div>
+            ${code ? '<span class="badge bg-secondary">'+code+'</span>' : ''}
+          </div>`;
+        item.addEventListener('click', () => selectAirport({label, code}));
+        list.appendChild(item);
+      });
+      openList();
+    }
+
+    input.addEventListener('input', debounce(function(){
+      const q = this.value.trim();
+      originCodeHidden.value = '';
+      if(!q){ helper.textContent=''; closeList(); return; }
+      fetch(`/api/airports?query=${encodeURIComponent(q)}`)
+        .then(r => r.ok ? r.json() : [])
+        .then(data => render(Array.isArray(data) ? data : []))
+        .catch(() => render([]));
+    }, 180));
+
+    input.addEventListener('keydown', (e) => {
+      const items = Array.from(list.querySelectorAll('.autocomplete-item'));
+      if(!items.length) return;
+      if(e.key === 'ArrowDown'){ e.preventDefault(); acIndex = (acIndex + 1) % items.length; highlight(items); }
+      if(e.key === 'ArrowUp'){ e.preventDefault(); acIndex = (acIndex - 1 + items.length) % items.length; highlight(items); }
+      if(e.key === 'Enter' && acIndex >= 0){ e.preventDefault(); items[acIndex].click(); }
+      if(e.key === 'Escape'){ closeList(); }
+    });
+    document.addEventListener('click', (e)=>{ if(!list.contains(e.target) && e.target !== input) closeList(); });
+
+    // Outbound analytics
+    function bindResultAnalytics(scope=document){
       scope.querySelectorAll('a[data-analytics="book-now"]').forEach(a => {
         a.addEventListener('click', () => {
           if (window.plausible) {
@@ -750,41 +456,30 @@
     }
     bindResultAnalytics(document);
 
-    // Enhanced search with loading states
+    // Search (AJAX with loading state)
     const resultsContainer = document.getElementById('resultsContainer');
     const searchBtn = document.getElementById('searchButton');
     const btnText = searchBtn.querySelector('.btn-text');
 
-    function showLoading() {
-      searchBtn.classList.add('loading');
-      btnText.innerHTML = '<span>Searching...</span>';
-    }
+    function showLoading(){ searchBtn.classList.add('loading'); btnText.innerHTML = '<span>Searching...</span>'; }
+    function hideLoading(){ searchBtn.classList.remove('loading'); btnText.innerHTML = '<i class="fa fa-search me-2"></i>Search Flights'; }
 
-    function hideLoading() {
-      searchBtn.classList.remove('loading');
-      btnText.innerHTML = '<i class="fa fa-search me-2"></i>Search Flights';
-    }
-
-    searchBtn.addEventListener('click', function() {
-      if (!input.value.trim()) {
+    searchBtn.addEventListener('click', function(){
+      if (!input.value.trim()){
         input.focus();
         input.style.borderColor = '#dc3545';
-        setTimeout(() => input.style.borderColor = '', 3000);
+        setTimeout(()=> input.style.borderColor = '', 3000);
         return;
       }
-      
       const form = document.getElementById('searchForm');
       const formData = new FormData(form);
       showLoading();
-
       fetch('/', { method: 'POST', body: formData })
-        .then(response => response.text())
+        .then(r => r.text())
         .then(html => {
           hideLoading();
-          const tempDiv = document.createElement('div');
-          tempDiv.innerHTML = html;
+          const tempDiv = document.createElement('div'); tempDiv.innerHTML = html;
           const inner = tempDiv.querySelector('#resultsContainer');
-          
           if (inner) {
             resultsContainer.innerHTML = inner.innerHTML;
             bindResultAnalytics(resultsContainer);
@@ -795,8 +490,6 @@
           resultsContainer.innerHTML = '<div class="alert alert-danger text-center">Something went wrong. Please try again.</div>';
         });
     });
-
-    console.log('Autocomplete initialization complete');
   });
   </script>
 </body>
