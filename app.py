@@ -1,19 +1,18 @@
 from flask import Flask, render_template, request, jsonify, send_from_directory, url_for
-from markupsafe import Markup
-import requests
-import json
-import os
 from datetime import datetime
 from amadeus import Client
+import requests
+import os
+import json
 from dotenv import load_dotenv
 
 load_dotenv()
 
-app = Flask(__name__)
+# Be explicit about folders
+app = Flask(__name__, template_folder='templates', static_folder='static')
 
-API_TOKEN = os.getenv('API_TOKEN')
-
-# Amadeus
+# ---- Secrets / API keys ----
+API_TOKEN = os.getenv('API_TOKEN')  # Travelpayouts API token
 AMADEUS_CLIENT_ID = os.getenv('AMADEUS_CLIENT_ID')
 AMADEUS_CLIENT_SECRET = os.getenv('AMADEUS_CLIENT_SECRET')
 
@@ -22,32 +21,74 @@ amadeus = Client(
     client_secret=AMADEUS_CLIENT_SECRET
 )
 
-# Make current year available in all templates
+# ---- Template globals ----
 @app.context_processor
 def inject_now():
     return {"current_year": datetime.utcnow().year}
 
-def load_airport_names(query):
+
+# ---- Helpers ----
+def load_airport_names(query: str) -> dict:
     """
+    Query Amadeus for airports by keyword.
     Returns dict: { IATA: 'Airport Name' }
     """
     try:
-        response = amadeus.reference_data.locations.get(
-            keyword=query,
-            subType="AIRPORT"
-        )
-        airports = response.data if response.data else []
+        resp = amadeus.reference_data.locations.get(keyword=query, subType="AIRPORT")
+        airports = resp.data if resp.data else []
         return {a['iataCode']: a.get('name', a['iataCode']) for a in airports}
-    except Exception as e:
-        print(f"Error in load_airport_names: {e}")
+    except Exception:
         return {}
 
+
+def read_local_airports() -> list:
+    """
+    Optional local fallback file: static/airports.json
+    Format for each item: { "code": "LHR", "label": "Heathrow", "city": "London" }
+    """
+    path = os.path.join(app.static_folder, 'airports.json')
+    if not os.path.exists(path):
+        return []
+    try:
+        with open(path, 'r', encoding='utf-8') as f:
+            data = json.load(f)
+        return data if isinstance(data, list) else []
+    except Exception:
+        return []
+
+
+def resolve_label_for_code(code: str) -> str:
+    """
+    Try to find a human label for an IATA code.
+    """
+    code = (code or '').upper().strip()
+    if not code:
+        return ''
+    # try local first
+    for a in read_local_airports():
+        if (a.get('code') or '').upper() == code:
+            label = a.get('label') or a.get('city') or code
+            return f"{label} ({code})"
+    # fallback to Amadeus
+    try:
+        resp = amadeus.reference_data.locations.get(keyword=code, subType="AIRPORT")
+        if resp.data:
+            name = resp.data[0].get('name', code)
+            return f"{name} ({code})"
+    except Exception:
+        pass
+    return code
+
+
+# ---- Routes ----
 @app.route('/', methods=['GET', 'POST'])
 def index():
     flights = []
     origin_label = ""
     date = ""
-    airport_names = {}
+    airport_names = {}  # only used when we resolve the input query
+
+    # Keep previously submitted values visible
     form_data = {
         'trip_type': request.form.get('trip_type', 'oneway'),
         'passengers': request.form.get('passengers', '1'),
@@ -57,66 +98,56 @@ def index():
     }
 
     if request.method == 'POST':
-        origin_label_input = request.form.get('origin')
+        origin_raw = (request.form.get('origin') or '').strip()
+        origin_code_hidden = (request.form.get('origin_code') or '').strip().upper()
         departure_date = request.form.get('departure_date')
         return_date = request.form.get('return_date')
         trip_type = request.form.get('trip_type', 'oneway')
         passengers = request.form.get('passengers', '1')
 
-        form_data = {
+        # Store latest form values
+        form_data.update({
             'trip_type': trip_type,
             'passengers': passengers,
             'departure_date': departure_date,
             'return_date': return_date,
-            'origin': origin_label_input
-        }
+            'origin': origin_raw
+        })
 
-        # Detect IATA code in input, else resolve via Amadeus
-        if '(' in origin_label_input and ')' in origin_label_input:
-            origin_code = origin_label_input.split('(')[-1].replace(')', '').strip()
-            origin_label = origin_label_input
+        # --- Determine origin_code + origin_label robustly ---
+        origin_code = ''
+        # 1) Prefer hidden field (our newer UI sets this)
+        if origin_code_hidden and len(origin_code_hidden) == 3 and origin_code_hidden.isalpha():
+            origin_code = origin_code_hidden
+            origin_label = resolve_label_for_code(origin_code)
         else:
-            # Try to find airport code from local JSON first
-            try:
-                airports_file = os.path.join('static', 'airports.json')
-                if os.path.exists(airports_file):
-                    with open(airports_file, 'r') as f:
-                        local_airports = json.load(f)
-                    
-                    # Search for matching airport
-                    query_lower = origin_label_input.lower()
-                    for airport in local_airports:
-                        if (query_lower == airport.get('code', '').lower() or
-                            query_lower in airport.get('label', '').lower() or
-                            query_lower in airport.get('city', '').lower()):
-                            origin_code = airport['code']
-                            origin_label = f"{airport['label']} ({airport['code']})"
-                            break
-                    else:
-                        # If not found locally, try Amadeus
-                        airport_names = load_airport_names(origin_label_input)
-                        origin_code = list(airport_names.keys())[0] if airport_names else 'LON'
-                        origin_label = airport_names.get(origin_code, origin_label_input)
+            # 2) If input looks like "Heathrow (LHR)"
+            if '(' in origin_raw and ')' in origin_raw:
+                origin_code = origin_raw.split('(')[-1].replace(')', '').strip().upper()
+                origin_label = origin_raw
+            # 3) If input looks like a code, use it directly
+            elif len(origin_raw) == 3 and origin_raw.isalpha():
+                origin_code = origin_raw.upper()
+                origin_label = resolve_label_for_code(origin_code)
+            # 4) Else query Amadeus by keyword and take the first match
+            else:
+                airport_names = load_airport_names(origin_raw)
+                if airport_names:
+                    origin_code = list(airport_names.keys())[0]
+                    origin_label = f"{airport_names[origin_code]} ({origin_code})"
                 else:
-                    # No local file, use Amadeus
-                    airport_names = load_airport_names(origin_label_input)
-                    origin_code = list(airport_names.keys())[0] if airport_names else 'LON'
-                    origin_label = airport_names.get(origin_code, origin_label_input)
-            except Exception as e:
-                print(f"Error processing origin: {e}")
-                # Fallback to Amadeus
-                airport_names = load_airport_names(origin_label_input)
-                origin_code = list(airport_names.keys())[0] if airport_names else 'LON'
-                origin_label = airport_names.get(origin_code, origin_label_input)
+                    # final fallback: London
+                    origin_code = 'LON'
+                    origin_label = 'London (LON)'
 
         date = departure_date
 
+        # --- Travelpayouts fetch (v2/prices/latest) ---
         params = {
             'origin': origin_code,
             'currency': 'gbp',
             'token': API_TOKEN
         }
-
         try:
             r = requests.get("https://api.travelpayouts.com/v2/prices/latest", params=params, timeout=15)
             if r.status_code == 200:
@@ -126,50 +157,33 @@ def index():
                     price = flight.get('value', 'N/A')
 
                     # Build Aviasales deep link
-                    if departure_date:
-                        try:
-                            depart_str = datetime.strptime(departure_date, '%Y-%m-%d').strftime('%d%m')
-                            if trip_type == 'roundtrip' and return_date:
-                                return_str = datetime.strptime(return_date, '%Y-%m-%d').strftime('%d%m')
-                                search_code = f"{origin_code}{depart_str}{dest_code}{return_str}"
-                            else:
-                                search_code = f"{origin_code}{depart_str}{dest_code}1"
-                        except ValueError:
-                            # Fallback if date parsing fails
-                            search_code = f"{origin_code}0101{dest_code}1"
+                    depart_str = datetime.strptime(departure_date, '%Y-%m-%d').strftime('%d%m')
+                    if trip_type == 'roundtrip' and return_date:
+                        return_str = datetime.strptime(return_date, '%Y-%m-%d').strftime('%d%m')
+                        search_code = f"{origin_code}{depart_str}{dest_code}{return_str}"
                     else:
-                        search_code = f"{origin_code}0101{dest_code}1"
+                        search_code = f"{origin_code}{depart_str}{dest_code}1"
 
                     booking_url = f"https://www.aviasales.com/search/{search_code}?adults={passengers}&marker=617752"
 
-                    # Try to get destination name from local airports
-                    dest_label = dest_code
-                    try:
-                        airports_file = os.path.join('static', 'airports.json')
-                        if os.path.exists(airports_file):
-                            with open(airports_file, 'r') as f:
-                                local_airports = json.load(f)
-                            for airport in local_airports:
-                                if airport.get('code') == dest_code:
-                                    dest_label = airport.get('label', dest_code)
-                                    break
-                    except Exception:
-                        pass
-
                     flights.append({
                         'destination_code': dest_code,
-                        'destination_label': dest_label,
+                        'destination_label': airport_names.get(dest_code, dest_code),
                         'price': price,
                         'booking_url': booking_url
                     })
-            else:
-                print(f"Travel API error: {r.status_code}")
-        except Exception as e:
-            print(f"Error fetching flights: {e}")
+        except Exception:
+            # Fail silently; page will show empty results message via JS
+            pass
 
-    return render_template('index.html', flights=flights, origin_label=origin_label, date=date, form_data=form_data)
+    return render_template('index.html',
+                           flights=flights,
+                           origin_label=origin_label,
+                           date=date,
+                           form_data=form_data)
 
-# ---------- New content routes ----------
+
+# ---- Content pages ----
 @app.route('/about')
 def about():
     return render_template('about.html')
@@ -186,122 +200,71 @@ def privacy():
 def terms():
     return render_template('terms.html')
 
-# ---------- Improved Autocomplete API ----------
+
+# ---- Autocomplete API (backward compatible) ----
 @app.route('/api/airports', methods=['GET'])
 def get_airports():
-    query = request.args.get('query', '').strip()
-    print(f"Airport search query: '{query}'")  # Debug log
-    
-    if not query:
-        print("Empty query, returning empty array")
+    """
+    Backward-compatible airport lookup.
+    Returns items like:
+      {
+        "code": "LHR",
+        "label": "Heathrow",           # new field (clean name)
+        "city": "London",              # new field (optional)
+        "name": "Heathrow (LHR)"       # legacy field your older JS used
+      }
+    Tries Amadeus first; falls back to static/airports.json if available.
+    """
+    q = (request.args.get('query') or "").strip()
+    if not q:
         return jsonify([])
 
+    results = []
+
+    # 1) Try Amadeus
     try:
-        # Try Amadeus API first
-        print("Trying Amadeus API...")
-        response = amadeus.reference_data.locations.get(
-            keyword=query,
-            subType="AIRPORT"
-        )
-        airports = response.data if response.data else []
-        print(f"Amadeus returned {len(airports)} airports")
-        
-        out = []
-        for a in airports:
+        resp = amadeus.reference_data.locations.get(keyword=q, subType="AIRPORT")
+        for a in (resp.data or []):
             code = a.get('iataCode')
-            name = a.get('name', code)
-            city = (a.get('address') or {}).get('cityName', '')
-            if code:  # Only include airports with valid IATA codes
-                out.append({"code": code, "label": name, "city": city})
-        
-        print(f"Returning {len(out)} formatted airports from Amadeus")
-        return jsonify(out)
-        
-    except Exception as e:
-        print(f"Amadeus API error: {e}")
-        
-        # Fallback: Load from local airports.json
-        try:
-            print("Trying local airports.json fallback...")
-            airports_file = os.path.join('static', 'airports.json')
-            
-            if os.path.exists(airports_file):
-                with open(airports_file, 'r') as f:
-                    local_airports = json.load(f)
-                
-                print(f"Loaded {len(local_airports)} airports from local file")
-                
-                # Filter local airports based on query
-                query_lower = query.lower()
-                filtered = []
-                
-                for airport in local_airports:
-                    code = airport.get('code', '').lower()
-                    label = airport.get('label', '').lower()
-                    city = airport.get('city', '').lower()
-                    
-                    if (query_lower in code or 
-                        query_lower in label or 
-                        query_lower in city):
-                        filtered.append(airport)
-                        
-                    if len(filtered) >= 10:  # Limit to 10 results
-                        break
-                
-                print(f"Using local fallback, returning {len(filtered)} airports")
-                return jsonify(filtered)
-            else:
-                print("No local airports.json file found")
-                
-        except Exception as fallback_error:
-            print(f"Local fallback error: {fallback_error}")
-        
-        # Ultimate fallback - return empty array
-        print("All methods failed, returning empty array")
-        return jsonify([])
+            label = a.get('name', code) or ""
+            city = (a.get('address') or {}).get('cityName', "") or ""
+            if code:
+                results.append({
+                    "code": code,
+                    "label": label,
+                    "city": city,
+                    "name": f"{label} ({code})"
+                })
+    except Exception:
+        pass
 
-# Test endpoint to check if airports.json is loading
-@app.route('/test/airports')
-def test_airports():
-    try:
-        airports_file = os.path.join('static', 'airports.json')
-        
-        if os.path.exists(airports_file):
-            with open(airports_file, 'r') as f:
-                airports = json.load(f)
-            
-            sample_airports = airports[:3] if len(airports) > 3 else airports
-            return {
-                "status": "success",
-                "total_airports": len(airports),
-                "file_path": airports_file,
-                "sample_airports": sample_airports
-            }
-        else:
-            return {
-                "status": "error",
-                "message": "airports.json file not found",
-                "file_path": airports_file,
-                "current_dir": os.getcwd(),
-                "static_exists": os.path.exists('static')
-            }
-    except Exception as e:
-        return {
-            "status": "error",
-            "message": f"Error loading airports: {e}",
-            "file_path": airports_file if 'airports_file' in locals() else "unknown"
-        }
+    # 2) Fallback to local JSON if Amadeus gave nothing
+    if not results:
+        local = read_local_airports()
+        if local:
+            s = q.lower()
+            code_hits = [a for a in local if (a.get('code') or '').lower().startswith(s)]
+            label_hits = [a for a in local if s in (a.get('label', '').lower() + ' ' + a.get('city', '').lower())]
+            seen = set()
+            merged = []
+            for a in code_hits + label_hits:
+                c = (a.get('code') or '').upper()
+                label = a.get('label', '') or a.get('city', '') or c
+                city = a.get('city', '')
+                if c and c not in seen:
+                    merged.append({
+                        "code": c,
+                        "label": label,
+                        "city": city,
+                        "name": f"{label} ({c})"
+                    })
+                    seen.add(c)
+            results = merged[:25]
 
-# Test endpoint for API functionality
-@app.route('/test/api')
-def test_api():
-    return {
-        "amadeus_configured": bool(AMADEUS_CLIENT_ID and AMADEUS_CLIENT_SECRET),
-        "travel_api_token": bool(API_TOKEN),
-        "current_time": datetime.now().isoformat()
-    }
+    return jsonify(results)
 
-# ---------- Misc ----------
+
+# ---- Misc / static helpers ----
 @app.route('/google48b33f47cd3a277e.html')
 def serve_verification_file():
     return send_from_directory('.', 'google48b33f47cd3a277e.html')
@@ -312,14 +275,16 @@ def robots_txt():
 
 @app.route('/debug-files')
 def debug_files():
-    import os
-    files = os.listdir('.')
-    static_files = os.listdir('static') if os.path.exists('static') else []
-    return {
-        "root_files": files,
-        "static_files": static_files,
-        "current_dir": os.getcwd()
-    }
+    return '<br>'.join(os.listdir('.'))
+
+# Optional: quick template listing for debugging
+@app.route('/debug-templates')
+def debug_templates():
+    try:
+        return "<br>".join(sorted(os.listdir(app.template_folder)))
+    except Exception as e:
+        return f"Error reading templates: {e}", 500
+
 
 if __name__ == '__main__':
     app.run(debug=True)
