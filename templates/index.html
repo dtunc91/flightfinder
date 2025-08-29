@@ -646,6 +646,8 @@
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   <script>
     document.addEventListener('DOMContentLoaded', function () {
+      console.log('Starting autocomplete initialization...');
+      
       // Create floating background particles
       function createBackgroundParticles() {
         const container = document.getElementById('bgParticles');
@@ -675,13 +677,6 @@
       }
       
       createBackgroundParticles();
-
-      // Enhanced tooltip initialization
-      function bindTooltips(scope = document) {
-        const tooltipTriggerList = [].slice.call(scope.querySelectorAll('[data-bs-toggle="tooltip"]'));
-        tooltipTriggerList.forEach(t => new bootstrap.Tooltip(t));
-      }
-      bindTooltips();
 
       // Trip type and date management
       const tripTypeRadios = document.querySelectorAll('input[name="trip_type"]');
@@ -722,19 +717,19 @@
         });
       }
 
-      // Enhanced autocomplete system
+      // SIMPLIFIED AUTOCOMPLETE SYSTEM
       const input = document.getElementById('origin');
       const list = document.getElementById('origin-autocomplete-list');
       const helper = document.getElementById('origin-helper');
       const originCodeHidden = document.getElementById('origin_code');
       let acIndex = -1;
-      let localAirports = [];
-
-      // Load local fallback
-      fetch("{{ url_for('static', filename='airports.json') }}", { cache: 'force-cache' })
-        .then(r => r.ok ? r.json() : [])
-        .then(j => { localAirports = Array.isArray(j) ? j : []; })
-        .catch(() => { localAirports = []; });
+      
+      console.log('Autocomplete elements found:', {
+        input: !!input,
+        list: !!list,
+        helper: !!helper,
+        originCodeHidden: !!originCodeHidden
+      });
 
       function debounce(fn, delay) { 
         let t; 
@@ -755,31 +750,52 @@
         acIndex = -1; 
       }
 
+      function renderResults(airports) {
+        console.log('Rendering results:', airports);
+        list.innerHTML = '';
+        
+        if (!airports || airports.length === 0) {
+          closeList();
+          return;
+        }
+        
+        airports.slice(0, 10).forEach((airport, index) => {
+          const item = document.createElement('div');
+          item.className = 'autocomplete-item';
+          item.setAttribute('role', 'option');
+          item.innerHTML = `
+            <div class="d-flex justify-content-between align-items-start">
+              <div>
+                <div class="fw-semibold">${airport.label || airport.name} (${airport.code})</div>
+                <div class="airport-sub">${airport.city || ''}</div>
+              </div>
+              <span class="badge bg-secondary">${airport.code}</span>
+            </div>
+          `;
+          
+          item.addEventListener('click', () => {
+            selectAirport(airport);
+          });
+          
+          list.appendChild(item);
+        });
+        
+        openList();
+      }
+
+      function selectAirport(airport) {
+        console.log('Selected airport:', airport);
+        input.value = airport.code;
+        originCodeHidden.value = airport.code;
+        helper.textContent = `${airport.label || airport.name} (${airport.code})`;
+        
+        // Update page title
+        document.title = `Cheap flights from ${airport.label || airport.name} | GetMeOutOfHere.Live`;
+        
+        closeList();
+      }
+
       function highlight(items) {
         items.forEach((el, i) => el.classList.toggle('active', i === acIndex));
-        if (items[acIndex]) items[acIndex].scrollIntoView({ block: 'nearest' });
-      }
-
-      function normalizeResult(a) {
-        return {
-          label: a.label || a.name || '',
-          code: a.code || '',
-          city: a.city || ''
-        };
-      }
-
-      function mergeUnique(primary, fallback) {
-        const map = new Map();
-        primary.forEach(a => { if (a.code) map.set(a.code, a); });
-        fallback.forEach(a => { if (a.code && !map.has(a.code)) map.set(a.code, a); });
-        return Array.from(map.values());
-      }
-
-      function localQuery(q) {
-        const s = q.toLowerCase();
-        const codeHits = localAirports.filter(a => a.code && a.code.toLowerCase().startsWith(s));
-        const labelHits = localAirports.filter(a => (a.label && a.label.toLowerCase().includes(s)) || (a.city && a.city.toLowerCase().includes(s)));
-        return mergeUnique(codeHits.map(normalizeResult), labelHits.map(normalizeResult)).slice(0, 25);
-      }
-
-      function render(results)
+        if (items[acIndex]) {
+          items[acIndex].scrollIntoView({ block: 'nearest' });
