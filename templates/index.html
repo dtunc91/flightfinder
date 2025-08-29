@@ -25,9 +25,6 @@
   <meta property="og:url" content="https://getmeoutofhere.live/" />
   <meta property="og:image" content="{{ url_for('static', filename='og-image.jpg') }}" />
   <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="{% if origin_label %}Cheap flights from {{ origin_label }}{% else %}Find the cheapest places to fly{% endif %}" />
-  <meta name="twitter:description" content="Find the cheapest flights from your airport — no destination needed." />
-  <meta name="twitter:image" content="{{ url_for('static', filename='og-image.jpg') }}" />
 
   <!-- Favicon -->
   <link rel="icon" type="image/png" href="{{ url_for('static', filename='favicon.png') }}">
@@ -37,83 +34,464 @@
   <link href="{{ url_for('static', filename='index.css') }}" rel="stylesheet" />
   <script src="{{ url_for('static', filename='fontawesome-free-6.7.2-web/js/all.js') }}"></script>
 
-  <!-- Plausible (lightweight analytics) -->
+  <!-- Analytics -->
   <script defer data-domain="getmeoutofhere.live" src="https://plausible.io/js/script.js"></script>
-  <!-- Optional: GA4
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXX"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date()); gtag('config', 'G-XXXXXXX');
-  </script>
-  -->
 
   <style>
-    /* Soft, trustworthy look (works with your existing index.css) */
+    /* Enhanced Visual Design */
     body.background{
       min-height:100vh;
-      background: radial-gradient(1200px 600px at 80% -10%, rgba(130,255,210,0.12), transparent 60%),
-                  radial-gradient(1200px 600px at 10% 10%, rgba(110,168,255,0.14), transparent 60%),
-                  #0b1020;
+      background: 
+        radial-gradient(1200px 600px at 80% -10%, rgba(130,255,210,0.15), transparent 60%),
+        radial-gradient(1200px 600px at 10% 10%, rgba(110,168,255,0.18), transparent 60%),
+        linear-gradient(135deg, #0b1020 0%, #0e1430 50%, #121a3a 100%);
       color:#eaf0ff;
+      position: relative;
     }
-    .top-nav a{ color:#9fb0ff; text-decoration:none; font-weight:600 }
-    .top-nav a:hover{ color:#cfe0ff; text-decoration:underline }
-    .title{ text-align:center; margin: 28px 0 8px; }
-    .container-border{ display:inline-block; padding:6px 12px; border-radius:14px; border:1px solid rgba(255,255,255,.12)}
-    .form-container{
-      background: rgba(255,255,255,0.03);
-      border:1px solid rgba(255,255,255,0.12);
-      border-radius:16px;
-      backdrop-filter: blur(6px);
-    }
-    .search-btn{
-      width:100%;
-      background:linear-gradient(135deg,#6ea8ff,#7bb6ff);
-      border:none; font-weight:800;
-    }
-    .trust-badges{ display:flex; flex-wrap:wrap; gap:8px; justify-content:center; margin-top:8px }
-    .trust-badges .badge{
-      background:#10173b; border:1px solid rgba(255,255,255,.18);
-      color:#cfe0ff; padding:8px 10px; border-radius:10px; font-weight:600
-    }
-    .tooltip-icon{ cursor:pointer; font-size:0.95rem }
 
-    /* Autocomplete dropdown */
-    .autocomplete-items{
-      position:absolute; z-index: 1000; width:100%;
-      max-height: 300px; overflow:auto;
-      background:#0e1430; border:1px solid rgba(255,255,255,.12); border-radius:12px;
-      box-shadow: 0 10px 24px rgba(0,0,0,.35); margin-top:4px;
+    /* Animated background particles */
+    .bg-particles {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: -1;
     }
-    .autocomplete-item{ padding:10px 12px; cursor:pointer }
-    .autocomplete-item:hover, .autocomplete-item.active{ background:#141c42 }
-    .airport-sub{ font-size:12px; opacity:.85; color:#9fb0ff }
-    .sr-helper{ font-size: 0.9rem; color:#bcd0ff; margin-top:6px }
 
-    /* Results loading */
-    .skeleton{ animation: pulse 1.2s ease-in-out infinite; background:#10173b; border-radius:8px; }
-    @keyframes pulse { 0%{opacity:.6} 50%{opacity:.95} 100%{opacity:.6} }
+    .particle {
+      position: absolute;
+      width: 2px;
+      height: 2px;
+      background: rgba(110, 168, 255, 0.6);
+      border-radius: 50%;
+      animation: float-up 15s infinite linear;
+    }
 
-    /* Keep result rows tidy on mobile */
-    #flightsList .list-group-item { flex-wrap: wrap; gap: 8px; }
-    #flightsList .book-btn { min-width: 110px; }
+    @keyframes float-up {
+      0% {
+        transform: translateY(100vh) translateX(0px);
+        opacity: 0;
+      }
+      10% {
+        opacity: 1;
+      }
+      90% {
+        opacity: 1;
+      }
+      100% {
+        transform: translateY(-100px) translateX(50px);
+        opacity: 0;
+      }
+    }
 
-    /* Harmonize input widths on large screens */
-    @media (min-width: 992px){
-      #departure_date { max-width: 360px; }
+    /* Enhanced Navigation */
+    .top-nav {
+      background: rgba(11, 16, 32, 0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      transition: all 0.3s ease;
+    }
+
+    .top-nav a{ 
+      color:#9fb0ff; 
+      text-decoration:none; 
+      font-weight:600;
+      transition: all 0.3s ease;
+      padding: 8px 12px;
+      border-radius: 8px;
+    }
+    .top-nav a:hover{ 
+      color:#cfe0ff; 
+      background: rgba(255, 255, 255, 0.1);
+      transform: translateY(-1px);
+    }
+
+    /* Enhanced Header */
+    .hero-section {
+      text-align: center;
+      padding: 3rem 0;
+      position: relative;
+    }
+
+    .main-title {
+      font-size: clamp(2rem, 5vw, 3.5rem);
+      font-weight: 800;
+      background: linear-gradient(135deg, #6ea8ff 0%, #82d7ff 50%, #7bb6ff 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 1rem;
+      animation: slideInUp 0.8s ease-out;
+    }
+
+    .hero-subtitle {
+      font-size: 1.25rem;
+      margin-bottom: 2rem;
+      opacity: 0.9;
+      animation: slideInUp 0.8s ease-out 0.2s both;
+    }
+
+    .trust-badges { 
+      display: flex; 
+      flex-wrap: wrap; 
+      gap: 12px; 
+      justify-content: center; 
+      margin-top: 1.5rem;
+      animation: slideInUp 0.8s ease-out 0.4s both;
+    }
+
+    .trust-badges .badge {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: #cfe0ff;
+      padding: 10px 16px;
+      border-radius: 12px;
+      font-weight: 600;
+      backdrop-filter: blur(8px);
+      transition: all 0.3s ease;
+    }
+
+    .trust-badges .badge:hover {
+      background: rgba(255, 255, 255, 0.12);
+      transform: translateY(-2px);
+    }
+
+    /* Enhanced Form Design */
+    .form-container {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 20px;
+      backdrop-filter: blur(16px);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+      position: relative;
+      overflow: hidden;
+      animation: slideInUp 0.8s ease-out 0.6s both;
+    }
+
+    .form-container::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.05), transparent);
+      transition: left 0.6s ease;
+    }
+
+    .form-container:hover::before {
+      left: 100%;
+    }
+
+    .form-control {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 12px;
+      color: #eaf0ff;
+      transition: all 0.3s ease;
+    }
+
+    .form-control:focus {
+      background: rgba(255, 255, 255, 0.12);
+      border-color: #6ea8ff;
+      box-shadow: 0 0 0 3px rgba(110, 168, 255, 0.2);
+      color: #ffffff;
+    }
+
+    .form-control::placeholder {
+      color: rgba(234, 240, 255, 0.6);
+    }
+
+    .search-btn {
+      width: 100%;
+      background: linear-gradient(135deg, #6ea8ff, #7bb6ff);
+      border: none;
+      font-weight: 800;
+      border-radius: 12px;
+      padding: 12px 24px;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .search-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(110, 168, 255, 0.4);
+    }
+
+    .search-btn:active {
+      transform: translateY(0);
+    }
+
+    .search-btn.loading {
+      pointer-events: none;
+    }
+
+    .search-btn.loading::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 20px;
+      height: 20px;
+      margin: -10px 0 0 -10px;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      border-top: 2px solid white;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* Enhanced Autocomplete */
+    .autocomplete-items {
+      position: absolute;
+      z-index: 1000;
+      width: 100%;
+      max-height: 320px;
+      overflow: auto;
+      background: rgba(14, 20, 48, 0.95);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 16px;
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
+      margin-top: 8px;
+      backdrop-filter: blur(16px);
+    }
+
+    .autocomplete-item {
+      padding: 14px 16px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .autocomplete-item:last-child {
+      border-bottom: none;
+    }
+
+    .autocomplete-item:hover,
+    .autocomplete-item.active {
+      background: rgba(110, 168, 255, 0.15);
+      transform: translateX(4px);
+    }
+
+    .airport-sub {
+      font-size: 12px;
+      opacity: 0.75;
+      color: #9fb0ff;
+    }
+
+    /* Enhanced Results */
+    .results-section {
+      animation: slideInUp 0.6s ease-out;
+    }
+
+    .results-header {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 16px;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+      text-align: center;
+    }
+
+    .flight-card {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 16px;
+      margin-bottom: 12px;
+      padding: 20px;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .flight-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(110, 168, 255, 0.1), transparent);
+      transition: left 0.5s ease;
+    }
+
+    .flight-card:hover::before {
+      left: 100%;
+    }
+
+    .flight-card:hover {
+      transform: translateY(-4px);
+      border-color: rgba(110, 168, 255, 0.3);
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.3);
+    }
+
+    .flight-destination {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: #ffffff;
+      margin-bottom: 0.5rem;
+    }
+
+    .flight-price {
+      font-size: 1.5rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, #6ea8ff, #82d7ff);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .book-btn {
+      background: linear-gradient(135deg, #28a745, #20c997);
+      border: none;
+      border-radius: 12px;
+      padding: 10px 20px;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      min-width: 120px;
+    }
+
+    .book-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(40, 167, 69, 0.4);
+    }
+
+    /* Loading States */
+    .skeleton {
+      animation: pulse 1.5s ease-in-out infinite;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+    }
+
+    @keyframes pulse {
+      0% { opacity: 0.6; }
+      50% { opacity: 1; }
+      100% { opacity: 0.6; }
+    }
+
+    .loading-container {
+      text-align: center;
+      padding: 3rem;
+    }
+
+    .loading-spinner {
+      width: 40px;
+      height: 40px;
+      border: 4px solid rgba(110, 168, 255, 0.3);
+      border-top: 4px solid #6ea8ff;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 1rem;
+    }
+
+    /* Animations */
+    @keyframes slideInUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Mobile Responsive Enhancements */
+    @media (max-width: 768px) {
+      .top-nav .d-flex:last-child {
+        flex-wrap: wrap;
+        gap: 0.5rem;
+      }
+
+      .top-nav a {
+        font-size: 0.9rem;
+        padding: 6px 8px;
+      }
+
+      .hero-section {
+        padding: 2rem 0;
+      }
+
+      .trust-badges {
+        gap: 8px;
+      }
+
+      .trust-badges .badge {
+        font-size: 0.8rem;
+        padding: 8px 12px;
+      }
+
+      .flight-card {
+        padding: 16px;
+      }
+
+      .flight-price {
+        font-size: 1.3rem;
+      }
+    }
+
+    /* Additional UX Enhancements */
+    .form-label {
+      color: #cfe0ff;
+      font-weight: 600;
+      margin-bottom: 0.75rem;
+    }
+
+    .form-check-label {
+      color: #eaf0ff;
+    }
+
+    .text-muted {
+      color: rgba(234, 240, 255, 0.7) !important;
+    }
+
+    .alert {
+      border-radius: 12px;
+      border: none;
+      backdrop-filter: blur(8px);
+    }
+
+    .alert-warning {
+      background: rgba(255, 193, 7, 0.15);
+      color: #fff3cd;
+      border: 1px solid rgba(255, 193, 7, 0.3);
+    }
+
+    .alert-danger {
+      background: rgba(220, 53, 69, 0.15);
+      color: #f8d7da;
+      border: 1px solid rgba(220, 53, 69, 0.3);
+    }
+
+    /* Footer Enhancement */
+    footer {
+      background: rgba(0, 0, 0, 0.3);
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(8px);
     }
   </style>
 </head>
 
 <body class="background">
-  <!-- Top nav -->
+  <!-- Animated background particles -->
+  <div class="bg-particles" id="bgParticles"></div>
+
+  <!-- Enhanced Navigation -->
   <nav class="container d-flex justify-content-between align-items-center py-3 top-nav">
     <div class="d-flex align-items-center gap-2">
       <span class="fs-5 fw-bold">GetMeOutOfHere<span class="text-info">.Live</span></span>
       <i class="fa fa-plane fa-fade fa-rotate-by ms-1" style="--fa-rotate-angle:320deg; --fa-animation-duration: 2s; --fa-fade-opacity: 0.6; animation-duration: 1s; animation-iteration-count: 2;"></i>
     </div>
-    <div class="d-flex gap-3">
+    <div class="d-flex gap-2">
       <a href="/about">About</a>
       <a href="/faq">FAQ</a>
       <a href="/privacy">Privacy</a>
@@ -122,46 +500,52 @@
     </div>
   </nav>
 
-  <!-- Header -->
-  <header class="title">
-    <h1 class="container-border fw-bold">
-      Get Me Out of Here <i class="fa fa-plane ms-1" style="font-size:22px; opacity:.8"></i>
-    </h1>
-    <p class="mt-2">The world's waiting. Not sure where to go? Check the cheapest places you can fly to from your airport.</p>
-    <div class="trust-badges">
-      <span class="badge">🔒 Secure</span>
-      <span class="badge">🤝 Affiliate partner: Travelpayouts</span>
-      <span class="badge">📱 Mobile-friendly</span>
-      <span class="badge">🛫 10k+ airports</span>
+  <!-- Enhanced Hero Section -->
+  <header class="hero-section">
+    <div class="container">
+      <h1 class="main-title">
+        Get Me Out of Here <i class="fa fa-plane ms-2" style="font-size:0.8em; opacity:.8"></i>
+      </h1>
+      <p class="hero-subtitle">The world's waiting. Not sure where to go? Check the cheapest places you can fly to from your airport.</p>
+      <div class="trust-badges">
+        <span class="badge">🔒 Secure & Safe</span>
+        <span class="badge">🤝 Travelpayouts Partner</span>
+        <span class="badge">📱 Mobile Optimized</span>
+        <span class="badge">🛫 10,000+ Airports</span>
+      </div>
     </div>
   </header>
 
   <main class="container mb-5">
-    <!-- Search form -->
+    <!-- Enhanced Search Form -->
     <form method="POST" class="mb-4 p-4 p-md-5 form-container position-relative" id="searchForm" autocomplete="off">
       <div class="row mb-3 g-3">
-        <!-- Origin + autocomplete -->
+        <!-- Origin with enhanced autocomplete -->
         <div class="col-md position-relative">
-          <label for="origin" class="form-label fw-semibold">
-            <i class="fa fa-paper-plane me-1"></i> Fly from
+          <label for="origin" class="form-label">
+            <i class="fa fa-paper-plane me-2"></i>Fly from
           </label>
           <input type="text" id="origin" name="origin" class="form-control" placeholder="Start typing a city or airport..." required
                  value="{{ form_data.origin }}" aria-autocomplete="list" aria-expanded="false" aria-controls="origin-autocomplete-list">
           <input type="hidden" id="origin_code" name="origin_code" value="{{ form_data.origin_code }}">
           <div id="origin-autocomplete-list" class="autocomplete-items d-none" role="listbox"></div>
-          <div id="origin-helper" class="sr-helper"></div>
+          <div id="origin-helper" class="sr-helper small text-muted mt-1"></div>
         </div>
 
-        <!-- Departure -->
+        <!-- Departure Date -->
         <div class="col-sm">
-          <label for="departure_date" class="form-label fw-semibold">Departure date</label>
+          <label for="departure_date" class="form-label">
+            <i class="fa fa-calendar me-2"></i>Departure date
+          </label>
           <input type="date" id="departure_date" name="departure_date" class="form-control" required value="{{ form_data.departure_date }}">
         </div>
       </div>
 
-      <!-- Trip type -->
+      <!-- Trip Type -->
       <div class="mb-3">
-        <label class="form-label me-3 fw-semibold">Trip type</label>
+        <label class="form-label me-3">
+          <i class="fa fa-route me-2"></i>Trip type
+        </label>
         <div class="form-check form-check-inline">
           <input class="form-check-input" type="radio" name="trip_type" id="oneway" value="oneway"
                  {% if form_data.trip_type != 'roundtrip' %}checked{% endif %}>
@@ -174,126 +558,209 @@
         </div>
       </div>
 
-      <!-- Return -->
+      <!-- Return Date -->
       <div class="mb-3" id="return_date_group" style="display:none;">
-        <label for="return_date" class="form-label fw-semibold">Return date</label>
+        <label for="return_date" class="form-label">
+          <i class="fa fa-calendar-check me-2"></i>Return date
+        </label>
         <input type="date" id="return_date" name="return_date" class="form-control" value="{{ form_data.return_date }}">
       </div>
 
       <div class="row g-3">
         <!-- Passengers -->
         <div class="col-sm">
-          <label for="passengers" class="form-label fw-semibold">Passengers</label>
-          <input type="number" id="passengers" name="passengers" class="form-control" min="1" value="{{ form_data.passengers or 1 }}">
+          <label for="passengers" class="form-label">
+            <i class="fa fa-users me-2"></i>Passengers
+          </label>
+          <input type="number" id="passengers" name="passengers" class="form-control" min="1" max="9" value="{{ form_data.passengers or 1 }}">
         </div>
 
-        <!-- Search -->
+        <!-- Search Button -->
         <div class="col-sm d-grid">
-          <label class="form-label fw-semibold invisible">Search</label>
-          <button type="button" class="btn btn-primary search-btn" id="searchButton">Search</button>
+          <label class="form-label invisible">Search</label>
+          <button type="button" class="btn btn-primary search-btn" id="searchButton">
+            <span class="btn-text">
+              <i class="fa fa-search me-2"></i>Search Flights
+            </span>
+          </button>
         </div>
       </div>
 
-      <div class="small text-muted mt-2">
-        <span class="me-2">💡</span>
-        <span class="text-light">Click “Book Now” to see even lower prices — these are just estimates.</span>
+      <div class="small text-muted mt-3 text-center">
+        <i class="fa fa-info-circle me-2"></i>
+        <span class="text-light">Click "Book Now" to see even lower prices — these are just estimates.</span>
       </div>
     </form>
 
-    <!-- Results -->
-    <div class="container mb-4" id="resultsContainer">
+    <!-- Enhanced Results Section -->
+    <div class="results-section" id="resultsContainer">
       {% if flights %}
-        <h5 class="mb-3">Showing results from <strong>{{ origin_label }}</strong>{% if date %} on <strong>{{ date }}</strong>{% endif %}</h5>
-        <ul class="list-group" id="flightsList">
+        <div class="results-header">
+          <h4 class="mb-2">
+            <i class="fa fa-plane-departure me-2"></i>
+            Flight Results from <strong>{{ origin_label }}</strong>
+          </h4>
+          {% if date %}
+            <p class="mb-0 text-muted">
+              <i class="fa fa-calendar me-2"></i>Departing on <strong>{{ date }}</strong>
+            </p>
+          {% endif %}
+        </div>
+
+        <div id="flightsList">
           {% for flight in flights %}
-          <li class="list-group-item d-flex justify-content-between align-items-center">
-            <div>
-              ✈️ To: <strong>{{ flight.destination_label or flight.destination_code }}</strong>
-              – £{{ flight.price }}
-              <span class="ms-2 text-muted tooltip-icon" data-bs-toggle="tooltip" title="Click 'Book Now' to see even lower prices — these are just estimates.">ℹ️</span>
+            <div class="flight-card">
+              <div class="d-flex justify-content-between align-items-center">
+                <div class="flex-grow-1">
+                  <div class="flight-destination">
+                    <i class="fa fa-map-marker-alt me-2 text-info"></i>
+                    {{ flight.destination_label or flight.destination_code }}
+                  </div>
+                  <div class="flight-price">£{{ flight.price }}</div>
+                  <div class="small text-muted mt-1">
+                    <i class="fa fa-info-circle me-1"></i>
+                    Estimate - click to see final price
+                  </div>
+                </div>
+                <div class="text-end">
+                  <a href="{{ flight.booking_url }}" target="_blank" rel="nofollow noopener" class="btn btn-success book-btn"
+                     data-analytics="book-now" data-origin="{{ origin_label }}" 
+                     data-destination="{{ flight.destination_label or flight.destination_code }}" 
+                     data-price="{{ flight.price }}">
+                    <i class="fa fa-external-link-alt me-2"></i>Book Now
+                  </a>
+                </div>
+              </div>
             </div>
-            <a href="{{ flight.booking_url }}" target="_blank" rel="nofollow noopener" class="btn btn-success book-btn"
-               data-analytics="book-now" data-origin="{{ origin_label }}" data-destination="{{ flight.destination_label or flight.destination_code }}" data-price="{{ flight.price }}">
-              Book Now
-            </a>
-          </li>
           {% endfor %}
-        </ul>
+        </div>
       {% endif %}
     </div>
   </main>
 
-  <footer class="container py-4 text-center text-secondary">
-    <div>© {{ current_year if current_year else 2025 }} GetMeOutOfHere.Live</div>
+  <footer class="container py-4 text-center">
+    <div class="text-secondary">© {{ current_year if current_year else 2025 }} GetMeOutOfHere.Live</div>
   </footer>
 
   <!-- Scripts -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   <script>
     document.addEventListener('DOMContentLoaded', function () {
-      // Tooltips
-      function bindTooltips(scope=document){
+      // Create floating background particles
+      function createBackgroundParticles() {
+        const container = document.getElementById('bgParticles');
+        
+        function addParticle() {
+          const particle = document.createElement('div');
+          particle.className = 'particle';
+          particle.style.left = Math.random() * 100 + '%';
+          particle.style.animationDelay = Math.random() * 2 + 's';
+          particle.style.animationDuration = (Math.random() * 10 + 10) + 's';
+          container.appendChild(particle);
+          
+          setTimeout(() => {
+            if (container.contains(particle)) {
+              container.removeChild(particle);
+            }
+          }, 20000);
+        }
+        
+        // Create initial particles
+        for (let i = 0; i < 5; i++) {
+          setTimeout(addParticle, i * 2000);
+        }
+        
+        // Continue creating particles
+        setInterval(addParticle, 3000);
+      }
+      
+      createBackgroundParticles();
+
+      // Enhanced tooltip initialization
+      function bindTooltips(scope = document) {
         const tooltipTriggerList = [].slice.call(scope.querySelectorAll('[data-bs-toggle="tooltip"]'));
         tooltipTriggerList.forEach(t => new bootstrap.Tooltip(t));
       }
       bindTooltips();
 
-      // Round-trip toggle + min dates
+      // Trip type and date management
       const tripTypeRadios = document.querySelectorAll('input[name="trip_type"]');
       const returnDateGroup = document.getElementById('return_date_group');
       const dep = document.getElementById('departure_date');
       const ret = document.getElementById('return_date');
 
-      function fmt(d){ return d.toISOString().slice(0,10); }
-      function initDates(){
-        const today = new Date(); today.setHours(0,0,0,0);
-        const d1 = new Date(today); d1.setDate(d1.getDate()+14);
-        const d2 = new Date(today); d2.setDate(d2.getDate()+21);
-        dep.min = fmt(today); if(ret){ ret.min = fmt(today); }
-        if(!dep.value) dep.value = fmt(d1);
-        if(ret && !ret.value) ret.value = fmt(d2);
+      function fmt(d) { return d.toISOString().slice(0, 10); }
+      
+      function initDates() {
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        const d1 = new Date(today);
+        d1.setDate(d1.getDate() + 14);
+        const d2 = new Date(today);
+        d2.setDate(d2.getDate() + 21);
+        
+        dep.min = fmt(today);
+        if (ret) ret.min = fmt(today);
+        if (!dep.value) dep.value = fmt(d1);
+        if (ret && !ret.value) ret.value = fmt(d2);
       }
+      
       initDates();
 
       function syncReturnVisibility() {
         const val = document.querySelector('input[name="trip_type"]:checked')?.value || 'oneway';
         returnDateGroup.style.display = val === 'roundtrip' ? 'block' : 'none';
       }
+      
       tripTypeRadios.forEach(radio => radio.addEventListener('change', syncReturnVisibility));
       syncReturnVisibility();
 
-      // Ensure return >= depart
-      if (dep && ret){
+      if (dep && ret) {
         dep.addEventListener('change', () => {
-          if(ret.value && ret.value < dep.value) ret.value = dep.value;
+          if (ret.value && ret.value < dep.value) ret.value = dep.value;
           ret.min = dep.value;
         });
       }
 
-      // ---------- Autocomplete (server + local fallback)
+      // Enhanced autocomplete system
       const input = document.getElementById('origin');
       const list = document.getElementById('origin-autocomplete-list');
       const helper = document.getElementById('origin-helper');
       const originCodeHidden = document.getElementById('origin_code');
       let acIndex = -1;
-      let localAirports = []; // from static/airports.json
+      let localAirports = [];
 
-      // Load local fallback once
-      fetch("{{ url_for('static', filename='airports.json') }}", {cache:'force-cache'})
+      // Load local fallback
+      fetch("{{ url_for('static', filename='airports.json') }}", { cache: 'force-cache' })
         .then(r => r.ok ? r.json() : [])
         .then(j => { localAirports = Array.isArray(j) ? j : []; })
-        .catch(()=>{ localAirports = []; });
+        .catch(() => { localAirports = []; });
 
-      function debounce(fn, delay){ let t; return (...a)=>{ clearTimeout(t); t=setTimeout(()=>fn(...a), delay); } }
-
-      function openList(){ list.classList.remove('d-none'); input.setAttribute('aria-expanded','true'); }
-      function closeList(){ list.classList.add('d-none'); input.setAttribute('aria-expanded','false'); acIndex = -1; }
-      function highlight(items){
-        items.forEach((el,i)=> el.classList.toggle('active', i===acIndex));
-        if(items[acIndex]) items[acIndex].scrollIntoView({block:'nearest'});
+      function debounce(fn, delay) { 
+        let t; 
+        return (...a) => { 
+          clearTimeout(t); 
+          t = setTimeout(() => fn(...a), delay); 
+        };
       }
 
-      function normalizeResult(a){
+      function openList() { 
+        list.classList.remove('d-none'); 
+        input.setAttribute('aria-expanded', 'true'); 
+      }
+      
+      function closeList() { 
+        list.classList.add('d-none'); 
+        input.setAttribute('aria-expanded', 'false'); 
+        acIndex = -1; 
+      }
+
+      function highlight(items) {
+        items.forEach((el, i) => el.classList.toggle('active', i === acIndex));
+        if (items[acIndex]) items[acIndex].scrollIntoView({ block: 'nearest' });
+      }
+
+      function normalizeResult(a) {
         return {
           label: a.label || a.name || '',
           code: a.code || '',
@@ -301,172 +768,18 @@
         };
       }
 
-      function mergeUnique(primary, fallback){
+      function mergeUnique(primary, fallback) {
         const map = new Map();
-        primary.forEach(a => { if(a.code) map.set(a.code, a); });
-        fallback.forEach(a => { if(a.code && !map.has(a.code)) map.set(a.code, a); });
+        primary.forEach(a => { if (a.code) map.set(a.code, a); });
+        fallback.forEach(a => { if (a.code && !map.has(a.code)) map.set(a.code, a); });
         return Array.from(map.values());
       }
 
-      function localQuery(q){
+      function localQuery(q) {
         const s = q.toLowerCase();
         const codeHits = localAirports.filter(a => a.code && a.code.toLowerCase().startsWith(s));
         const labelHits = localAirports.filter(a => (a.label && a.label.toLowerCase().includes(s)) || (a.city && a.city.toLowerCase().includes(s)));
-        return mergeUnique(codeHits.map(normalizeResult), labelHits.map(normalizeResult)).slice(0,25);
+        return mergeUnique(codeHits.map(normalizeResult), labelHits.map(normalizeResult)).slice(0, 25);
       }
 
-      function render(results){
-        const arr = (results || []).map(normalizeResult);
-        list.innerHTML = '';
-        if(!arr.length){ closeList(); return; }
-        arr.slice(0, 15).forEach((a, idx) => {
-          const label = a.label || a.code || '';
-          const city  = a.city || '';
-          const code  = a.code || '';
-          const item = document.createElement('div');
-          item.className = 'autocomplete-item';
-          item.setAttribute('role','option');
-          item.id = `origin-opt-${idx}`;
-          item.innerHTML = `
-            <div class="d-flex justify-content-between align-items-start">
-              <div>
-                <div class="fw-semibold">${label}${code ? ' ('+code+')' : ''}</div>
-                <div class="airport-sub">${city}${city && code ? ' · ' : ''}${!city && code ? code : ''}</div>
-              </div>
-              ${code ? '<span class="badge bg-secondary">' + code + '</span>' : ''}
-            </div>
-          `;
-          item.addEventListener('click', () => selectAirport({label, code}));
-          list.appendChild(item);
-        });
-        openList();
-      }
-
-      // *** FIX: clean, non-duplicating helper + code-only input value ***
-      function selectAirport(a){
-        const label = a.label || a.name || a.code || '';
-        const code  = a.code || '';
-        const display = label && code ? `${label} (${code})` : (label || code);
-
-        // Submit the code; show the pretty label below
-        input.value = code || '';
-        originCodeHidden.value = code || '';
-        helper.textContent = display;
-
-        // Dynamic title
-        document.title = `Cheap flights from ${label || code} | GetMeOutOfHere.Live`;
-
-        // Close list
-        closeList();
-      }
-
-      input.addEventListener('keydown', (e) => {
-        const items = Array.from(list.querySelectorAll('.autocomplete-item'));
-        if(list.classList.contains('d-none') && (e.key === 'ArrowDown' || e.key === 'Enter')) return;
-        if(!items.length) return;
-        if(e.key === 'ArrowDown'){ e.preventDefault(); acIndex = (acIndex + 1) % items.length; highlight(items); }
-        if(e.key === 'ArrowUp'){ e.preventDefault(); acIndex = (acIndex - 1 + items.length) % items.length; highlight(items); }
-        if(e.key === 'Enter'){ if(acIndex >= 0){ e.preventDefault(); items[acIndex].click(); } }
-        if(e.key === 'Escape'){ closeList(); }
-      });
-
-      input.addEventListener('input', debounce(function(){
-        const q = this.value.trim();
-        closeList();
-        helper.textContent = '';
-        originCodeHidden.value = '';
-        if(!q) return;
-
-        // Try server
-        fetch(`/api/airports?query=${encodeURIComponent(q)}`)
-          .then(r => r.ok ? r.json() : [])
-          .then(serverList => {
-            const primary = (serverList || []).map(normalizeResult);
-            // Merge with local fallback to guarantee suggestions
-            const merged = mergeUnique(primary, localQuery(q));
-            render(merged);
-          })
-          .catch(() => {
-            // Server failed → local only
-            render(localQuery(q));
-          });
-      }, 160));
-
-      document.addEventListener('click', (e) => {
-        if(!list.contains(e.target) && e.target !== input){ closeList(); }
-      });
-
-      // ---------- Results: analytics + tooltips after Ajax ----------
-      function bindResultAnalytics(scope=document){
-        scope.querySelectorAll('a[data-analytics="book-now"]').forEach(a => {
-          a.addEventListener('click', () => {
-            if(window.plausible){
-              plausible('Book Now Click', {
-                props: {
-                  origin: a.dataset.origin || '',
-                  destination: a.dataset.destination || '',
-                  price: a.dataset.price || ''
-                }
-              });
-            }
-          });
-        });
-      }
-      bindResultAnalytics(document);
-
-      // ---------- Search (AJAX POST) with loading/empty states ----------
-      const resultsContainer = document.getElementById('resultsContainer');
-      const searchBtn = document.getElementById('searchButton');
-
-      function showLoading(){
-        resultsContainer.innerHTML = `
-          <div class="mb-3">Searching deals…</div>
-          <div class="skeleton" style="height:16px; width:60%; margin-bottom:8px;"></div>
-          <div class="skeleton" style="height:16px; width:80%; margin-bottom:8px;"></div>
-          <div class="skeleton" style="height:16px; width:70%;"></div>
-        `;
-      }
-
-      searchBtn.addEventListener('click', function() {
-        // Basic validation
-        if(!input.value.trim()){
-          input.focus();
-          return;
-        }
-        if(document.querySelector('input[name="trip_type"]:checked')?.value === 'roundtrip'){
-          if(!ret.value){ ret.focus(); return; }
-          if(ret.value < dep.value){ ret.value = dep.value; }
-        }
-
-        const form = document.getElementById('searchForm');
-        const formData = new FormData(form);
-        showLoading();
-
-        fetch('/', { method: 'POST', body: formData })
-          .then(response => response.text())
-          .then(html => {
-            const tempDiv = document.createElement('div'); tempDiv.innerHTML = html;
-            const inner = tempDiv.querySelector('#resultsContainer');
-            if (inner) {
-              resultsContainer.innerHTML = inner.innerHTML;
-
-              // Re-bind tooltips & analytics on injected HTML
-              bindTooltips(resultsContainer);
-              bindResultAnalytics(resultsContainer);
-
-              // If zero results, show helpful pivots
-              if(!resultsContainer.querySelector('#flightsList')){
-                resultsContainer.innerHTML = `
-                  <div class="alert alert-warning">No deals found. Try a weekend date or a nearby airport.</div>
-                `;
-              }
-            }
-          })
-          .catch(() => {
-            resultsContainer.innerHTML = `<div class="alert alert-danger">Something went wrong. Please try again.</div>`;
-          });
-      });
-    });
-  </script>
-</body>
-</html>
+      function render(results)
