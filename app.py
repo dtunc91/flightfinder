@@ -53,6 +53,7 @@ def _load_local_airports() -> list:
     """
     Load static/airports.json once and cache; hot-reload if file changes.
     Expected format: [{ "code": "LHR", "label": "Heathrow", "city": "London" }, ...]
+    Your file may omit city and may include (CODE) inside label, which is fine.
     """
     path = os.path.join(app.static_folder, 'airports.json')
     if not os.path.exists(path):
@@ -67,17 +68,19 @@ def _load_local_airports() -> list:
     try:
         with open(path, 'r', encoding='utf-8') as f:
             data = json.load(f)
+
         # sanitize + unique by code
         seen, clean = set(), []
         for a in data if isinstance(data, list) else []:
-            code = (a.get("code") or "").upper()
+            code = (a.get("code") or "").upper().strip()
             if code and code not in seen:
                 clean.append({
                     "code": code,
-                    "label": a.get("label") or code,
-                    "city": a.get("city") or ""
+                    "label": (a.get("label") or code).strip(),
+                    "city": (a.get("city") or "").strip()
                 })
                 seen.add(code)
+
         _AIRPORTS_CACHE["data"] = clean
         _AIRPORTS_CACHE["mtime"] = mtime
         return clean
@@ -91,19 +94,20 @@ def _search_local_airports(q: str, pool: list) -> list:
     qs = _normalize(q)
     if not qs:
         return []
-    # buckets
     code_pref, name_pref, substr = [], [], []
     for a in pool:
         code = (a.get("code") or "")
         label = a.get("label") or ""
         city = a.get("city") or ""
-        blob = f"{_normalize(label)} {_normalize(city)}"
+        blob = f"{_normalize(label)} {_normalize(city)}".strip()
+
         if code.lower().startswith(qs):
             code_pref.append(a)
         elif blob.startswith(qs):
             name_pref.append(a)
         elif qs in blob:
             substr.append(a)
+
     # merge unique keeping order
     seen, out = set(), []
     for bucket in (code_pref, name_pref, substr):
@@ -112,7 +116,23 @@ def _search_local_airports(q: str, pool: list) -> list:
             if c not in seen:
                 out.append(a)
                 seen.add(c)
+
     return out[:25]
+
+def _display_name(label: str, code: str) -> str:
+    """
+    Returns a nice display string. Avoids duplicating (CODE) if label already contains it.
+    Examples:
+      label="Utirik Airport (UTK), MH", code="UTK" -> "Utirik Airport (UTK), MH"
+      label="Heathrow", code="LHR" -> "Heathrow (LHR)"
+    """
+    label = (label or "").strip()
+    code = (code or "").strip().upper()
+    if not label and not code:
+        return ""
+    if code and f"({code})" in label:
+        return label
+    return f"{label} ({code})" if (label and code) else (label or code)
 
 def resolve_label_for_code(code: str) -> str:
     """
@@ -121,17 +141,19 @@ def resolve_label_for_code(code: str) -> str:
     code = (code or "").upper().strip()
     if not code:
         return ""
+
     for a in _load_local_airports():
         if a["code"] == code:
-            label = a.get("label") or a.get("city") or code
-            return f"{label} ({code})"
+            return _display_name(a.get("label") or code, code)
+
     try:
         resp = amadeus.reference_data.locations.get(keyword=code, subType="AIRPORT")
         if resp.data:
             name = resp.data[0].get("name", code)
-            return f"{name} ({code})"
+            return _display_name(name, code)
     except Exception:
         pass
+
     return code
 
 def load_airport_names(query: str) -> dict:
@@ -151,7 +173,6 @@ def index():
     flights = []
     origin_label = ""
     date = ""
-    airport_names = {}  # used when resolving origin via Amadeus keyword
 
     form_data = {
         'trip_type': request.form.get('trip_type', 'oneway'),
@@ -179,23 +200,27 @@ def index():
             'origin_code': origin_code_hidden
         })
 
-        # Determine origin_code + human label
+        # Determine origin_code + human label (prefer hidden code; frontend now ensures it's set)
         origin_code = ''
         if origin_code_hidden and len(origin_code_hidden) == 3 and origin_code_hidden.isalpha():
             origin_code = origin_code_hidden
             origin_label = resolve_label_for_code(origin_code)
         else:
+            # fallback behavior (still here as safety)
             if '(' in origin_raw and ')' in origin_raw:
-                origin_code = origin_raw.split('(')[-1].replace(')', '').strip().upper()
-                origin_label = origin_raw
+                guessed = origin_raw.split('(')[-1].replace(')', '').strip().upper()
+                if len(guessed) == 3 and guessed.isalpha():
+                    origin_code = guessed
+                    origin_label = origin_raw
             elif len(origin_raw) == 3 and origin_raw.isalpha():
                 origin_code = origin_raw.upper()
                 origin_label = resolve_label_for_code(origin_code)
             else:
+                # last-resort: try Amadeus keyword
                 airport_names = load_airport_names(origin_raw)
                 if airport_names:
                     origin_code = list(airport_names.keys())[0]
-                    origin_label = f"{airport_names[origin_code]} ({origin_code})"
+                    origin_label = _display_name(airport_names[origin_code], origin_code)
                 else:
                     origin_code = 'LON'
                     origin_label = 'London (LON)'
@@ -230,11 +255,13 @@ def index():
         except Exception:
             pass
 
-    return render_template('index.html',
-                           flights=flights,
-                           origin_label=origin_label,
-                           date=date,
-                           form_data=form_data)
+    return render_template(
+        'index.html',
+        flights=flights,
+        origin_label=origin_label,
+        date=date,
+        form_data=form_data
+    )
 
 # ---- Content pages ----
 @app.route('/about')
@@ -259,6 +286,7 @@ def get_airports():
     """
     Returns items like:
       { "code": "LHR", "label": "Heathrow", "city": "London", "name": "Heathrow (LHR)" }
+    Your local airports.json labels may already include (CODE), and we avoid duplicating.
     """
     q = (request.args.get('query') or "").strip()
     if not q:
@@ -270,11 +298,16 @@ def get_airports():
     try:
         resp = amadeus.reference_data.locations.get(keyword=q, subType="AIRPORT")
         for a in (resp.data or []):
-            code = a.get('iataCode')
-            label = a.get('name', code) or ""
-            city = (a.get('address') or {}).get('cityName', "") or ""
+            code = (a.get('iataCode') or "").strip().upper()
+            label = (a.get('name', code) or "").strip()
+            city = ((a.get('address') or {}).get('cityName', "") or "").strip()
             if code:
-                results.append({"code": code, "label": label, "city": city, "name": f"{label} ({code})"})
+                results.append({
+                    "code": code,
+                    "label": label or code,
+                    "city": city,
+                    "name": _display_name(label, code)
+                })
     except Exception:
         pass
 
@@ -283,18 +316,22 @@ def get_airports():
         pool = _load_local_airports()
         hits = _search_local_airports(q, pool)
         if hits:
-            results = [{"code": a["code"],
-                        "label": a["label"],
-                        "city": a.get("city", ""),
-                        "name": f'{a["label"]} ({a["code"]})'} for a in hits]
+            results = [{
+                "code": a["code"],
+                "label": a["label"],
+                "city": a.get("city", ""),
+                "name": _display_name(a.get("label"), a.get("code"))
+            } for a in hits]
 
     # 3) Built-in defaults
     if not results:
         hits = _search_local_airports(q, DEFAULT_AIRPORTS)
-        results = [{"code": a["code"],
-                    "label": a["label"],
-                    "city": a.get("city", ""),
-                    "name": f'{a["label"]} ({a["code"]})'} for a in hits]
+        results = [{
+            "code": a["code"],
+            "label": a["label"],
+            "city": a.get("city", ""),
+            "name": _display_name(a.get("label"), a.get("code"))
+        } for a in hits]
 
     return jsonify(results)
 
