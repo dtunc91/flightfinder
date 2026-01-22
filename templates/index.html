@@ -383,7 +383,7 @@
       const label = a.label || a.name || a.code || '';
       const code  = a.code || '';
       const display = label && code ? `${label} (${code})` : (label || code);
-      input.value = code || '';
+      input.value = display; // ✅ FIXED: Show full display text instead of just code
       originCodeHidden.value = code || '';
       helper.textContent = display;
       closeList();
