@@ -6,15 +6,44 @@
 
   <!-- SEO -->
   <title>
-    {% if origin_label %}
+    {% if seo_page %}
+      Cheap Flights from {{ seo_page.city }} ({{ seo_page.code }}) | GetMeOutOfHere.Live
+    {% elif origin_label %}
       Cheap flights from {{ origin_label }} | GetMeOutOfHere.Live
     {% else %}
       Find the cheapest places to fly from your airport | GetMeOutOfHere.Live
     {% endif %}
   </title>
-  <meta name="description" content="Get Me Out of Here helps you find the cheapest places to fly from your airport — no destination needed." />
+  <meta name="description" content="{% if seo_page %}Find the cheapest flights from {{ seo_page.city }} ({{ seo_page.code }}). No destination needed — just pick a date and see where you can go.{% else %}Get Me Out of Here helps you find the cheapest places to fly from your airport — no destination needed.{% endif %}" />
+  {% if seo_page %}
+  <link rel="canonical" href="https://getmeoutofhere.live/cheap-flights-from/{{ seo_page.code }}" />
+  {% else %}
   <link rel="canonical" href="https://getmeoutofhere.live/" />
+  {% endif %}
   <link rel="icon" type="image/png" href="{{ url_for('static', filename='favicon.png') }}">
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="GetMeOutOfHere.Live" />
+  {% if seo_page %}
+  <meta property="og:title" content="Cheap Flights from {{ seo_page.city }} ({{ seo_page.code }}) | GetMeOutOfHere.Live" />
+  <meta property="og:description" content="Find the cheapest flights from {{ seo_page.city }}. No destination needed — just pick a date and see where you can go." />
+  <meta property="og:url" content="https://getmeoutofhere.live/cheap-flights-from/{{ seo_page.code }}" />
+  {% else %}
+  <meta property="og:title" content="Find the cheapest places to fly from your airport | GetMeOutOfHere.Live" />
+  <meta property="og:description" content="Get Me Out of Here helps you find the cheapest places to fly from your airport — no destination needed." />
+  <meta property="og:url" content="https://getmeoutofhere.live/" />
+  {% endif %}
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary" />
+  {% if seo_page %}
+  <meta name="twitter:title" content="Cheap Flights from {{ seo_page.city }} ({{ seo_page.code }}) | GetMeOutOfHere.Live" />
+  <meta name="twitter:description" content="Find the cheapest flights from {{ seo_page.city }}. No destination needed — just pick a date and see where you can go." />
+  {% else %}
+  <meta name="twitter:title" content="Find the cheapest places to fly from your airport | GetMeOutOfHere.Live" />
+  <meta name="twitter:description" content="Get Me Out of Here helps you find the cheapest places to fly from your airport — no destination needed." />
+  {% endif %}
 
   <!-- CSS & Icons -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
@@ -281,6 +310,52 @@
     }
     .btn-book:hover { opacity: .88; transform: translateY(-1px); color: #fff; }
 
+    /* hotel link on card */
+    .hotel-link {
+      font-size: 0.75rem;
+      color: #9fb0ff;
+      text-decoration: none;
+      margin-top: 6px;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      opacity: .75;
+      transition: opacity .15s;
+    }
+    .hotel-link:hover { opacity: 1; color: #cfe0ff; }
+
+    /* ── EMAIL CAPTURE ────────────────────────────────── */
+    .email-capture {
+      background: rgba(110,168,255,.07);
+      border: 1px solid rgba(110,168,255,.2);
+      border-radius: 16px;
+      padding: 24px;
+      margin-top: 28px;
+    }
+    .email-capture h3 { font-size: 1rem; font-weight: 700; margin-bottom: 4px; }
+    .email-capture p  { font-size: 0.85rem; color: #9fb0ff; margin-bottom: 14px; }
+    .email-input-row { display: flex; gap: 8px; flex-wrap: wrap; }
+    .email-input-row .form-control { flex: 1; min-width: 200px; }
+    .btn-subscribe {
+      background: linear-gradient(135deg, #3b7dd8 0%, #1a55b0 100%);
+      border: none; color: #fff; border-radius: 10px;
+      font-weight: 600; font-size: 0.88rem; padding: 10px 20px;
+      white-space: nowrap; cursor: pointer; transition: opacity .2s;
+    }
+    .btn-subscribe:hover { opacity: .88; }
+    #subscribeMsg { font-size: 0.82rem; margin-top: 8px; }
+
+    /* ── SEO PAGE HEADER ──────────────────────────────── */
+    .seo-header {
+      background: rgba(255,255,255,.04);
+      border: 1px solid rgba(255,255,255,.08);
+      border-radius: 14px;
+      padding: 18px 20px;
+      margin-bottom: 20px;
+    }
+    .seo-header h2 { font-size: 1.15rem; font-weight: 700; margin-bottom: 4px; }
+    .seo-header p  { font-size: 0.82rem; color: #9fb0ff; margin: 0; }
+
     /* ── LOADING OVERLAY ──────────────────────────────── */
     #loadingOverlay {
       display: none;
@@ -349,10 +424,17 @@
 
 <!-- HERO -->
 <header class="text-center py-4 px-3">
-  <h1 class="fw-bold mb-2">Get Me Out of Here ✈️</h1>
-  <p style="color:#9fb0ff; max-width:500px; margin:0 auto;">
-    No destination in mind? Find the cheapest places you can fly to — just pick your airport.
-  </p>
+  {% if seo_page %}
+    <h1 class="fw-bold mb-2">Cheap Flights from {{ seo_page.city }} ✈️</h1>
+    <p style="color:#9fb0ff; max-width:500px; margin:0 auto;">
+      No destination needed. Pick a date and we'll show you the cheapest places to fly from <strong style="color:#eaf0ff">{{ seo_page.city }}</strong>.
+    </p>
+  {% else %}
+    <h1 class="fw-bold mb-2">Get Me Out of Here ✈️</h1>
+    <p style="color:#9fb0ff; max-width:500px; margin:0 auto;">
+      No destination in mind? Find the cheapest places you can fly to — just pick your airport.
+    </p>
+  {% endif %}
 </header>
 
 <!-- MAIN -->
@@ -458,6 +540,11 @@
             <span class="flight-iata">{{ flight.destination_code }}</span>
           </div>
           <div class="flight-airport-name">{{ flight.destination_label }}</div>
+          <a class="hotel-link"
+             href="https://www.hotellook.com/search?destination={{ (flight.destination_city or flight.destination_code) | urlencode }}&marker=617752"
+             target="_blank" rel="noopener">
+            <i class="fa fa-hotel"></i> Find hotels
+          </a>
         </div>
 
         <div class="flight-right">
@@ -488,6 +575,29 @@
     <i class="fa fa-plane fa-2x d-block"></i>
     <p>No cheap flights found from <strong>{{ origin_label }}</strong>.<br>
     Try a different date or airport.</p>
+  </div>
+  {% endif %}
+
+  <!-- EMAIL CAPTURE -->
+  {% if form_data.origin_code %}
+  <div class="email-capture">
+    <h3><i class="fa fa-bell me-2" style="color:#6ea8ff"></i>Get price alerts</h3>
+    <p>
+      We'll email you when cheap flights from
+      <strong style="color:#eaf0ff">{{ origin_label or form_data.origin }}</strong> drop even lower.
+    </p>
+    <form id="subscribeForm" onsubmit="handleSubscribe(event)">
+      <input type="hidden" name="airport_code" value="{{ form_data.origin_code }}">
+      <input type="hidden" name="airport_name" value="{{ origin_label or form_data.origin }}">
+      <div class="email-input-row">
+        <input type="email" name="email" class="form-control"
+               placeholder="your@email.com" required>
+        <button type="submit" class="btn-subscribe">
+          <i class="fa fa-paper-plane me-1"></i> Notify me
+        </button>
+      </div>
+      <div id="subscribeMsg"></div>
+    </form>
   </div>
   {% endif %}
 
@@ -588,6 +698,33 @@ document.addEventListener('DOMContentLoaded', () => {
   document.addEventListener('click', e => {
     if (!list.contains(e.target) && e.target !== input) closeList();
   });
+
+  // ── Email signup ────────────────────────────────────
+  window.handleSubscribe = function(e) {
+    e.preventDefault();
+    const form = e.target;
+    const msg  = document.getElementById('subscribeMsg');
+    const btn  = form.querySelector('.btn-subscribe');
+    btn.disabled = true;
+    btn.textContent = 'Subscribing...';
+    fetch('/subscribe', { method: 'POST', body: new FormData(form) })
+      .then(r => r.json())
+      .then(data => {
+        if (data.ok) {
+          msg.innerHTML = '<span style="color:#82ffd2"><i class="fa fa-circle-check me-1"></i>You\'re subscribed! We\'ll be in touch when prices drop.</span>';
+          form.querySelector('input[type="email"]').value = '';
+        } else {
+          msg.innerHTML = `<span style="color:#ff8080">${data.error}</span>`;
+          btn.disabled = false;
+          btn.innerHTML = '<i class="fa fa-paper-plane me-1"></i> Notify me';
+        }
+      })
+      .catch(() => {
+        msg.innerHTML = '<span style="color:#ff8080">Something went wrong. Please try again.</span>';
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fa fa-paper-plane me-1"></i> Notify me';
+      });
+  };
 
   // ── Sort flights (client-side) ──────────────────────
   window.sortFlights = function(order) {
