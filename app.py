@@ -5,6 +5,7 @@ import requests
 import os
 import json
 import csv
+import re
 import unicodedata
 from dotenv import load_dotenv
 
@@ -89,10 +90,13 @@ def _load_local_airports() -> list:
         for a in data if isinstance(data, list) else []:
             code = (a.get("code") or "").upper().strip()
             if code and code not in seen:
+                raw_label = (a.get("label") or code).strip()
+                m = re.search(r',\s*([A-Z]{2})\s*$', raw_label)
                 clean.append({
                     "code": code,
-                    "label": (a.get("label") or code).strip(),
-                    "city": (a.get("city") or "").strip()
+                    "label": raw_label,
+                    "city": (a.get("city") or "").strip(),
+                    "country": m.group(1) if m else (a.get("country") or "")
                 })
                 seen.add(code)
 
@@ -253,6 +257,9 @@ def index():
             if r.status_code == 200:
                 data = r.json().get('data', [])[:10]
                 airport_index = _get_airport_index()
+                origin_info = airport_index.get(origin_code, {})
+                origin_country = origin_info.get('country', '')
+
                 for flight in data:
                     dest_code = flight.get('destination', 'N/A')
                     price = flight.get('value', 'N/A')
@@ -261,6 +268,7 @@ def index():
                     dest_info = airport_index.get(dest_code, {})
                     dest_label = _display_name(dest_info.get('label') or dest_code, dest_code) if dest_info else dest_code
                     dest_city = dest_info.get('city', '')
+                    dest_country = dest_info.get('country', '')
 
                     depart_str = datetime.strptime(departure_date, '%Y-%m-%d').strftime('%d%m')
                     if trip_type == 'roundtrip' and return_date:
@@ -275,6 +283,7 @@ def index():
                         'destination_code': dest_code,
                         'destination_label': dest_label,
                         'destination_city': dest_city,
+                        'destination_country': dest_country,
                         'price': price,
                         'num_stops': num_stops,
                         'booking_url': booking_url
@@ -282,10 +291,14 @@ def index():
         except Exception:
             pass
 
+    airport_index = _get_airport_index()
+    origin_country = airport_index.get(form_data.get('origin_code', ''), {}).get('country', '')
+
     return render_template(
         'index.html',
         flights=flights,
         origin_label=origin_label,
+        origin_country=origin_country,
         date=date,
         form_data=form_data
     )

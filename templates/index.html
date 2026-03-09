@@ -444,7 +444,7 @@
   <form method="POST" id="searchForm" class="p-4 form-container" autocomplete="off">
 
     <!-- Trip type toggle -->
-    <div class="d-flex mb-3">
+    <div class="d-flex flex-wrap gap-3 mb-3">
       <div class="trip-toggle btn-group" role="group">
         <input type="radio" class="btn-check" name="trip_type" id="trip_oneway" value="oneway"
                {% if form_data.trip_type != 'roundtrip' %}checked{% endif %}>
@@ -456,6 +456,15 @@
         <label class="btn" for="trip_roundtrip">
           <i class="fa fa-right-left me-1"></i> Round-trip
         </label>
+      </div>
+
+      <div class="trip-toggle btn-group" role="group" id="flightTypeToggle">
+        <input type="radio" class="btn-check" name="flight_type" id="ft_all" value="all" checked>
+        <label class="btn" for="ft_all">All</label>
+        <input type="radio" class="btn-check" name="flight_type" id="ft_domestic" value="domestic">
+        <label class="btn" for="ft_domestic"><i class="fa fa-house me-1"></i> Domestic</label>
+        <input type="radio" class="btn-check" name="flight_type" id="ft_international" value="international">
+        <label class="btn" for="ft_international"><i class="fa fa-earth-europe me-1"></i> International</label>
       </div>
     </div>
 
@@ -531,7 +540,7 @@
 
     <div id="flightsList">
       {% for flight in flights %}
-      <div class="flight-card" data-price="{{ flight.price }}">
+      <div class="flight-card" data-price="{{ flight.price }}" data-country="{{ flight.destination_country }}">
         <div class="flight-dest">
           <div class="flight-dest-top">
             <span class="flight-city">
@@ -740,6 +749,36 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('sortAsc').classList.toggle('active', order === 'asc');
     document.getElementById('sortDesc').classList.toggle('active', order === 'desc');
   };
+
+  // ── Flight type filter (domestic / international) ────
+  const ORIGIN_COUNTRY = {{ origin_country | tojson }};
+
+  function applyFlightTypeFilter() {
+    const selected = document.querySelector('input[name="flight_type"]:checked')?.value || 'all';
+    const container = document.getElementById('flightsList');
+    if (!container) return;
+    let visibleCount = 0;
+    container.querySelectorAll('.flight-card').forEach(card => {
+      const destCountry = card.dataset.country || '';
+      let show = true;
+      if (selected === 'domestic')      show = ORIGIN_COUNTRY && destCountry === ORIGIN_COUNTRY;
+      if (selected === 'international') show = !ORIGIN_COUNTRY || destCountry !== ORIGIN_COUNTRY;
+      card.style.display = show ? '' : 'none';
+      if (show) visibleCount++;
+    });
+    // update count label if present
+    const countEl = document.querySelector('.results-count strong');
+    if (countEl) countEl.textContent = visibleCount;
+  }
+
+  document.querySelectorAll('input[name="flight_type"]').forEach(r =>
+    r.addEventListener('change', applyFlightTypeFilter)
+  );
+  // hide toggle if no country data available
+  if (!ORIGIN_COUNTRY) {
+    const toggle = document.getElementById('flightTypeToggle');
+    if (toggle) toggle.style.display = 'none';
+  }
 });
 </script>
 
