@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <!-- Basics -->
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
 
@@ -13,149 +12,544 @@
       Find the cheapest places to fly from your airport | GetMeOutOfHere.Live
     {% endif %}
   </title>
-
   <meta name="description" content="Get Me Out of Here helps you find the cheapest places to fly from your airport — no destination needed." />
   <link rel="canonical" href="https://getmeoutofhere.live/" />
+  <link rel="icon" type="image/png" href="{{ url_for('static', filename='favicon.png') }}">
 
   <!-- CSS & Icons -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
   <link href="{{ url_for('static', filename='index.css') }}" rel="stylesheet" />
   <script src="{{ url_for('static', filename='fontawesome-free-6.7.2-web/js/all.js') }}"></script>
+  <script defer data-domain="getmeoutofhere.live" src="https://plausible.io/js/script.js"></script>
 
   <style>
-    body.background{
-      min-height:100vh;
+    /* ── BASE ─────────────────────────────────────────── */
+    body.background {
+      min-height: 100vh;
       background:
         radial-gradient(1200px 600px at 80% -10%, rgba(130,255,210,0.15), transparent 60%),
         radial-gradient(1200px 600px at 10% 10%, rgba(110,168,255,0.18), transparent 60%),
         linear-gradient(135deg, #0b1020 0%, #0e1430 50%, #121a3a 100%);
-      color:#eaf0ff;
+      color: #eaf0ff;
     }
 
-    /* IMPORTANT FIX */
-    .form-container{
+    /* ── NAV ──────────────────────────────────────────── */
+    .top-nav a { color: #9fb0ff; text-decoration: none; font-weight: 600; font-size: 0.9rem; }
+    .top-nav a:hover { color: #cfe0ff; }
+
+    /* ── FORM ─────────────────────────────────────────── */
+    .form-container {
       background: rgba(255,255,255,.06);
-      border:1px solid rgba(255,255,255,.15);
-      border-radius:20px;
+      border: 1px solid rgba(255,255,255,.15);
+      border-radius: 20px;
       backdrop-filter: blur(16px);
       box-shadow: 0 20px 40px rgba(0,0,0,.2);
-      position:relative;
-      overflow: visible; /* 🔑 autocomplete fix */
+      position: relative;
+      overflow: visible;
     }
 
-    .autocomplete-items{
-      position:absolute;
-      z-index:2000;
-      width:100%;
-      max-height:320px;
-      overflow:auto;
-      background: rgba(14,20,48,.95);
-      border:1px solid rgba(255,255,255,.15);
-      border-radius:16px;
-      box-shadow: 0 15px 35px rgba(0,0,0,.4);
-      margin-top:8px;
+    .form-control, .form-select {
+      background: rgba(255,255,255,.07);
+      border: 1px solid rgba(255,255,255,.2);
+      color: #eaf0ff;
+      border-radius: 10px;
+    }
+    .form-control:focus, .form-select:focus {
+      background: rgba(255,255,255,.1);
+      border-color: rgba(110,168,255,.6);
+      color: #eaf0ff;
+      box-shadow: 0 0 0 3px rgba(110,168,255,.15);
+    }
+    .form-control::placeholder { color: rgba(234,240,255,.4); }
+    .form-label {
+      color: #9fb0ff;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      margin-bottom: 6px;
     }
 
-    .autocomplete-item{
-      padding:14px 16px;
-      cursor:pointer;
-      border-bottom:1px solid rgba(255,255,255,.05);
+    /* trip type toggle */
+    .trip-toggle .btn-check + .btn {
+      background: rgba(255,255,255,.06);
+      border: 1px solid rgba(255,255,255,.18);
+      color: #9fb0ff;
+      border-radius: 10px;
+      font-size: 0.85rem;
+      padding: 7px 18px;
+      transition: background .15s, color .15s;
     }
-    .autocomplete-item:last-child{ border-bottom:none; }
-    .autocomplete-item:hover,
-    .autocomplete-item.active{
-      background: rgba(110,168,255,.15);
+    .trip-toggle .btn-check:checked + .btn {
+      background: rgba(110,168,255,.25);
+      border-color: rgba(110,168,255,.55);
+      color: #cfe0ff;
+      font-weight: 600;
+    }
+    .trip-toggle .btn-check + .btn:first-of-type { border-radius: 10px 0 0 10px; }
+    .trip-toggle .btn-check + .btn:last-of-type  { border-radius: 0 10px 10px 0; }
+
+    /* ── AUTOCOMPLETE ─────────────────────────────────── */
+    .autocomplete-items {
+      position: absolute;
+      z-index: 2000;
+      width: 100%;
+      max-height: 320px;
+      overflow: auto;
+      background: rgba(12,18,44,.98);
+      border: 1px solid rgba(255,255,255,.14);
+      border-radius: 14px;
+      box-shadow: 0 16px 40px rgba(0,0,0,.55);
+      margin-top: 6px;
+    }
+    .autocomplete-item {
+      padding: 11px 14px;
+      cursor: pointer;
+      border-bottom: 1px solid rgba(255,255,255,.05);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .autocomplete-item:last-child { border-bottom: none; }
+    .autocomplete-item:hover, .autocomplete-item.active {
+      background: rgba(110,168,255,.14);
+    }
+    .airport-code-badge {
+      background: rgba(110,168,255,.2);
+      color: #6ea8ff;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: .04em;
+      padding: 4px 8px;
+      border-radius: 7px;
+      min-width: 40px;
+      text-align: center;
+      flex-shrink: 0;
+    }
+    .airport-info { flex: 1; min-width: 0; }
+    .airport-name {
+      font-weight: 600;
+      font-size: 0.88rem;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      color: #eaf0ff;
+    }
+    .airport-sub { font-size: 11px; color: #9fb0ff; margin-top: 1px; }
+
+    /* ── SEARCH BUTTON ────────────────────────────────── */
+    .btn-search {
+      background: linear-gradient(135deg, #3b7dd8 0%, #1a55b0 100%);
+      border: none;
+      color: #fff;
+      border-radius: 12px;
+      font-weight: 700;
+      font-size: 1rem;
+      padding: 13px;
+      transition: opacity .2s, transform .1s;
+      letter-spacing: .02em;
+    }
+    .btn-search:hover:not(:disabled) { opacity: .88; transform: translateY(-1px); color: #fff; }
+    .btn-search:disabled { opacity: .45; cursor: not-allowed; }
+
+    /* ── RESULTS ──────────────────────────────────────── */
+    .results-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+    .results-count { font-size: 0.88rem; color: #9fb0ff; }
+    .sort-controls { display: flex; gap: 6px; }
+    .sort-btn {
+      background: rgba(255,255,255,.06);
+      border: 1px solid rgba(255,255,255,.14);
+      color: #9fb0ff;
+      border-radius: 8px;
+      font-size: 0.78rem;
+      padding: 5px 12px;
+      cursor: pointer;
+      transition: background .15s, color .15s;
+    }
+    .sort-btn:hover { background: rgba(110,168,255,.14); color: #cfe0ff; }
+    .sort-btn.active {
+      background: rgba(110,168,255,.2);
+      border-color: rgba(110,168,255,.4);
+      color: #cfe0ff;
+      font-weight: 600;
     }
 
-    .airport-sub{
-      font-size:12px;
-      opacity:.75;
-      color:#9fb0ff;
+    /* flight card */
+    .flight-card {
+      background: rgba(255,255,255,.055);
+      border: 1px solid rgba(255,255,255,.1);
+      border-radius: 16px;
+      padding: 18px 20px;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      transition: border-color .2s, background .2s;
+    }
+    .flight-card:hover {
+      background: rgba(255,255,255,.09);
+      border-color: rgba(110,168,255,.3);
+    }
+    .flight-dest { flex: 1; min-width: 0; }
+    .flight-dest-top {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 3px;
+    }
+    .flight-city {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: #eaf0ff;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .flight-iata {
+      background: rgba(110,168,255,.18);
+      color: #6ea8ff;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: .05em;
+      padding: 3px 8px;
+      border-radius: 6px;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+    .flight-airport-name {
+      font-size: 0.75rem;
+      color: #5a6e9e;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .flight-right {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      flex-shrink: 0;
+    }
+    .flight-price-block { text-align: right; }
+    .flight-price {
+      font-size: 1.55rem;
+      font-weight: 800;
+      color: #82ffd2;
+      line-height: 1;
+    }
+    .flight-price-label { font-size: 0.68rem; color: #9fb0ff; margin-top: 2px; }
+    .stops-badge {
+      font-size: 0.7rem;
+      font-weight: 600;
+      padding: 4px 10px;
+      border-radius: 20px;
+      white-space: nowrap;
+    }
+    .stops-direct {
+      background: rgba(130,255,210,.12);
+      color: #82ffd2;
+      border: 1px solid rgba(130,255,210,.28);
+    }
+    .stops-1 {
+      background: rgba(255,193,7,.1);
+      color: #ffc107;
+      border: 1px solid rgba(255,193,7,.25);
+    }
+    .stops-2plus {
+      background: rgba(255,100,100,.1);
+      color: #ff8080;
+      border: 1px solid rgba(255,100,100,.2);
+    }
+    .btn-book {
+      background: linear-gradient(135deg, #3b7dd8 0%, #1a55b0 100%);
+      border: none;
+      color: #fff;
+      border-radius: 10px;
+      font-weight: 600;
+      font-size: 0.82rem;
+      padding: 8px 16px;
+      white-space: nowrap;
+      text-decoration: none;
+      transition: opacity .2s, transform .1s;
+      display: inline-block;
+    }
+    .btn-book:hover { opacity: .88; transform: translateY(-1px); color: #fff; }
+
+    /* ── LOADING OVERLAY ──────────────────────────────── */
+    #loadingOverlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(11,16,32,.82);
+      z-index: 9999;
+      backdrop-filter: blur(4px);
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 14px;
+    }
+    #loadingOverlay.show { display: flex; }
+    .loading-text { color: #eaf0ff; font-weight: 600; font-size: 1rem; }
+
+    /* ── NO RESULTS ───────────────────────────────────── */
+    .no-results {
+      text-align: center;
+      padding: 48px 24px;
+      color: #9fb0ff;
+    }
+    .no-results i { opacity: .35; margin-bottom: 16px; }
+
+    /* ── RESPONSIVE ───────────────────────────────────── */
+    @media (max-width: 576px) {
+      .flight-card {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      .flight-right {
+        width: 100%;
+        justify-content: space-between;
+        align-items: center;
+      }
+      .btn-book { flex: 1; text-align: center; }
+      .results-header { flex-direction: column; align-items: flex-start; }
+      .top-nav .d-flex.gap-3 { gap: 10px !important; flex-wrap: wrap; }
+      .top-nav a { font-size: 0.8rem; }
     }
   </style>
 </head>
 
 <body class="background">
-<!-- VERSION: RESTORED-UI-WITH-AUTOCOMPLETE -->
 
-<nav class="container d-flex justify-content-between align-items-center py-3">
-  <span class="fs-5 fw-bold">GetMeOutOfHere<span class="text-info">.Live</span></span>
+<!-- Loading overlay -->
+<div id="loadingOverlay">
+  <div class="spinner-border text-info" style="width:3rem;height:3rem;" role="status"></div>
+  <div class="loading-text">Searching for the cheapest flights...</div>
+</div>
+
+<!-- NAV -->
+<nav class="container d-flex justify-content-between align-items-center py-3 top-nav">
+  <div class="d-flex align-items-center gap-2">
+    <span class="fs-5 fw-bold text-light">GetMeOutOfHere<span class="text-info">.Live</span></span>
+    <i class="fa fa-plane ms-1" style="font-size:17px; opacity:.7"></i>
+  </div>
+  <div class="d-flex gap-3">
+    <a href="{{ url_for('about') }}">About</a>
+    <a href="{{ url_for('faq') }}">FAQ</a>
+    <a href="{{ url_for('privacy') }}">Privacy</a>
+    <a href="{{ url_for('terms') }}">Terms</a>
+    <a href="mailto:hello@getmeoutofhere.live">Contact</a>
+  </div>
 </nav>
 
-<header class="text-center py-4">
-  <h1 class="fw-bold">Get Me Out of Here ✈️</h1>
-  <p>The world's waiting. Not sure where to go? Check the cheapest places you can fly to from your airport.</p>
+<!-- HERO -->
+<header class="text-center py-4 px-3">
+  <h1 class="fw-bold mb-2">Get Me Out of Here ✈️</h1>
+  <p style="color:#9fb0ff; max-width:500px; margin:0 auto;">
+    No destination in mind? Find the cheapest places you can fly to — just pick your airport.
+  </p>
 </header>
 
-<main class="container mb-5">
+<!-- MAIN -->
+<main class="container mb-5" style="max-width:700px;">
+
+  <!-- SEARCH FORM -->
   <form method="POST" id="searchForm" class="p-4 form-container" autocomplete="off">
+
+    <!-- Trip type toggle -->
+    <div class="d-flex mb-3">
+      <div class="trip-toggle btn-group" role="group">
+        <input type="radio" class="btn-check" name="trip_type" id="trip_oneway" value="oneway"
+               {% if form_data.trip_type != 'roundtrip' %}checked{% endif %}>
+        <label class="btn" for="trip_oneway">
+          <i class="fa fa-arrow-right me-1"></i> One-way
+        </label>
+        <input type="radio" class="btn-check" name="trip_type" id="trip_roundtrip" value="roundtrip"
+               {% if form_data.trip_type == 'roundtrip' %}checked{% endif %}>
+        <label class="btn" for="trip_roundtrip">
+          <i class="fa fa-right-left me-1"></i> Round-trip
+        </label>
+      </div>
+    </div>
+
+    <!-- Airport autocomplete -->
     <div class="mb-3 position-relative">
-      <label class="form-label">Fly from</label>
+      <label class="form-label" for="origin">
+        <i class="fa fa-plane-departure me-1"></i>Fly from
+      </label>
       <input type="text" id="origin" name="origin" class="form-control"
-             placeholder="Start typing a city or airport..."
-             value="{{ form_data.origin }}">
+             placeholder="City or airport name..."
+             value="{{ form_data.origin }}" autocomplete="off">
       <input type="hidden" id="origin_code" name="origin_code" value="{{ form_data.origin_code }}">
       <div id="origin-autocomplete-list" class="autocomplete-items d-none"></div>
-      <div id="origin-helper" class="small text-muted mt-1"></div>
-    </div>
-
-    <div class="row g-3 mb-3">
-      <div class="col">
-        <label class="form-label">Departure date</label>
-        <input type="date" name="departure_date" class="form-control" required value="{{ form_data.departure_date }}">
-      </div>
-      <div class="col">
-        <label class="form-label">Passengers</label>
-        <input type="number" name="passengers" class="form-control" min="1" max="9" value="{{ form_data.passengers or 1 }}">
+      <div id="origin-helper" class="small mt-1">
+        {% if form_data.origin_code %}
+          <span style="color:#82ffd2"><i class="fa fa-circle-check me-1"></i>{{ form_data.origin }}</span>
+        {% else %}
+          <span style="color:#9fb0ff">Start typing to search airports</span>
+        {% endif %}
       </div>
     </div>
 
-    <button type="button" id="searchButton" class="btn btn-primary w-100" disabled>
-      <i class="fa fa-search me-2"></i>Search Flights
+    <!-- Dates + Passengers -->
+    <div class="row g-2 mb-3">
+      <div class="col-sm col-12">
+        <label class="form-label" for="departure_date">
+          <i class="fa fa-calendar me-1"></i>Departure
+        </label>
+        <input type="date" id="departure_date" name="departure_date" class="form-control"
+               required value="{{ form_data.departure_date }}">
+      </div>
+      <div id="returnDateCol" class="col-sm col-12"
+           {% if form_data.trip_type != 'roundtrip' %}style="display:none"{% endif %}>
+        <label class="form-label" for="return_date">
+          <i class="fa fa-calendar-check me-1"></i>Return
+        </label>
+        <input type="date" id="return_date" name="return_date" class="form-control"
+               value="{{ form_data.return_date }}">
+      </div>
+      <div class="col-sm-3 col-12">
+        <label class="form-label" for="passengers">
+          <i class="fa fa-user me-1"></i>Passengers
+        </label>
+        <input type="number" id="passengers" name="passengers" class="form-control"
+               min="1" max="9" value="{{ form_data.passengers or 1 }}">
+      </div>
+    </div>
+
+    <button type="button" id="searchButton" class="btn btn-search w-100"
+            {% if not form_data.origin_code %}disabled{% endif %}>
+      <i class="fa fa-magnifying-glass me-2"></i>Search Flights
     </button>
   </form>
 
+  <!-- RESULTS -->
+  {% if flights %}
   <div id="resultsContainer" class="mt-4">
-    {% for flight in flights %}
-      <div class="p-3 mb-2 rounded bg-dark">
-        <strong>{{ flight.destination_label }}</strong>
-        <div>£{{ flight.price }}</div>
-        <a href="{{ flight.booking_url }}" target="_blank" class="btn btn-success btn-sm mt-2">Book Now</a>
+    <div class="results-header">
+      <div class="results-count">
+        <i class="fa fa-ticket me-1"></i>
+        <strong>{{ flights|length }}</strong> destination{{ 's' if flights|length != 1 }}
+        from <strong>{{ origin_label }}</strong>
       </div>
-    {% endfor %}
+      <div class="sort-controls">
+        <button class="sort-btn active" id="sortAsc" onclick="sortFlights('asc')">
+          <i class="fa fa-arrow-up-wide-short me-1"></i>Cheapest first
+        </button>
+        <button class="sort-btn" id="sortDesc" onclick="sortFlights('desc')">
+          <i class="fa fa-arrow-down-wide-short me-1"></i>Priciest first
+        </button>
+      </div>
+    </div>
+
+    <div id="flightsList">
+      {% for flight in flights %}
+      <div class="flight-card" data-price="{{ flight.price }}">
+        <div class="flight-dest">
+          <div class="flight-dest-top">
+            <span class="flight-city">
+              {{ flight.destination_city if flight.destination_city else flight.destination_code }}
+            </span>
+            <span class="flight-iata">{{ flight.destination_code }}</span>
+          </div>
+          <div class="flight-airport-name">{{ flight.destination_label }}</div>
+        </div>
+
+        <div class="flight-right">
+          <div class="flight-price-block">
+            <div class="flight-price">£{{ flight.price }}</div>
+            <div class="flight-price-label">per person</div>
+          </div>
+
+          {% if flight.num_stops == 0 %}
+            <span class="stops-badge stops-direct">Direct</span>
+          {% elif flight.num_stops == 1 %}
+            <span class="stops-badge stops-1">1 stop</span>
+          {% else %}
+            <span class="stops-badge stops-2plus">{{ flight.num_stops }} stops</span>
+          {% endif %}
+
+          <a href="{{ flight.booking_url }}" target="_blank" rel="noopener" class="btn-book">
+            Book <i class="fa fa-arrow-right ms-1"></i>
+          </a>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
   </div>
+
+  {% elif form_data.origin_code %}
+  <div class="no-results">
+    <i class="fa fa-plane fa-2x d-block"></i>
+    <p>No cheap flights found from <strong>{{ origin_label }}</strong>.<br>
+    Try a different date or airport.</p>
+  </div>
+  {% endif %}
+
 </main>
+
+<footer class="container py-4 text-center" style="color:#4a5880; font-size:0.82rem;">
+  © {{ current_year if current_year else 2025 }} GetMeOutOfHere.Live &nbsp;·&nbsp;
+  Prices sourced from <a href="https://www.aviasales.com" target="_blank" rel="noopener" style="color:#6b7eb5;">Aviasales</a>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
 <script>
 document.addEventListener('DOMContentLoaded', () => {
-  const input = document.getElementById('origin');
-  const list = document.getElementById('origin-autocomplete-list');
-  const helper = document.getElementById('origin-helper');
-  const hidden = document.getElementById('origin_code');
+  const input     = document.getElementById('origin');
+  const list      = document.getElementById('origin-autocomplete-list');
+  const helper    = document.getElementById('origin-helper');
+  const hidden    = document.getElementById('origin_code');
   const searchBtn = document.getElementById('searchButton');
+  const form      = document.getElementById('searchForm');
+  const overlay   = document.getElementById('loadingOverlay');
 
-  function setEnabled(on){ searchBtn.disabled = !on; }
+  // ── Trip type toggle ────────────────────────────────
+  const tripOneway    = document.getElementById('trip_oneway');
+  const tripRoundtrip = document.getElementById('trip_roundtrip');
+  const returnCol     = document.getElementById('returnDateCol');
+  const returnInput   = document.getElementById('return_date');
 
-  function closeList(){ list.classList.add('d-none'); }
-  function openList(){ list.classList.remove('d-none'); }
+  function syncTripType() {
+    const isRound = tripRoundtrip.checked;
+    returnCol.style.display = isRound ? '' : 'none';
+    returnInput.required = isRound;
+  }
+  tripOneway.addEventListener('change', syncTripType);
+  tripRoundtrip.addEventListener('change', syncTripType);
 
-  function selectAirport(a){
-    input.value = a.name;
+  // ── Autocomplete helpers ────────────────────────────
+  function setEnabled(on) { searchBtn.disabled = !on; }
+  function closeList()    { list.classList.add('d-none'); }
+  function openList()     { list.classList.remove('d-none'); }
+
+  function selectAirport(a) {
+    input.value  = a.name;
     hidden.value = a.code;
-    helper.textContent = `Selected: ${a.name}`;
+    helper.innerHTML = `<span style="color:#82ffd2"><i class="fa fa-circle-check me-1"></i>${a.name}</span>`;
     setEnabled(true);
     closeList();
   }
 
-  function render(items){
+  function render(items) {
     list.innerHTML = '';
-    if(!items.length){ closeList(); return; }
-    items.slice(0,15).forEach(a=>{
+    if (!items.length) { closeList(); return; }
+    items.slice(0, 12).forEach(a => {
       const div = document.createElement('div');
       div.className = 'autocomplete-item';
+      const sub = a.city ? `<div class="airport-sub">${a.city}</div>` : '';
       div.innerHTML = `
-        <div><strong>${a.name}</strong></div>
-        <div class="airport-sub">${a.city || ''}</div>
+        <span class="airport-code-badge">${a.code}</span>
+        <div class="airport-info">
+          <div class="airport-name">${a.label || a.name}</div>
+          ${sub}
+        </div>
       `;
       div.onclick = () => selectAirport(a);
       list.appendChild(div);
@@ -163,30 +557,54 @@ document.addEventListener('DOMContentLoaded', () => {
     openList();
   }
 
+  // ── Debounced input (300 ms) ────────────────────────
+  let debounceTimer;
   input.addEventListener('input', () => {
+    clearTimeout(debounceTimer);
     hidden.value = '';
     setEnabled(false);
+    helper.innerHTML = '<span style="color:#9fb0ff">Start typing to search airports</span>';
     const q = input.value.trim();
-    if(!q){ closeList(); return; }
-
-    fetch(`/api/airports?query=${encodeURIComponent(q)}`)
-      .then(r => r.json())
-      .then(render)
-      .catch(closeList);
+    if (!q) { closeList(); return; }
+    debounceTimer = setTimeout(() => {
+      fetch(`/api/airports?query=${encodeURIComponent(q)}`)
+        .then(r => r.json())
+        .then(render)
+        .catch(closeList);
+    }, 300);
   });
 
+  // ── Search button ───────────────────────────────────
   searchBtn.onclick = () => {
-    if(!hidden.value){
-      helper.textContent = 'Select an airport from the list';
+    if (!hidden.value) {
+      helper.innerHTML = '<span style="color:#ff8080"><i class="fa fa-circle-exclamation me-1"></i>Please select an airport from the dropdown</span>';
       return;
     }
-    document.getElementById('searchForm').submit();
+    overlay.classList.add('show');
+    form.submit();
   };
 
-  document.addEventListener('click', e=>{
-    if(!list.contains(e.target) && e.target !== input) closeList();
+  // ── Close dropdown on outside click ────────────────
+  document.addEventListener('click', e => {
+    if (!list.contains(e.target) && e.target !== input) closeList();
   });
+
+  // ── Sort flights (client-side) ──────────────────────
+  window.sortFlights = function(order) {
+    const container = document.getElementById('flightsList');
+    if (!container) return;
+    const cards = Array.from(container.querySelectorAll('.flight-card'));
+    cards.sort((a, b) => {
+      const pa = parseFloat(a.dataset.price) || 0;
+      const pb = parseFloat(b.dataset.price) || 0;
+      return order === 'asc' ? pa - pb : pb - pa;
+    });
+    cards.forEach(c => container.appendChild(c));
+    document.getElementById('sortAsc').classList.toggle('active', order === 'asc');
+    document.getElementById('sortDesc').classList.toggle('active', order === 'desc');
+  };
 });
 </script>
+
 </body>
 </html>

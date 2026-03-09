@@ -119,6 +119,10 @@ def _search_local_airports(q: str, pool: list) -> list:
 
     return out[:25]
 
+def _get_airport_index() -> dict:
+    """Build {IATA_CODE: airport_dict} for O(1) lookups."""
+    return {a['code']: a for a in _load_local_airports()}
+
 def _display_name(label: str, code: str) -> str:
     """
     Returns a nice display string. Avoids duplicating (CODE) if label already contains it.
@@ -233,9 +237,15 @@ def index():
             r = requests.get("https://api.travelpayouts.com/v2/prices/latest", params=params, timeout=15)
             if r.status_code == 200:
                 data = r.json().get('data', [])[:10]
+                airport_index = _get_airport_index()
                 for flight in data:
                     dest_code = flight.get('destination', 'N/A')
                     price = flight.get('value', 'N/A')
+                    num_stops = flight.get('number_of_changes', 0)
+
+                    dest_info = airport_index.get(dest_code, {})
+                    dest_label = _display_name(dest_info.get('label') or dest_code, dest_code) if dest_info else dest_code
+                    dest_city = dest_info.get('city', '')
 
                     depart_str = datetime.strptime(departure_date, '%Y-%m-%d').strftime('%d%m')
                     if trip_type == 'roundtrip' and return_date:
@@ -248,8 +258,10 @@ def index():
 
                     flights.append({
                         'destination_code': dest_code,
-                        'destination_label': dest_code,  # keep fast; code is fine
+                        'destination_label': dest_label,
+                        'destination_city': dest_city,
                         'price': price,
+                        'num_stops': num_stops,
                         'booking_url': booking_url
                     })
         except Exception:
