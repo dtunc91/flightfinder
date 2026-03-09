@@ -436,15 +436,15 @@ def sitemap():
 # ---- Static helpers ----
 @app.route('/google48b33f47cd3a277e.html')
 def serve_verification_file():
-    return send_from_directory('.', 'google48b33f47cd3a277e.html')
+    return send_from_directory(app.root_path, 'google48b33f47cd3a277e.html')
 
 @app.route('/google4a38a2e0e650c32c.html')
 def serve_verification_file2():
-    return send_from_directory('.', 'google4a38a2e0e650c32c.html')
+    return send_from_directory(app.root_path, 'google4a38a2e0e650c32c.html')
 
 @app.route('/robots.txt')
 def robots_txt():
-    return send_from_directory('.', 'robots.txt')
+    return send_from_directory(app.root_path, 'robots.txt')
 
 # Optional: quick debug route
 @app.route('/debug-templates')
