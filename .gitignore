@@ -3,3 +3,4 @@ Deniz.code-workspace
 __pycache__/
 *.pyc
 *.pyo
+data/subscribers.csv

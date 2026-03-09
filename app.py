@@ -1,15 +1,30 @@
-from flask import Flask, render_template, request, jsonify, send_from_directory
+from flask import Flask, render_template, request, jsonify, send_from_directory, abort
 from datetime import datetime
 from amadeus import Client
 import requests
 import os
 import json
+import csv
 import unicodedata
 from dotenv import load_dotenv
 
 load_dotenv()
 
 app = Flask(__name__, template_folder='templates', static_folder='static')
+
+DATA_DIR = os.path.join(os.path.dirname(__file__), 'data')
+SUBSCRIBERS_FILE = os.path.join(DATA_DIR, 'subscribers.csv')
+
+# Major airports for SEO landing pages + sitemap
+SEO_AIRPORTS = [
+    # UK
+    'LHR','LGW','MAN','EDI','BHX','BRS','LTN','STN','GLA','NCL',
+    'LPL','LBA','SOU','ABZ','BFS','CWL',
+    # Popular international
+    'CDG','AMS','FRA','MAD','BCN','FCO','DXB','JFK','LAX','BKK',
+    'SIN','DUB','LIS','ATH','PRG','VIE','CPH','OSL','ARN','HEL',
+    'WAW','BUD','ZRH','GVA','MXP','FCO','IST','NRT','SYD','YYZ',
+]
 
 # ---- Secrets / API keys ----
 API_TOKEN = os.getenv('API_TOKEN')  # Travelpayouts API token
@@ -346,6 +361,77 @@ def get_airports():
         } for a in hits]
 
     return jsonify(results)
+
+# ---- SEO landing pages ----
+@app.route('/cheap-flights-from/<string:code>')
+def seo_airport(code):
+    code = code.upper()
+    airport_index = _get_airport_index()
+    info = airport_index.get(code)
+    if not info:
+        abort(404)
+    label = _display_name(info.get('label') or code, code)
+    city = info.get('city', '') or label
+    return render_template(
+        'index.html',
+        flights=[],
+        origin_label=label,
+        date='',
+        form_data={
+            'origin': label,
+            'origin_code': code,
+            'departure_date': '',
+            'return_date': '',
+            'passengers': 1,
+            'trip_type': 'oneway',
+        },
+        seo_page={'code': code, 'label': label, 'city': city},
+    )
+
+# ---- Email price-alert signup ----
+@app.route('/subscribe', methods=['POST'])
+def subscribe():
+    email = (request.form.get('email') or '').strip().lower()
+    airport_code = (request.form.get('airport_code') or '').strip().upper()
+    airport_name = (request.form.get('airport_name') or '').strip()
+    if not email or '@' not in email or '.' not in email.split('@')[-1]:
+        return jsonify({'ok': False, 'error': 'Please enter a valid email address.'}), 400
+    os.makedirs(DATA_DIR, exist_ok=True)
+    new_file = not os.path.exists(SUBSCRIBERS_FILE)
+    with open(SUBSCRIBERS_FILE, 'a', newline='', encoding='utf-8') as f:
+        w = csv.DictWriter(f, fieldnames=['email', 'airport_code', 'airport_name', 'signed_up_at'])
+        if new_file:
+            w.writeheader()
+        w.writerow({
+            'email': email,
+            'airport_code': airport_code,
+            'airport_name': airport_name,
+            'signed_up_at': datetime.utcnow().isoformat(),
+        })
+    return jsonify({'ok': True})
+
+# ---- Sitemap ----
+@app.route('/sitemap.xml')
+def sitemap():
+    airport_index = _get_airport_index()
+    pages = [
+        ('https://getmeoutofhere.live/', '1.0'),
+        ('https://getmeoutofhere.live/about', '0.5'),
+        ('https://getmeoutofhere.live/faq', '0.5'),
+        ('https://getmeoutofhere.live/privacy', '0.3'),
+        ('https://getmeoutofhere.live/terms', '0.3'),
+    ]
+    for code in SEO_AIRPORTS:
+        if code in airport_index:
+            pages.append((f'https://getmeoutofhere.live/cheap-flights-from/{code}', '0.8'))
+    lines = [
+        '<?xml version="1.0" encoding="UTF-8"?>',
+        '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">',
+    ]
+    for url, priority in pages:
+        lines.append(f'  <url><loc>{url}</loc><priority>{priority}</priority></url>')
+    lines.append('</urlset>')
+    return '\n'.join(lines), 200, {'Content-Type': 'application/xml'}
 
 # ---- Static helpers ----
 @app.route('/google48b33f47cd3a277e.html')
