@@ -440,7 +440,7 @@ def serve_verification_file():
 
 @app.route('/google4a38a2e0e650c32c.html')
 def serve_verification_file2():
-    return send_from_directory(app.root_path, 'google4a38a2e0e650c32c.html')
+    return 'google-site-verification: google4a38a2e0e650c32c.html', 200, {'Content-Type': 'text/html'}
 
 @app.route('/robots.txt')
 def robots_txt():
