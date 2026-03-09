@@ -1,2 +1,5 @@
 .env
 Deniz.code-workspace
+__pycache__/
+*.pyc
+*.pyo
