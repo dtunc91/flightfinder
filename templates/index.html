@@ -15,8 +15,35 @@
     {% endif %}
   </title>
   <meta name="description" content="{% if seo_page %}Find the cheapest flights from {{ seo_page.city }} ({{ seo_page.code }}). No destination needed — just pick a date and see where you can go.{% else %}Get Me Out of Here helps you find the cheapest places to fly from your airport — no destination needed.{% endif %}" />
+  {% if seo_page %}
+  <link rel="canonical" href="https://getmeoutofhere.live/cheap-flights-from/{{ seo_page.code }}" />
+  {% else %}
   <link rel="canonical" href="https://getmeoutofhere.live/" />
+  {% endif %}
   <link rel="icon" type="image/png" href="{{ url_for('static', filename='favicon.png') }}">
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="GetMeOutOfHere.Live" />
+  {% if seo_page %}
+  <meta property="og:title" content="Cheap Flights from {{ seo_page.city }} ({{ seo_page.code }}) | GetMeOutOfHere.Live" />
+  <meta property="og:description" content="Find the cheapest flights from {{ seo_page.city }}. No destination needed — just pick a date and see where you can go." />
+  <meta property="og:url" content="https://getmeoutofhere.live/cheap-flights-from/{{ seo_page.code }}" />
+  {% else %}
+  <meta property="og:title" content="Find the cheapest places to fly from your airport | GetMeOutOfHere.Live" />
+  <meta property="og:description" content="Get Me Out of Here helps you find the cheapest places to fly from your airport — no destination needed." />
+  <meta property="og:url" content="https://getmeoutofhere.live/" />
+  {% endif %}
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary" />
+  {% if seo_page %}
+  <meta name="twitter:title" content="Cheap Flights from {{ seo_page.city }} ({{ seo_page.code }}) | GetMeOutOfHere.Live" />
+  <meta name="twitter:description" content="Find the cheapest flights from {{ seo_page.city }}. No destination needed — just pick a date and see where you can go." />
+  {% else %}
+  <meta name="twitter:title" content="Find the cheapest places to fly from your airport | GetMeOutOfHere.Live" />
+  <meta name="twitter:description" content="Get Me Out of Here helps you find the cheapest places to fly from your airport — no destination needed." />
+  {% endif %}
 
   <!-- CSS & Icons -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
