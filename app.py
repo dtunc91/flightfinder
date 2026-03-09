@@ -438,6 +438,10 @@ def sitemap():
 def serve_verification_file():
     return send_from_directory('.', 'google48b33f47cd3a277e.html')
 
+@app.route('/google4a38a2e0e650c32c.html')
+def serve_verification_file2():
+    return send_from_directory('.', 'google4a38a2e0e650c32c.html')
+
 @app.route('/robots.txt')
 def robots_txt():
     return send_from_directory('.', 'robots.txt')
