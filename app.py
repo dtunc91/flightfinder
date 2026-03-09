@@ -250,15 +250,17 @@ def index():
 
         date = departure_date
 
-        # Travelpayouts fetch
-        params = {'origin': origin_code, 'currency': 'gbp', 'token': API_TOKEN}
+        # Travelpayouts fetch — get a large batch then split into domestic/international
+        params = {'origin': origin_code, 'currency': 'gbp', 'token': API_TOKEN, 'limit': 100}
         try:
             r = requests.get("https://api.travelpayouts.com/v2/prices/latest", params=params, timeout=15)
             if r.status_code == 200:
-                data = r.json().get('data', [])[:10]
+                data = r.json().get('data', [])
                 airport_index = _get_airport_index()
                 origin_info = airport_index.get(origin_code, {})
                 origin_country = origin_info.get('country', '')
+
+                domestic_flights, international_flights = [], []
 
                 for flight in data:
                     dest_code = flight.get('destination', 'N/A')
@@ -279,7 +281,7 @@ def index():
 
                     booking_url = f"https://www.aviasales.com/search/{search_code}?adults={passengers}&marker=617752"
 
-                    flights.append({
+                    entry = {
                         'destination_code': dest_code,
                         'destination_label': dest_label,
                         'destination_city': dest_city,
@@ -287,7 +289,15 @@ def index():
                         'price': price,
                         'num_stops': num_stops,
                         'booking_url': booking_url
-                    })
+                    }
+
+                    if origin_country and dest_country == origin_country:
+                        domestic_flights.append(entry)
+                    else:
+                        international_flights.append(entry)
+
+                # Up to 10 of each, domestic first
+                flights = domestic_flights[:10] + international_flights[:10]
         except Exception:
             pass
 
