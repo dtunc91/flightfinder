@@ -601,43 +601,13 @@
 
 <!-- LIVE DEALS FEED -->
 {% if not seo_page %}
-<div class="live-feed-wrapper">
+<div class="live-feed-wrapper" id="liveFeedWrapper" style="display:none">
   <div class="live-feed-header">
-    <span class="pulse-dot"></span> Right now
+    <span class="pulse-dot"></span> Cheapest routes right now
   </div>
-  <div class="live-feed-scroll">
-    <div class="deal-chip">
-      <div class="deal-chip-route">London → Lisbon</div>
-      <div class="deal-chip-price">from £29</div>
-    </div>
-    <div class="deal-chip">
-      <div class="deal-chip-route">Manchester → Barcelona</div>
-      <div class="deal-chip-price">from £35</div>
-    </div>
-    <div class="deal-chip">
-      <div class="deal-chip-route">Edinburgh → Amsterdam</div>
-      <div class="deal-chip-price">from £42</div>
-    </div>
-    <div class="deal-chip">
-      <div class="deal-chip-route">Bristol → Rome</div>
-      <div class="deal-chip-price">from £51</div>
-    </div>
-    <div class="deal-chip">
-      <div class="deal-chip-route">Birmingham → Dublin</div>
-      <div class="deal-chip-price">from £28</div>
-    </div>
-    <div class="deal-chip">
-      <div class="deal-chip-route">Glasgow → Paris</div>
-      <div class="deal-chip-price">from £45</div>
-    </div>
-    <div class="deal-chip">
-      <div class="deal-chip-route">Leeds → Malaga</div>
-      <div class="deal-chip-price">from £38</div>
-    </div>
-    <div class="deal-chip">
-      <div class="deal-chip-route">Newcastle → Palma</div>
-      <div class="deal-chip-price">from £33</div>
-    </div>
+  <div class="live-feed-scroll" id="liveFeedScroll"></div>
+  <div style="font-size:0.7rem; color:#5a6e9e; margin-top:6px; padding-left:2px;">
+    Live prices from Aviasales · updated hourly · one-way per person
   </div>
 </div>
 {% endif %}
@@ -846,25 +816,25 @@
     <i class="fa fa-compass"></i> Flight Deal Guides
   </div>
   <div class="blog-grid">
-    <a href="{{ url_for('seo_airport', code='LHR') }}" class="blog-card">
+    <a href="{{ url_for('blog_post', slug='cheapest-flights-from-london') }}" class="blog-card">
       <span class="blog-card-emoji">🏙️</span>
-      <div class="blog-card-title">Cheapest places to fly from London this summer</div>
-      <div class="blog-card-meta">From Heathrow &amp; Gatwick</div>
+      <div class="blog-card-title">Cheapest places to fly from London</div>
+      <div class="blog-card-meta">Heathrow, Gatwick, Stansted &amp; Luton</div>
     </a>
-    <a href="{{ url_for('seo_airport', code='MAN') }}" class="blog-card">
+    <a href="{{ url_for('blog_post', slug='cheapest-flights-from-manchester') }}" class="blog-card">
       <span class="blog-card-emoji">✈️</span>
-      <div class="blog-card-title">Where to fly from Manchester for under £50</div>
-      <div class="blog-card-meta">From Manchester Airport</div>
+      <div class="blog-card-title">Cheapest places to fly from Manchester</div>
+      <div class="blog-card-meta">Manchester Airport (MAN)</div>
     </a>
-    <a href="{{ url_for('seo_airport', code='EDI') }}" class="blog-card">
+    <a href="{{ url_for('blog_post', slug='cheapest-flights-from-edinburgh') }}" class="blog-card">
       <span class="blog-card-emoji">🏴󠁧󠁢󠁳󠁣󠁴󠁿</span>
-      <div class="blog-card-title">Best cheap European breaks from Edinburgh</div>
-      <div class="blog-card-meta">From Edinburgh Airport</div>
+      <div class="blog-card-title">Cheapest places to fly from Edinburgh</div>
+      <div class="blog-card-meta">Edinburgh Airport (EDI)</div>
     </a>
-    <a href="{{ url_for('seo_airport', code='BRS') }}" class="blog-card">
+    <a href="{{ url_for('blog_post', slug='cheapest-flights-from-bristol') }}" class="blog-card">
       <span class="blog-card-emoji">🌞</span>
-      <div class="blog-card-title">Last-minute sun deals from Bristol</div>
-      <div class="blog-card-meta">From Bristol Airport</div>
+      <div class="blog-card-title">Cheapest places to fly from Bristol</div>
+      <div class="blog-card-meta">Bristol Airport (BRS)</div>
     </a>
   </div>
 </section>
@@ -878,6 +848,31 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
 <script>
+// ── Live deals feed ─────────────────────────────────
+(function() {
+  const wrapper = document.getElementById('liveFeedWrapper');
+  const scroll  = document.getElementById('liveFeedScroll');
+  if (!wrapper || !scroll) return;
+  fetch('/api/live-deals')
+    .then(r => r.json())
+    .then(deals => {
+      if (!deals || !deals.length) return;
+      deals.forEach(d => {
+        const chip = document.createElement('a');
+        chip.className = 'deal-chip';
+        chip.href = '#searchForm';
+        chip.style.textDecoration = 'none';
+        chip.innerHTML = `
+          <div class="deal-chip-route">${d.route}</div>
+          <div class="deal-chip-price">from £${d.price}</div>
+        `;
+        scroll.appendChild(chip);
+      });
+      wrapper.style.display = '';
+    })
+    .catch(() => { /* hide on error — no fake data */ });
+})();
+
 document.addEventListener('DOMContentLoaded', () => {
   const input     = document.getElementById('origin');
   const list      = document.getElementById('origin-autocomplete-list');

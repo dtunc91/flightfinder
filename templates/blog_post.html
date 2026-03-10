@@ -1,0 +1,132 @@
+{% extends "base.html" %}
+
+{% block title %}{{ post.title }} | GetMeOutOfHere.Live{% endblock %}
+{% block meta_description %}{{ post.meta }}{% endblock %}
+{% block og_title %}{{ post.title }} | GetMeOutOfHere.Live{% endblock %}
+{% block og_description %}{{ post.meta }}{% endblock %}
+{% block twitter_title %}{{ post.title }} | GetMeOutOfHere.Live{% endblock %}
+{% block twitter_description %}{{ post.meta }}{% endblock %}
+
+{% block content %}
+<style>
+  .blog-hero { margin-bottom: 32px; }
+  .blog-hero h1 { font-size: 1.8rem; font-weight: 800; line-height: 1.2; margin-bottom: 10px; }
+  .blog-hero .subtitle { font-size: 1rem; color: #9fb0ff; margin-bottom: 14px; }
+  .blog-hero .airport-tag {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: rgba(110,168,255,.1); border: 1px solid rgba(110,168,255,.2);
+    border-radius: 20px; padding: 5px 14px;
+    font-size: 0.78rem; color: #9fb0ff;
+  }
+
+  .blog-section { margin-bottom: 32px; }
+  .blog-section h2 {
+    font-size: 1.1rem; font-weight: 700; color: #eaf0ff;
+    margin-bottom: 14px; padding-bottom: 10px;
+    border-bottom: 1px solid rgba(255,255,255,.08);
+  }
+  .blog-section p, .blog-section .body-text {
+    font-size: 0.92rem; color: #c0ccee; line-height: 1.75;
+  }
+
+  .cta-box {
+    background: rgba(110,168,255,.08);
+    border: 1px solid rgba(110,168,255,.22);
+    border-radius: 16px; padding: 24px; margin: 36px 0;
+    text-align: center;
+  }
+  .cta-box h3 { font-size: 1.05rem; font-weight: 700; margin-bottom: 6px; }
+  .cta-box p { font-size: 0.85rem; color: #9fb0ff; margin-bottom: 16px; }
+  .btn-cta {
+    display: inline-block;
+    background: linear-gradient(135deg, #3b7dd8 0%, #1a55b0 100%);
+    color: #fff; border-radius: 12px; font-weight: 700;
+    font-size: 0.95rem; padding: 12px 28px;
+    text-decoration: none; transition: opacity .2s, transform .1s;
+  }
+  .btn-cta:hover { opacity: .88; transform: translateY(-1px); color: #fff; }
+
+  .disclaimer {
+    background: rgba(255,255,255,.03);
+    border: 1px solid rgba(255,255,255,.07);
+    border-radius: 12px; padding: 14px 16px;
+    font-size: 0.78rem; color: #5a6e9e; margin-bottom: 32px;
+    line-height: 1.55;
+  }
+  .disclaimer i { color: #6ea8ff; margin-right: 5px; }
+
+  .related-section { margin-top: 36px; }
+  .related-section h3 {
+    font-size: 0.75rem; font-weight: 700; color: #9fb0ff;
+    text-transform: uppercase; letter-spacing: .07em; margin-bottom: 12px;
+  }
+  .related-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  .related-card {
+    background: rgba(255,255,255,.04);
+    border: 1px solid rgba(255,255,255,.08);
+    border-radius: 12px; padding: 14px;
+    text-decoration: none; display: block;
+    font-size: 0.82rem; font-weight: 600; color: #cfe0ff;
+    transition: border-color .2s, background .2s;
+    line-height: 1.35;
+  }
+  .related-card:hover {
+    background: rgba(255,255,255,.08);
+    border-color: rgba(110,168,255,.3);
+    color: #eaf0ff;
+  }
+  .related-card i { color: #6ea8ff; margin-bottom: 6px; display: block; font-size: 0.9rem; }
+
+  @media (max-width: 576px) {
+    .blog-hero h1 { font-size: 1.45rem; }
+    .related-grid { grid-template-columns: 1fr; }
+  }
+</style>
+
+<!-- Hero -->
+<div class="blog-hero">
+  <div class="airport-tag mb-3">
+    <i class="fa fa-plane-departure"></i> {{ post.airport_names }}
+  </div>
+  <h1>{{ post.title }}</h1>
+  <p class="subtitle">{{ post.subtitle }}</p>
+</div>
+
+<!-- Disclaimer -->
+<div class="disclaimer">
+  <i class="fa fa-circle-info"></i>
+  <strong>About these prices:</strong> All price ranges shown are indicative, based on typical fares seen on Aviasales for each route. Actual prices change daily depending on date, availability and how far ahead you book. Always search for live prices using the tool below — it pulls real-time data directly from Aviasales.
+</div>
+
+<!-- Content sections -->
+{% for section in post.sections %}
+<div class="blog-section">
+  <h2>{{ section.heading }}</h2>
+  <div class="body-text">{{ section.body | safe }}</div>
+</div>
+{% endfor %}
+
+<!-- CTA -->
+<div class="cta-box">
+  <h3><i class="fa fa-magnifying-glass me-2" style="color:#6ea8ff"></i>Search live prices now</h3>
+  <p>The prices above are typical ranges — actual fares change every day. Use our search tool for real-time prices from Aviasales.</p>
+  <a href="{{ url_for('seo_airport', code=post.cta_airport) }}" class="btn-cta">
+    Search cheap flights from {{ post.airport_names.split(',')[0] }} <i class="fa fa-arrow-right ms-2"></i>
+  </a>
+</div>
+
+<!-- Related posts -->
+{% if post.related %}
+<div class="related-section">
+  <h3><i class="fa fa-compass me-1"></i> More flight deal guides</h3>
+  <div class="related-grid">
+    {% for slug, title in post.related %}
+    <a href="{{ url_for('blog_post', slug=slug) }}" class="related-card">
+      <i class="fa fa-plane"></i>
+      {{ title }}
+    </a>
+    {% endfor %}
+  </div>
+</div>
+{% endif %}
+{% endblock %}
