@@ -6,6 +6,7 @@ import os
 import json
 import csv
 import re
+import time
 import unicodedata
 from dotenv import load_dotenv
 
@@ -26,6 +27,202 @@ SEO_AIRPORTS = [
     'SIN','DUB','LIS','ATH','PRG','VIE','CPH','OSL','ARN','HEL',
     'WAW','BUD','ZRH','GVA','MXP','FCO','IST','NRT','SYD','YYZ',
 ]
+
+# ---- Live deals feed ----
+_live_deals_cache = {"data": [], "fetched_at": 0}
+LIVE_DEALS_TTL = 3600  # re-fetch every hour
+
+LIVE_DEAL_ORIGINS = [
+    ("LHR", "London"),
+    ("MAN", "Manchester"),
+    ("EDI", "Edinburgh"),
+    ("BRS", "Bristol"),
+    ("BHX", "Birmingham"),
+    ("GLA", "Glasgow"),
+    ("LBA", "Leeds"),
+    ("NCL", "Newcastle"),
+]
+
+# ---- Blog post content ----
+BLOG_POSTS = {
+    'cheapest-flights-from-london': {
+        'title': 'Cheapest Places to Fly from London',
+        'subtitle': "Where to go when you just need to get away — without breaking the bank",
+        'airport_names': 'Heathrow, Gatwick, Stansted, Luton & London City',
+        'slug': 'cheapest-flights-from-london',
+        'meta': 'The cheapest places to fly from London airports — Amsterdam, Dublin, Barcelona and more. Tips on when to book and which airport to use.',
+        'sections': [
+            {
+                'heading': 'Why London is one of the best cities for cheap flights',
+                'body': (
+                    "London has five airports served by dozens of budget and full-service airlines, which means genuine competition on almost every route. "
+                    "Ryanair dominates Stansted, easyJet is strong at Gatwick and Luton, and British Airways adds competition on popular routes like Dublin and Amsterdam. That rivalry keeps prices low. "
+                    "The key is knowing which airport serves your destination — Stansted is 45 minutes from central London by train, Gatwick 30 minutes. Factor that in when comparing prices."
+                ),
+            },
+            {
+                'heading': 'The consistently cheapest routes from London',
+                'body': (
+                    "<strong>Dublin (DUB)</strong> — One of the most frequently discounted routes. Ryanair flies from Stansted multiple times a day, easyJet from Gatwick. Prices can drop below £20 one-way on off-peak dates.<br><br>"
+                    "<strong>Amsterdam (AMS)</strong> — 90 minutes and multiple airlines from several London airports. Fares typically start from around £30–50 one-way.<br><br>"
+                    "<strong>Barcelona (BCN)</strong> — Popular year-round. Outside July and August, one-way fares often start around £40–60 with Vueling, easyJet or Ryanair.<br><br>"
+                    "<strong>Lisbon &amp; Porto (LIS / OPO)</strong> — Portugal has become a go-to cheap-flight destination. Ryanair and easyJet compete heavily; fares can start from around £35–55 one-way.<br><br>"
+                    "<strong>Kraków &amp; Warsaw (KRK / WAW)</strong> — Poland is exceptional value from London. Fares to Kraków from Stansted often start under £30 one-way.<br><br>"
+                    "<strong>Alicante &amp; Malaga (ALC / AGP)</strong> — The Spanish costas are served by multiple budget carriers, with fares from around £40–70 one-way outside peak summer."
+                ),
+            },
+            {
+                'heading': 'Tips for finding the cheapest fares from London',
+                'body': (
+                    "<strong>Use Stansted for the lowest base fares.</strong> Ryanair's UK hub is Stansted — checking STN first often surfaces the cheapest options.<br><br>"
+                    "<strong>Book 4–8 weeks ahead for short breaks.</strong> For European city breaks, the sweet spot is typically 6–8 weeks out.<br><br>"
+                    "<strong>Avoid school holidays.</strong> Prices spike sharply in July, August and October half-term. Mid-September to early November is often the best value window.<br><br>"
+                    "<strong>Be flexible on your return date.</strong> Shifting your return by one day — say, Tuesday instead of Sunday — can cut the return leg cost significantly.<br><br>"
+                    "<strong>Check all five London airports.</strong> Heathrow has the most routes but is often pricier. Stansted and Luton typically have the cheapest budget carrier fares."
+                ),
+            },
+        ],
+        'cta_airport': 'LHR',
+        'related': [
+            ('cheapest-flights-from-manchester', 'Cheapest flights from Manchester'),
+            ('cheapest-flights-from-bristol', 'Cheapest flights from Bristol'),
+            ('cheapest-flights-from-edinburgh', 'Cheapest flights from Edinburgh'),
+        ],
+    },
+    'cheapest-flights-from-manchester': {
+        'title': 'Cheapest Places to Fly from Manchester',
+        'subtitle': "Great routes, strong competition, and no need to travel south for a deal",
+        'airport_names': 'Manchester Airport (MAN)',
+        'slug': 'cheapest-flights-from-manchester',
+        'meta': 'Find the cheapest flights from Manchester Airport — Dublin, Amsterdam, Faro, Barcelona and more with tips on when and how to book.',
+        'sections': [
+            {
+                'heading': "Manchester: the north's best-connected airport",
+                'body': (
+                    "Manchester Airport is the UK's third busiest, with direct long-haul routes many regional airports can't match. "
+                    "For budget short-break hunters, its strength is the breadth of European routes served by Ryanair, easyJet, Jet2 and Wizz Air. "
+                    "Competition between those four carriers on Spanish, Portuguese and Central European routes means you can regularly find competitive fares without going anywhere near Heathrow."
+                ),
+            },
+            {
+                'heading': 'Best value routes from Manchester',
+                'body': (
+                    "<strong>Dublin (DUB)</strong> — Ryanair and Aer Lingus both compete; one-way fares frequently start from under £30.<br><br>"
+                    "<strong>Amsterdam (AMS)</strong> — KLM flies direct alongside budget carriers. Fares typically from around £40–70 one-way.<br><br>"
+                    "<strong>Faro (FAO)</strong> — Gateway to the Algarve. Jet2 and easyJet compete heavily; fares from around £50–80 one-way outside peak season.<br><br>"
+                    "<strong>Alicante &amp; Malaga (ALC / AGP)</strong> — Two of the most popular sun routes from Manchester. Jet2 and Ryanair compete, with fares often from around £45–80 one-way.<br><br>"
+                    "<strong>Palma, Mallorca (PMI)</strong> — A big Jet2 route. Shoulder season (April, May, September, October) yields the best deals.<br><br>"
+                    "<strong>Kraków (KRK)</strong> — Ryanair and Wizz Air both fly it; fares can sometimes drop below £25 one-way.<br><br>"
+                    "<strong>Tenerife (TFS)</strong> — Year-round sun with multiple airlines; fares from around £80–120 one-way, better in winter."
+                ),
+            },
+            {
+                'heading': 'How to get the best deals from Manchester',
+                'body': (
+                    "<strong>Compare Jet2 and budget carriers carefully.</strong> Jet2 often includes checked luggage, which can make them genuinely better value once you add Ryanair's bag fees.<br><br>"
+                    "<strong>Midweek departures are cheaper.</strong> Tuesday and Wednesday departures consistently come in lower than Friday/Sunday from Manchester.<br><br>"
+                    "<strong>Shoulder-season sun is exceptional value.</strong> May, early June, and September/October offer good weather on Spanish and Portuguese routes with significantly lower fares than July/August.<br><br>"
+                    "<strong>Sign up for price alerts.</strong> Manchester routes can drop sharply in sale windows — having alerts set means you catch these quickly."
+                ),
+            },
+        ],
+        'cta_airport': 'MAN',
+        'related': [
+            ('cheapest-flights-from-london', 'Cheapest flights from London'),
+            ('cheapest-flights-from-edinburgh', 'Cheapest flights from Edinburgh'),
+            ('cheapest-flights-from-bristol', 'Cheapest flights from Bristol'),
+        ],
+    },
+    'cheapest-flights-from-edinburgh': {
+        'title': 'Cheapest Places to Fly from Edinburgh',
+        'subtitle': "Scotland's busiest airport punches well above its weight for cheap European routes",
+        'airport_names': 'Edinburgh Airport (EDI)',
+        'slug': 'cheapest-flights-from-edinburgh',
+        'meta': 'Cheap flights from Edinburgh Airport — Amsterdam, Dublin, Barcelona, Reykjavik and beyond. Find out which routes offer the best value.',
+        'sections': [
+            {
+                'heading': "Edinburgh Airport: smaller than you'd think, better than you'd expect",
+                'body': (
+                    "Edinburgh Airport is Scotland's busiest, and while it doesn't have the breadth of London or Manchester, it has solid European coverage — and increasingly competitive fares as Ryanair, easyJet and Wizz Air have all expanded their Scottish operations. "
+                    "For Scots and visitors, it often means you don't need to take a domestic flight to London just to find a cheap deal to Europe."
+                ),
+            },
+            {
+                'heading': 'Best value destinations from Edinburgh',
+                'body': (
+                    "<strong>Amsterdam (AMS)</strong> — One of the most popular routes from Edinburgh, well-served by multiple carriers. Fares often start from around £45–70 one-way.<br><br>"
+                    "<strong>Dublin (DUB)</strong> — Ryanair and Aer Lingus both fly this route. Prices frequently start from around £30–50 one-way.<br><br>"
+                    "<strong>Barcelona (BCN)</strong> — easyJet and Ryanair fly direct; fares from around £55–90 one-way outside peak summer.<br><br>"
+                    "<strong>Alicante &amp; Malaga (ALC / AGP)</strong> — Sun routes that have grown in popularity. Fares typically start from around £60–90 one-way.<br><br>"
+                    "<strong>Faro (FAO)</strong> — The Algarve direct from Scotland, with fares often starting from around £65–95 one-way.<br><br>"
+                    "<strong>Reykjavik (KEF)</strong> — Icelandair flies this route and it's a genuinely unique destination. Fares from around £80–120 one-way — well worth it.<br><br>"
+                    "<strong>Paris (CDG/ORY)</strong> — A two-hour flight with easyJet, great for long weekends; fares often from around £50–80 one-way."
+                ),
+            },
+            {
+                'heading': 'Tips for flying cheap from Edinburgh',
+                'body': (
+                    "<strong>Book early for summer.</strong> Edinburgh is a popular inbound tourism destination, which pushes summer outbound fares up too. For July/August travel, booking 3–4 months ahead is sensible.<br><br>"
+                    "<strong>Autumn and winter are great for European city breaks.</strong> October through March sees fewer tourists and lower fares on most routes — ideal for Amsterdam or Barcelona.<br><br>"
+                    "<strong>Check Glasgow (GLA) too.</strong> Glasgow Airport is 45 minutes away and sometimes has better fares on certain routes — worth a quick comparison.<br><br>"
+                    "<strong>Shift your date by a day or two.</strong> On Edinburgh routes, the day of the week can make a meaningful price difference. Use the search tool to compare across dates."
+                ),
+            },
+        ],
+        'cta_airport': 'EDI',
+        'related': [
+            ('cheapest-flights-from-london', 'Cheapest flights from London'),
+            ('cheapest-flights-from-manchester', 'Cheapest flights from Manchester'),
+            ('cheapest-flights-from-bristol', 'Cheapest flights from Bristol'),
+        ],
+    },
+    'cheapest-flights-from-bristol': {
+        'title': 'Cheapest Places to Fly from Bristol',
+        'subtitle': "The southwest's gateway to Europe — with more cheap routes than you might expect",
+        'airport_names': 'Bristol Airport (BRS)',
+        'slug': 'cheapest-flights-from-bristol',
+        'meta': 'Cheap flights from Bristol Airport — Amsterdam, Dublin, Faro, Barcelona and beyond. Tips on the best routes and how to find deals.',
+        'sections': [
+            {
+                'heading': "Bristol Airport: the southwest's best gateway",
+                'body': (
+                    "Bristol Airport serves the southwest of England and South Wales — and it punches above its size. "
+                    "easyJet has a significant base here, and Ryanair covers a growing number of routes, meaning genuine competition on popular European destinations. "
+                    "For anyone in Bristol, Bath, Cardiff, Gloucester or Somerset, it's almost always worth checking BRS before travelling to Heathrow or Gatwick."
+                ),
+            },
+            {
+                'heading': 'The cheapest and most popular routes from Bristol',
+                'body': (
+                    "<strong>Amsterdam (AMS)</strong> — easyJet flies direct; fares typically from around £50–75 one-way.<br><br>"
+                    "<strong>Dublin (DUB)</strong> — Ryanair covers this well; fares often from around £30–55 one-way.<br><br>"
+                    "<strong>Faro (FAO)</strong> — The Algarve gateway, popular from Bristol. easyJet flies it seasonally; fares from around £60–90 one-way.<br><br>"
+                    "<strong>Barcelona (BCN)</strong> — easyJet and Vueling both serve this route. Great for a long weekend; fares from around £55–85 one-way outside peak summer.<br><br>"
+                    "<strong>Palma, Mallorca (PMI)</strong> — Very popular in summer. Shoulder season fares (April/May and September/October) are considerably cheaper than July/August.<br><br>"
+                    "<strong>Malaga &amp; Alicante (AGP / ALC)</strong> — Solid summer sun routes; fares from around £60–95 one-way in shoulder season.<br><br>"
+                    "<strong>Prague (PRG)</strong> — A brilliant city break and often excellent value from Bristol; fares from around £45–70 one-way.<br><br>"
+                    "<strong>Tenerife (TFS)</strong> — Year-round from Bristol. One of the best winter sun options; fares from around £85–120 one-way."
+                ),
+            },
+            {
+                'heading': 'How to find the best deals from Bristol',
+                'body': (
+                    "<strong>easyJet sales from Bristol are frequent.</strong> Bristol features heavily in easyJet promotional fares — worth signing up for their alerts.<br><br>"
+                    "<strong>Travel mid-week for lower prices.</strong> Tuesday and Wednesday departures are consistently cheaper on most Bristol routes.<br><br>"
+                    "<strong>Book October half-term early.</strong> Bristol prices spike during school holidays. Aim for the last week of October if you need that window, which can be cheaper.<br><br>"
+                    "<strong>Compare with Cardiff (CWL).</strong> Cardiff Airport is around 40 minutes away and occasionally has better fares on certain routes.<br><br>"
+                    "<strong>Early morning flights are cheapest.</strong> Bristol's first departures of the day are typically priced lower than midday or evening slots."
+                ),
+            },
+        ],
+        'cta_airport': 'BRS',
+        'related': [
+            ('cheapest-flights-from-london', 'Cheapest flights from London'),
+            ('cheapest-flights-from-manchester', 'Cheapest flights from Manchester'),
+            ('cheapest-flights-from-edinburgh', 'Cheapest flights from Edinburgh'),
+        ],
+    },
+}
 
 # ---- Secrets / API keys ----
 API_TOKEN = os.getenv('API_TOKEN')  # Travelpayouts API token
@@ -433,6 +630,64 @@ def subscribe():
         })
     return jsonify({'ok': True})
 
+# ---- Live deals API ----
+@app.route('/api/live-deals')
+def api_live_deals():
+    now = time.time()
+    if _live_deals_cache["data"] and now - _live_deals_cache["fetched_at"] < LIVE_DEALS_TTL:
+        return jsonify(_live_deals_cache["data"])
+
+    if not API_TOKEN:
+        return jsonify([])
+
+    airport_index = _get_airport_index()
+    results = []
+
+    for origin_code, origin_city in LIVE_DEAL_ORIGINS:
+        try:
+            params = {
+                'origin': origin_code,
+                'currency': 'gbp',
+                'token': API_TOKEN,
+                'limit': 5,
+                'sorting': 'price',
+            }
+            r = requests.get(
+                "https://api.travelpayouts.com/v2/prices/latest",
+                params=params, timeout=8
+            )
+            if r.status_code == 200:
+                data = r.json().get('data', [])
+                if data:
+                    best = min(data, key=lambda x: x.get('value', 9999))
+                    dest_code = best.get('destination', '')
+                    price = best.get('value', 0)
+                    if price and 5 < price < 800:  # sanity bounds
+                        dest_info = airport_index.get(dest_code, {})
+                        dest_city = dest_info.get('city', '') or dest_code
+                        results.append({
+                            'route': f"{origin_city} \u2192 {dest_city}",
+                            'price': price,
+                        })
+        except Exception:
+            pass
+
+    if results:
+        _live_deals_cache["data"] = results
+        _live_deals_cache["fetched_at"] = now
+
+    return jsonify(results)
+
+
+# ---- Blog posts ----
+@app.route('/blog/<string:slug>')
+def blog_post(slug):
+    post = BLOG_POSTS.get(slug)
+    if not post:
+        abort(404)
+    return render_template('blog_post.html', post=post)
+
+
 # ---- Sitemap ----
 @app.route('/sitemap.xml')
 def sitemap():
@@ -444,6 +699,8 @@ def sitemap():
         ('https://getmeoutofhere.live/privacy', '0.3'),
         ('https://getmeoutofhere.live/terms', '0.3'),
     ]
+    for slug in BLOG_POSTS:
+        pages.append((f'https://getmeoutofhere.live/blog/{slug}', '0.7'))
     for code in SEO_AIRPORTS:
         if code in airport_index:
             pages.append((f'https://getmeoutofhere.live/cheap-flights-from/{code}', '0.8'))
