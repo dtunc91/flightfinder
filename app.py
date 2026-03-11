@@ -29,9 +29,10 @@ SEO_AIRPORTS = [
 ]
 
 # ---- Live deals feed ----
-_live_deals_cache = {"data": [], "fetched_at": 0}
+_live_deals_cache = {}  # {country_code: {"data": [], "fetched_at": 0}}
 LIVE_DEALS_TTL = 3600  # re-fetch every hour
 
+# Kept for backward-compat (used as GB fallback)
 LIVE_DEAL_ORIGINS = [
     ("LHR", "London"),
     ("MAN", "Manchester"),
@@ -42,6 +43,110 @@ LIVE_DEAL_ORIGINS = [
     ("LBA", "Leeds"),
     ("NCL", "Newcastle"),
 ]
+
+# ---- Country → airports for geo-based live deals ----
+COUNTRY_AIRPORTS = {
+    'GB': LIVE_DEAL_ORIGINS,
+    'ES': [("MAD","Madrid"),("BCN","Barcelona"),("AGP","Malaga"),("PMI","Palma"),("ALC","Alicante"),("VLC","Valencia"),("SVQ","Seville"),("BIO","Bilbao")],
+    'DE': [("FRA","Frankfurt"),("MUC","Munich"),("BER","Berlin"),("HAM","Hamburg"),("DUS","Dusseldorf"),("STR","Stuttgart"),("CGN","Cologne"),("NUE","Nuremberg")],
+    'FR': [("CDG","Paris"),("ORY","Paris Orly"),("NCE","Nice"),("LYS","Lyon"),("MRS","Marseille"),("TLS","Toulouse"),("BOD","Bordeaux"),("NTE","Nantes")],
+    'IT': [("FCO","Rome"),("MXP","Milan"),("NAP","Naples"),("VCE","Venice"),("BLQ","Bologna"),("PSA","Pisa"),("CTA","Catania"),("PMO","Palermo")],
+    'NL': [("AMS","Amsterdam"),("EIN","Eindhoven"),("RTM","Rotterdam")],
+    'PT': [("LIS","Lisbon"),("OPO","Porto"),("FAO","Faro"),("FNC","Funchal")],
+    'IE': [("DUB","Dublin"),("ORK","Cork"),("SNN","Shannon")],
+    'PL': [("WAW","Warsaw"),("KRK","Krakow"),("GDN","Gdansk"),("WRO","Wroclaw"),("POZ","Poznan"),("KTW","Katowice")],
+    'US': [("JFK","New York"),("LAX","Los Angeles"),("ORD","Chicago"),("DFW","Dallas"),("ATL","Atlanta"),("DEN","Denver"),("SFO","San Francisco"),("MIA","Miami")],
+    'AU': [("SYD","Sydney"),("MEL","Melbourne"),("BNE","Brisbane"),("PER","Perth"),("ADL","Adelaide")],
+    'CA': [("YYZ","Toronto"),("YVR","Vancouver"),("YUL","Montreal"),("YYC","Calgary")],
+    'AE': [("DXB","Dubai"),("AUH","Abu Dhabi"),("SHJ","Sharjah")],
+    'GR': [("ATH","Athens"),("SKG","Thessaloniki"),("HER","Heraklion"),("RHO","Rhodes")],
+    'TR': [("IST","Istanbul"),("SAW","Istanbul Sabiha"),("AYT","Antalya"),("ESB","Ankara")],
+    'SE': [("ARN","Stockholm"),("GOT","Gothenburg"),("MMX","Malmo")],
+    'NO': [("OSL","Oslo"),("BGO","Bergen"),("TRD","Trondheim")],
+    'DK': [("CPH","Copenhagen"),("AAL","Aalborg"),("BLL","Billund")],
+    'FI': [("HEL","Helsinki"),("TMP","Tampere"),("TKU","Turku")],
+    'BE': [("BRU","Brussels"),("CRL","Charleroi"),("ANR","Antwerp")],
+    'CH': [("ZRH","Zurich"),("GVA","Geneva"),("BSL","Basel")],
+    'AT': [("VIE","Vienna"),("GRZ","Graz"),("SZG","Salzburg")],
+    'CZ': [("PRG","Prague"),("BRQ","Brno"),("OSR","Ostrava")],
+    'HU': [("BUD","Budapest"),("DEB","Debrecen")],
+    'RO': [("OTP","Bucharest"),("CLJ","Cluj"),("TSR","Timisoara")],
+    'HR': [("ZAG","Zagreb"),("SPU","Split"),("DBV","Dubrovnik")],
+    'BG': [("SOF","Sofia"),("VAR","Varna"),("BOJ","Burgas")],
+    'RS': [("BEG","Belgrade"),("INI","Nis")],
+    'SK': [("BTS","Bratislava"),("KSC","Kosice")],
+    'JP': [("NRT","Tokyo Narita"),("HND","Tokyo Haneda"),("KIX","Osaka"),("NGO","Nagoya"),("CTS","Sapporo")],
+    'CN': [("PEK","Beijing"),("PVG","Shanghai"),("CAN","Guangzhou"),("CTU","Chengdu"),("SZX","Shenzhen")],
+    'IN': [("DEL","Delhi"),("BOM","Mumbai"),("MAA","Chennai"),("BLR","Bangalore"),("HYD","Hyderabad"),("CCU","Kolkata")],
+    'SG': [("SIN","Singapore")],
+    'TH': [("BKK","Bangkok"),("DMK","Bangkok Don Mueang"),("HKT","Phuket"),("CNX","Chiang Mai")],
+    'MY': [("KUL","Kuala Lumpur"),("PEN","Penang"),("BKI","Kota Kinabalu")],
+    'ID': [("CGK","Jakarta"),("DPS","Bali"),("SUB","Surabaya")],
+    'MX': [("MEX","Mexico City"),("CUN","Cancun"),("GDL","Guadalajara"),("MTY","Monterrey")],
+    'BR': [("GRU","Sao Paulo"),("GIG","Rio de Janeiro"),("BSB","Brasilia"),("SSA","Salvador")],
+    'AR': [("EZE","Buenos Aires"),("COR","Cordoba"),("MDZ","Mendoza")],
+    'ZA': [("JNB","Johannesburg"),("CPT","Cape Town"),("DUR","Durban")],
+    'EG': [("CAI","Cairo"),("HRG","Hurghada"),("SSH","Sharm el-Sheikh")],
+    'MA': [("CMN","Casablanca"),("RAK","Marrakech"),("FEZ","Fez"),("TNG","Tangier")],
+    'IL': [("TLV","Tel Aviv")],
+    'SA': [("RUH","Riyadh"),("JED","Jeddah"),("DMM","Dammam")],
+    'QA': [("DOH","Doha")],
+    'NZ': [("AKL","Auckland"),("WLG","Wellington"),("CHC","Christchurch"),("ZQN","Queenstown")],
+    'IS': [("KEF","Reykjavik")],
+    'CY': [("LCA","Larnaca"),("PFO","Paphos")],
+    'MT': [("MLA","Malta")],
+    'LU': [("LUX","Luxembourg")],
+    'AL': [("TIA","Tirana")],
+    'ME': [("TGD","Podgorica"),("TIV","Tivat")],
+    'BA': [("SJJ","Sarajevo")],
+    'MK': [("SKP","Skopje")],
+}
+
+# ---- Country → (currency_code, symbol) ----
+COUNTRY_CURRENCY = {
+    'GB': ('gbp', '£'),
+    'US': ('usd', '$'),
+    'AU': ('aud', 'A$'),
+    'CA': ('cad', 'C$'),
+    'AE': ('aed', 'AED '),
+    'JP': ('jpy', '¥'),
+    'IN': ('inr', '₹'),
+    'SG': ('sgd', 'S$'),
+    'HK': ('hkd', 'HK$'),
+    'NZ': ('nzd', 'NZ$'),
+    'CH': ('chf', 'CHF '),
+    'NO': ('nok', 'kr '),
+    'SE': ('sek', 'kr '),
+    'DK': ('dkk', 'kr '),
+    'IS': ('isk', 'kr '),
+    'CN': ('cny', '¥'),
+    'BR': ('brl', 'R$'),
+    'MX': ('mxn', 'MX$'),
+    'ZA': ('zar', 'R '),
+    'TR': ('try', '₺'),
+    'IL': ('ils', '₪'),
+    'SA': ('sar', 'SAR '),
+    'QA': ('qar', 'QAR '),
+    'EG': ('egp', 'E£'),
+    'MA': ('mad', 'MAD '),
+    'TH': ('thb', '฿'),
+    'ID': ('idr', 'Rp '),
+    'MY': ('myr', 'RM '),
+    'AR': ('ars', 'ARS '),
+    'PL': ('pln', 'zł'),
+    'CZ': ('czk', 'Kč'),
+    'HU': ('huf', 'Ft'),
+    'RO': ('ron', 'lei'),
+    'BG': ('bgn', 'лв'),
+    'RS': ('rsd', 'din'),
+}
+# Eurozone
+for _c in ['DE','FR','IT','ES','NL','BE','AT','PT','FI','GR','IE','LU','SK','SI','EE','LV','LT','MT','CY','HR']:
+    COUNTRY_CURRENCY.setdefault(_c, ('eur', '€'))
+
+# ---- Geo-IP cache (avoids repeat calls to ipapi.co) ----
+_geo_cache = {}  # {ip: {"country": "GB", "fetched_at": 0}}
+GEO_CACHE_TTL = 3600
 
 # ---- Blog post content ----
 BLOG_POSTS = {
@@ -400,7 +505,9 @@ def index():
         'departure_date': request.form.get('departure_date', ''),
         'return_date': request.form.get('return_date', ''),
         'origin': request.form.get('origin', ''),
-        'origin_code': request.form.get('origin_code', '')
+        'origin_code': request.form.get('origin_code', ''),
+        'currency': request.form.get('currency', 'gbp'),
+        'currency_symbol': request.form.get('currency_symbol', '£'),
     }
 
     if request.method == 'POST':
@@ -448,7 +555,7 @@ def index():
         date = departure_date
 
         # Travelpayouts fetch — get a large batch then split into domestic/international
-        params = {'origin': origin_code, 'currency': 'gbp', 'token': API_TOKEN, 'limit': 100}
+        params = {'origin': origin_code, 'currency': form_data['currency'], 'token': API_TOKEN, 'limit': 100}
         try:
             r = requests.get("https://api.travelpayouts.com/v2/prices/latest", params=params, timeout=15)
             if r.status_code == 200:
@@ -630,24 +737,73 @@ def subscribe():
         })
     return jsonify({'ok': True})
 
+# ---- Geo detection API ----
+@app.route('/api/geo')
+def api_geo():
+    """Detect user's country from IP and return relevant airports + currency."""
+    forwarded_for = request.headers.get('X-Forwarded-For', '')
+    client_ip = forwarded_for.split(',')[0].strip() if forwarded_for else request.remote_addr
+
+    # Localhost / private ranges → default to GB
+    if not client_ip or client_ip in ('127.0.0.1', '::1') or client_ip.startswith('192.168.') or client_ip.startswith('10.'):
+        country = 'GB'
+    else:
+        # Check server-side geo cache
+        cached = _geo_cache.get(client_ip)
+        if cached and time.time() - cached['fetched_at'] < GEO_CACHE_TTL:
+            country = cached['country']
+        else:
+            country = 'GB'  # safe default
+            try:
+                r = requests.get(f'https://ipapi.co/{client_ip}/json/', timeout=3)
+                if r.status_code == 200:
+                    data = r.json()
+                    detected = data.get('country_code', 'GB')
+                    if detected and len(detected) == 2:
+                        country = detected.upper()
+                _geo_cache[client_ip] = {'country': country, 'fetched_at': time.time()}
+            except Exception:
+                pass
+
+    currency_code, symbol = COUNTRY_CURRENCY.get(country, ('eur', '€'))
+    # Top airports for this country (fall back to GB)
+    airports = COUNTRY_AIRPORTS.get(country, COUNTRY_AIRPORTS['GB'])
+    top_airport_code = airports[0][0] if airports else 'LHR'
+
+    return jsonify({
+        'country': country,
+        'currency': currency_code,
+        'symbol': symbol,
+        'top_airport': top_airport_code,
+    })
+
+
 # ---- Live deals API ----
 @app.route('/api/live-deals')
 def api_live_deals():
+    country = (request.args.get('country') or 'GB').upper()
+    # Fall back to GB if country not in our mapping
+    if country not in COUNTRY_AIRPORTS:
+        country = 'GB'
+
     now = time.time()
-    if _live_deals_cache["data"] and now - _live_deals_cache["fetched_at"] < LIVE_DEALS_TTL:
-        return jsonify(_live_deals_cache["data"])
+    cached = _live_deals_cache.get(country)
+    if cached and cached['data'] and now - cached['fetched_at'] < LIVE_DEALS_TTL:
+        return jsonify(cached['data'])
 
     if not API_TOKEN:
         return jsonify([])
 
+    origins = COUNTRY_AIRPORTS[country]
+    currency_code, currency_symbol = COUNTRY_CURRENCY.get(country, ('eur', '€'))
     airport_index = _get_airport_index()
     results = []
 
-    for origin_code, origin_city in LIVE_DEAL_ORIGINS:
+    for origin_code, origin_city in origins:
         try:
             params = {
                 'origin': origin_code,
-                'currency': 'gbp',
+                'currency': currency_code,
                 'token': API_TOKEN,
                 'limit': 5,
                 'sorting': 'price',
@@ -662,19 +818,19 @@ def api_live_deals():
                     best = min(data, key=lambda x: x.get('value', 9999))
                     dest_code = best.get('destination', '')
                     price = best.get('value', 0)
-                    if price and 5 < price < 800:  # sanity bounds
+                    if price and 5 < price < 2000:  # sanity bounds
                         dest_info = airport_index.get(dest_code, {})
                         dest_city = dest_info.get('city', '') or dest_code
                         results.append({
                             'route': f"{origin_city} \u2192 {dest_city}",
                             'price': price,
+                            'symbol': currency_symbol,
                         })
         except Exception:
             pass
 
     if results:
-        _live_deals_cache["data"] = results
-        _live_deals_cache["fetched_at"] = now
+        _live_deals_cache[country] = {'data': results, 'fetched_at': now}
 
     return jsonify(results)
 
