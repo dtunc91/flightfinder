@@ -357,6 +357,79 @@ DEFAULT_AIRPORTS = [
     {"code":"MAD","label":"Madrid","city":"Madrid"}
 ]
 
+# ---- OurAirports (worldwide, typed dataset — downloaded weekly) ----
+OURAIRPORTS_URL       = "https://davidmegginson.github.io/ourairports-data/airports.csv"
+OURAIRPORTS_CACHE_FILE = os.path.join(DATA_DIR, 'ourairports_cache.csv')
+OURAIRPORTS_CACHE_TTL  = 86400 * 7   # re-download once a week
+_OA_CACHE = {"by_code": {}, "by_country": {}, "all": [], "loaded": False, "fetched_at": 0}
+
+def _load_ourairports() -> dict:
+    """Download OurAirports CSV once a week, cache to disk, parse into memory.
+
+    Returns dict with:
+      by_code    – {IATA: airport_dict}   (all airports with IATA codes)
+      by_country – {CC: [airport_dict, ...]}  (large+medium only, large first)
+      all        – flat list for full-text search
+    """
+    now = time.time()
+    if _OA_CACHE["loaded"] and now - _OA_CACHE["fetched_at"] < OURAIRPORTS_CACHE_TTL:
+        return _OA_CACHE
+
+    # Download if cache file is missing or stale
+    needs_download = (
+        not os.path.exists(OURAIRPORTS_CACHE_FILE) or
+        now - os.path.getmtime(OURAIRPORTS_CACHE_FILE) >= OURAIRPORTS_CACHE_TTL
+    )
+    if needs_download:
+        try:
+            resp = requests.get(OURAIRPORTS_URL, timeout=20)
+            if resp.status_code == 200:
+                os.makedirs(DATA_DIR, exist_ok=True)
+                with open(OURAIRPORTS_CACHE_FILE, 'w', encoding='utf-8') as fh:
+                    fh.write(resp.text)
+        except Exception:
+            pass  # fall through and try to read whatever is on disk
+
+    if not os.path.exists(OURAIRPORTS_CACHE_FILE):
+        _OA_CACHE["loaded"] = True
+        _OA_CACHE["fetched_at"] = now
+        return _OA_CACHE
+
+    try:
+        by_code, by_country, all_airports = {}, {}, []
+        TYPE_RANK = {'large_airport': 0, 'medium_airport': 1}
+        with open(OURAIRPORTS_CACHE_FILE, 'r', encoding='utf-8') as fh:
+            for row in csv.DictReader(fh):
+                iata    = (row.get('iata_code') or '').strip().upper()
+                if not iata or len(iata) != 3:
+                    continue
+                atype   = (row.get('type') or '').strip()
+                name    = (row.get('name') or '').strip()
+                city    = (row.get('municipality') or '').strip()
+                country = (row.get('iso_country') or '').strip().upper()
+                entry = {
+                    "code": iata, "label": name, "city": city,
+                    "country": country, "type": atype,
+                    "name": _display_name(name, iata),
+                }
+                by_code[iata] = entry
+                all_airports.append(entry)
+                if atype in ('large_airport', 'medium_airport') and country:
+                    by_country.setdefault(country, []).append(entry)
+
+        for lst in by_country.values():
+            lst.sort(key=lambda x: (TYPE_RANK.get(x['type'], 2), x['label']))
+
+        _OA_CACHE.update({
+            "by_code": by_code, "by_country": by_country,
+            "all": all_airports, "loaded": True, "fetched_at": now,
+        })
+    except Exception:
+        _OA_CACHE["loaded"] = True
+        _OA_CACHE["fetched_at"] = now
+
+    return _OA_CACHE
+
 # ---- Local airports cache (offline coverage) ----
 _AIRPORTS_CACHE = {"data": [], "mtime": None}
 
@@ -441,7 +514,10 @@ def _search_local_airports(q: str, pool: list) -> list:
     return out[:25]
 
 def _get_airport_index() -> dict:
-    """Build {IATA_CODE: airport_dict} for O(1) lookups."""
+    """Build {IATA_CODE: airport_dict} for O(1) lookups. OurAirports-first."""
+    oa = _load_ourairports()
+    if oa["by_code"]:
+        return oa["by_code"]
     return {a['code']: a for a in _load_local_airports()}
 
 def _display_name(label: str, code: str) -> str:
@@ -645,21 +721,20 @@ def get_airports():
     q       = (request.args.get('query')   or "").strip()
     country = (request.args.get('country') or "").strip().upper()
 
-    # No query but country provided → return popular airports for that country
+    # No query but country provided → popular airports for that country (OurAirports-first)
     if not q and country:
-        airport_index = _get_airport_index()
-        origins = COUNTRY_AIRPORTS.get(country) or COUNTRY_AIRPORTS.get('GB', [])
-        popular = []
-        for code, city in origins:
-            info  = airport_index.get(code, {})
-            label = info.get('label') or city
-            popular.append({
-                "code": code,
-                "label": label,
-                "city": city,
-                "name": _display_name(label, code)
-            })
-        return jsonify(popular)
+        oa = _load_ourairports()
+        airports_for_country = oa["by_country"].get(country, [])
+        if not airports_for_country:
+            # Fallback to hardcoded list for unmapped countries
+            airports_for_country = [
+                {"code": c, "label": city, "city": city, "name": _display_name(city, c)}
+                for c, city in (COUNTRY_AIRPORTS.get(country) or COUNTRY_AIRPORTS.get('GB', []))
+            ]
+        return jsonify([
+            {"code": a["code"], "label": a["label"], "city": a.get("city", ""), "name": a["name"]}
+            for a in airports_for_country[:10]
+        ])
 
     if not q:
         return jsonify([])
@@ -683,7 +758,21 @@ def get_airports():
     except Exception:
         pass
 
-    # 2) Local file fallback
+    # 2) OurAirports (worldwide typed dataset — large airports ranked first)
+    if not results:
+        oa = _load_ourairports()
+        if oa["all"]:
+            TYPE_RANK = {'large_airport': 0, 'medium_airport': 1}
+            hits = _search_local_airports(q, oa["all"])
+            hits.sort(key=lambda x: TYPE_RANK.get(x.get('type'), 2))
+            results = [{
+                "code": a["code"],
+                "label": a["label"],
+                "city": a.get("city", ""),
+                "name": a["name"]
+            } for a in hits[:12]]
+
+    # 3) Local airports.json (static fallback)
     if not results:
         pool = _load_local_airports()
         hits = _search_local_airports(q, pool)
@@ -695,7 +784,7 @@ def get_airports():
                 "name": _display_name(a.get("label"), a.get("code"))
             } for a in hits]
 
-    # 3) Built-in defaults
+    # 4) Built-in defaults
     if not results:
         hits = _search_local_airports(q, DEFAULT_AIRPORTS)
         results = [{
@@ -784,9 +873,14 @@ def api_geo():
                 pass
 
     currency_code, symbol = COUNTRY_CURRENCY.get(country, ('eur', '€'))
-    # Top airports for this country (fall back to GB)
-    airports = COUNTRY_AIRPORTS.get(country, COUNTRY_AIRPORTS['GB'])
-    top_airport_code = airports[0][0] if airports else 'LHR'
+    # Top airports for this country via OurAirports, fall back to hardcoded list
+    oa = _load_ourairports()
+    oa_airports = oa["by_country"].get(country, [])
+    if oa_airports:
+        top_airport_code = oa_airports[0]["code"]
+    else:
+        fallback = COUNTRY_AIRPORTS.get(country, COUNTRY_AIRPORTS['GB'])
+        top_airport_code = fallback[0][0] if fallback else 'LHR'
 
     return jsonify({
         'country': country,
@@ -801,9 +895,6 @@ def api_geo():
 def api_live_deals():
     country = (request.args.get('country') or 'GB').upper()
     # Fall back to GB if country not in our mapping
-    if country not in COUNTRY_AIRPORTS:
-        country = 'GB'
-
     now = time.time()
     cached = _live_deals_cache.get(country)
     if cached and cached['data'] and now - cached['fetched_at'] < LIVE_DEALS_TTL:
@@ -812,7 +903,18 @@ def api_live_deals():
     if not API_TOKEN:
         return jsonify([])
 
-    origins = COUNTRY_AIRPORTS[country]
+    # Resolve origin airports: OurAirports large airports for this country,
+    # falling back to hardcoded COUNTRY_AIRPORTS, then GB.
+    oa = _load_ourairports()
+    oa_airports = oa["by_country"].get(country, [])
+    if oa_airports:
+        origins = [(a["code"], a["city"] or a["label"]) for a in oa_airports[:8]]
+    else:
+        origins = COUNTRY_AIRPORTS.get(country) or COUNTRY_AIRPORTS.get('GB', [])
+
+    if not origins:
+        return jsonify([])
+
     currency_code, currency_symbol = COUNTRY_CURRENCY.get(country, ('eur', '€'))
     airport_index = _get_airport_index()
     results = []
