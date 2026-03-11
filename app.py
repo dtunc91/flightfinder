@@ -642,7 +642,25 @@ def get_airports():
       { "code": "LHR", "label": "Heathrow", "city": "London", "name": "Heathrow (LHR)" }
     Your local airports.json labels may already include (CODE), and we avoid duplicating.
     """
-    q = (request.args.get('query') or "").strip()
+    q       = (request.args.get('query')   or "").strip()
+    country = (request.args.get('country') or "").strip().upper()
+
+    # No query but country provided → return popular airports for that country
+    if not q and country:
+        airport_index = _get_airport_index()
+        origins = COUNTRY_AIRPORTS.get(country) or COUNTRY_AIRPORTS.get('GB', [])
+        popular = []
+        for code, city in origins:
+            info  = airport_index.get(code, {})
+            label = info.get('label') or city
+            popular.append({
+                "code": code,
+                "label": label,
+                "city": city,
+                "name": _display_name(label, code)
+            })
+        return jsonify(popular)
+
     if not q:
         return jsonify([])
 

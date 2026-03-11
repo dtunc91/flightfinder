@@ -1034,6 +1034,16 @@ document.addEventListener('DOMContentLoaded', () => {
     }, 300);
   });
 
+  // ── Show popular airports on focus when input is empty ──
+  input.addEventListener('focus', () => {
+    if (input.value.trim() || list.children.length) return;
+    const country = window._geoCountry || 'GB';
+    fetch(`/api/airports?country=${encodeURIComponent(country)}`)
+      .then(r => r.json())
+      .then(items => { if (items.length && !input.value.trim()) render(items); })
+      .catch(() => {});
+  });
+
   // ── Search button ───────────────────────────────────
   searchBtn.onclick = () => {
     if (!hidden.value) {
