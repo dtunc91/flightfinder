@@ -713,12 +713,15 @@
         <button class="sort-btn" id="sortDesc" onclick="sortFlights('desc')">
           <i class="fa fa-arrow-down-wide-short me-1"></i>Priciest first
         </button>
+        <button class="sort-btn" id="directOnlyBtn" onclick="toggleDirectOnly()">
+          <i class="fa fa-plane me-1"></i>Direct only
+        </button>
       </div>
     </div>
 
     <div id="flightsList">
       {% for flight in flights %}
-      <div class="flight-card" data-price="{{ flight.price }}" data-country="{{ flight.destination_country }}">
+      <div class="flight-card" data-price="{{ flight.price }}" data-country="{{ flight.destination_country }}" data-stops="{{ flight.num_stops }}">
         <div class="flight-dest">
           <div class="flight-dest-top">
             <span class="flight-city">
@@ -1089,8 +1092,9 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('sortDesc').classList.toggle('active', order === 'desc');
   };
 
-  // ── Flight type filter (domestic / international) ────
+  // ── Flight type + direct-only filters ───────────────
   const ORIGIN_COUNTRY = {{ origin_country | tojson }};
+  let _directOnly = false;
 
   function applyFlightTypeFilter() {
     const selected = document.querySelector('input[name="flight_type"]:checked')?.value || 'all';
@@ -1099,16 +1103,24 @@ document.addEventListener('DOMContentLoaded', () => {
     let visibleCount = 0;
     container.querySelectorAll('.flight-card').forEach(card => {
       const destCountry = card.dataset.country || '';
+      const stops = parseInt(card.dataset.stops ?? '0', 10);
       let show = true;
       if (selected === 'domestic')      show = ORIGIN_COUNTRY && destCountry === ORIGIN_COUNTRY;
       if (selected === 'international') show = !ORIGIN_COUNTRY || destCountry !== ORIGIN_COUNTRY;
+      if (_directOnly && stops !== 0)   show = false;
       card.style.display = show ? '' : 'none';
       if (show) visibleCount++;
     });
-    // update count label if present
     const countEl = document.querySelector('.results-count strong');
     if (countEl) countEl.textContent = visibleCount;
   }
+
+  window.toggleDirectOnly = function() {
+    _directOnly = !_directOnly;
+    const btn = document.getElementById('directOnlyBtn');
+    if (btn) btn.classList.toggle('active', _directOnly);
+    applyFlightTypeFilter();
+  };
 
   document.querySelectorAll('input[name="flight_type"]').forEach(r =>
     r.addEventListener('change', applyFlightTypeFilter)
