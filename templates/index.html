@@ -652,6 +652,8 @@
              placeholder="City or airport name..."
              value="{{ form_data.origin }}" autocomplete="off">
       <input type="hidden" id="origin_code" name="origin_code" value="{{ form_data.origin_code }}">
+      <input type="hidden" id="currency" name="currency" value="{{ form_data.currency or 'gbp' }}">
+      <input type="hidden" id="currency_symbol" name="currency_symbol" value="{{ form_data.currency_symbol or '£' }}">
       <div id="origin-autocomplete-list" class="autocomplete-items d-none"></div>
       <div id="origin-helper" class="small mt-1">
         {% if form_data.origin_code %}
@@ -733,7 +735,7 @@
 
         <div class="flight-right">
           <div class="flight-price-block">
-            <div class="flight-price">£{{ flight.price }}</div>
+            <div class="flight-price">{{ form_data.currency_symbol or '£' }}{{ flight.price }}</div>
             <div class="flight-price-label">per person</div>
           </div>
 
@@ -848,29 +850,71 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
 <script>
-// ── Live deals feed ─────────────────────────────────
+// ── Geo detection + live deals feed ─────────────────
 (function() {
   const wrapper = document.getElementById('liveFeedWrapper');
   const scroll  = document.getElementById('liveFeedScroll');
-  if (!wrapper || !scroll) return;
-  fetch('/api/live-deals')
+
+  function fetchLiveDeals(country, symbol) {
+    if (!wrapper || !scroll) return;
+    fetch('/api/live-deals?country=' + encodeURIComponent(country))
+      .then(r => r.json())
+      .then(deals => {
+        if (!deals || !deals.length) return;
+        deals.forEach(d => {
+          const chip = document.createElement('a');
+          chip.className = 'deal-chip';
+          chip.href = '#searchForm';
+          chip.style.textDecoration = 'none';
+          const s = d.symbol || symbol || '£';
+          chip.innerHTML = `
+            <div class="deal-chip-route">${d.route}</div>
+            <div class="deal-chip-price">from ${s}${d.price}</div>
+          `;
+          scroll.appendChild(chip);
+        });
+        wrapper.style.display = '';
+      })
+      .catch(() => { /* hide on error */ });
+  }
+
+  // Detect country via server-side geo, then load relevant deals
+  fetch('/api/geo')
     .then(r => r.json())
-    .then(deals => {
-      if (!deals || !deals.length) return;
-      deals.forEach(d => {
-        const chip = document.createElement('a');
-        chip.className = 'deal-chip';
-        chip.href = '#searchForm';
-        chip.style.textDecoration = 'none';
-        chip.innerHTML = `
-          <div class="deal-chip-route">${d.route}</div>
-          <div class="deal-chip-price">from £${d.price}</div>
-        `;
-        scroll.appendChild(chip);
-      });
-      wrapper.style.display = '';
+    .then(geo => {
+      window._geoCountry  = geo.country  || 'GB';
+      window._geoCurrency = geo.currency || 'gbp';
+      window._geoSymbol   = geo.symbol   || '£';
+
+      // Update hidden currency fields so they're correct if user submits form
+      const currencyInput = document.getElementById('currency');
+      const symbolInput   = document.getElementById('currency_symbol');
+      if (currencyInput && !currencyInput.value || currencyInput.value === 'gbp') {
+        if (currencyInput) currencyInput.value = geo.currency || 'gbp';
+        if (symbolInput)   symbolInput.value   = geo.symbol   || '£';
+      }
+
+      fetchLiveDeals(window._geoCountry, window._geoSymbol);
+
+      // Auto-suggest top local airport if origin hasn't been set
+      const originInput  = document.getElementById('origin');
+      const originCode   = document.getElementById('origin_code');
+      if (originInput && originCode && !originCode.value && geo.top_airport) {
+        fetch('/api/airports?query=' + encodeURIComponent(geo.top_airport))
+          .then(r => r.json())
+          .then(airports => {
+            const match = airports.find(a => a.code === geo.top_airport) || airports[0];
+            if (match && window._autoSelectAirport) {
+              window._autoSelectAirport(match);
+            }
+          })
+          .catch(() => {});
+      }
     })
-    .catch(() => { /* hide on error — no fake data */ });
+    .catch(() => {
+      // Fall back to GB deals if geo fails
+      fetchLiveDeals('GB', '£');
+    });
 })();
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -901,13 +945,20 @@ document.addEventListener('DOMContentLoaded', () => {
   function closeList()    { list.classList.add('d-none'); }
   function openList()     { list.classList.remove('d-none'); }
 
-  function selectAirport(a) {
+  function selectAirport(a, autoDetected) {
     input.value  = a.name;
     hidden.value = a.code;
-    helper.innerHTML = `<span style="color:#82ffd2"><i class="fa fa-circle-check me-1"></i>${a.name}</span>`;
+    if (autoDetected) {
+      helper.innerHTML = `<span style="color:#9fb0ff"><i class="fa fa-location-dot me-1"></i>${a.name} <span style="opacity:.65;font-size:0.75em">(detected from your location)</span></span>`;
+    } else {
+      helper.innerHTML = `<span style="color:#82ffd2"><i class="fa fa-circle-check me-1"></i>${a.name}</span>`;
+    }
     setEnabled(true);
     closeList();
   }
+
+  // Expose for geo auto-fill (called from outside DOMContentLoaded)
+  window._autoSelectAirport = (a) => selectAirport(a, true);
 
   function render(items) {
     list.innerHTML = '';
@@ -934,6 +985,11 @@ document.addEventListener('DOMContentLoaded', () => {
   input.addEventListener('input', () => {
     clearTimeout(debounceTimer);
     hidden.value = '';
+    // Restore geo-detected currency when user clears airport selection
+    const currencyInput = document.getElementById('currency');
+    const symbolInput   = document.getElementById('currency_symbol');
+    if (currencyInput && window._geoCurrency) currencyInput.value = window._geoCurrency;
+    if (symbolInput   && window._geoSymbol)   symbolInput.value   = window._geoSymbol;
     setEnabled(false);
     helper.innerHTML = '<span style="color:#9fb0ff">Start typing to search airports</span>';
     const q = input.value.trim();
