@@ -485,7 +485,8 @@
       background: rgba(255,255,255,.09);
       border-color: rgba(110,168,255,.3);
     }
-    .deal-chip-route { color: #cfe0ff; font-size: 0.8rem; font-weight: 600; margin-bottom: 3px; }
+    .deal-chip-route { color: #cfe0ff; font-size: 0.8rem; font-weight: 600; margin-bottom: 2px; }
+    .deal-chip-date  { color: #5a6e9e; font-size: 0.7rem; margin-bottom: 3px; }
     .deal-chip-price { color: #82ffd2; font-size: 1rem; font-weight: 800; }
 
     /* ── GENERAL NEWSLETTER ────────────────────────── */
@@ -603,11 +604,11 @@
 {% if not seo_page %}
 <div class="live-feed-wrapper" id="liveFeedWrapper" style="display:none">
   <div class="live-feed-header">
-    <span class="pulse-dot"></span> Cheapest routes right now
+    <span class="pulse-dot"></span> This week's deals
   </div>
   <div class="live-feed-scroll" id="liveFeedScroll"></div>
   <div style="font-size:0.7rem; color:#5a6e9e; margin-top:6px; padding-left:2px;">
-    Live prices from Aviasales · updated hourly · one-way per person
+    Departing in the next 7 days · prices from Aviasales · one-way per person
   </div>
 </div>
 {% endif %}
@@ -867,8 +868,10 @@
           chip.href = '#searchForm';
           chip.style.textDecoration = 'none';
           const s = d.symbol || symbol || '£';
+          const dateStr = d.date ? `<div class="deal-chip-date">${d.date}</div>` : '';
           chip.innerHTML = `
             <div class="deal-chip-route">${d.route}</div>
+            ${dateStr}
             <div class="deal-chip-price">from ${s}${d.price}</div>
           `;
           scroll.appendChild(chip);

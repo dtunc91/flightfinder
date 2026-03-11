@@ -1,5 +1,5 @@
 from flask import Flask, render_template, request, jsonify, send_from_directory, abort
-from datetime import datetime
+from datetime import datetime, timedelta
 from amadeus import Client
 import requests
 import os
@@ -799,13 +799,16 @@ def api_live_deals():
     airport_index = _get_airport_index()
     results = []
 
+    today = datetime.utcnow().date()
+    week_end = today + timedelta(days=7)
+
     for origin_code, origin_city in origins:
         try:
             params = {
                 'origin': origin_code,
                 'currency': currency_code,
                 'token': API_TOKEN,
-                'limit': 5,
+                'limit': 30,
                 'sorting': 'price',
             }
             r = requests.get(
@@ -814,18 +817,43 @@ def api_live_deals():
             )
             if r.status_code == 200:
                 data = r.json().get('data', [])
-                if data:
-                    best = min(data, key=lambda x: x.get('value', 9999))
-                    dest_code = best.get('destination', '')
-                    price = best.get('value', 0)
-                    if price and 5 < price < 2000:  # sanity bounds
-                        dest_info = airport_index.get(dest_code, {})
-                        dest_city = dest_info.get('city', '') or dest_code
-                        results.append({
-                            'route': f"{origin_city} \u2192 {dest_city}",
-                            'price': price,
-                            'symbol': currency_symbol,
-                        })
+                if not data:
+                    continue
+
+                # Filter to flights departing within the next 7 days
+                week_data = []
+                for f in data:
+                    raw = (f.get('depart_date') or '')[:10]
+                    if raw:
+                        try:
+                            d = datetime.strptime(raw, '%Y-%m-%d').date()
+                            if today <= d <= week_end:
+                                week_data.append(f)
+                        except ValueError:
+                            pass
+
+                if not week_data:
+                    continue  # no this-week deals for this origin
+
+                best = min(week_data, key=lambda x: x.get('value', 9999))
+                dest_code = best.get('destination', '')
+                price = best.get('value', 0)
+                if price and 5 < price < 2000:
+                    dest_info = airport_index.get(dest_code, {})
+                    dest_city = dest_info.get('city', '') or dest_code
+                    # Format departure date e.g. "Fri 14 Mar"
+                    raw_date = (best.get('depart_date') or '')[:10]
+                    try:
+                        dep_dt = datetime.strptime(raw_date, '%Y-%m-%d')
+                        date_label = dep_dt.strftime('%a ') + str(dep_dt.day) + dep_dt.strftime(' %b')
+                    except ValueError:
+                        date_label = ''
+                    results.append({
+                        'route': f"{origin_city} \u2192 {dest_city}",
+                        'price': price,
+                        'symbol': currency_symbol,
+                        'date': date_label,
+                    })
         except Exception:
             pass
 
