@@ -468,10 +468,16 @@
       display: flex;
       gap: 8px;
       overflow-x: auto;
-      padding-bottom: 4px;
-      scrollbar-width: none;
+      padding-bottom: 10px;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(110,168,255,.35) rgba(255,255,255,.06);
+      cursor: grab;
     }
-    .live-feed-scroll::-webkit-scrollbar { display: none; }
+    .live-feed-scroll.is-dragging { cursor: grabbing; user-select: none; }
+    .live-feed-scroll::-webkit-scrollbar { height: 4px; }
+    .live-feed-scroll::-webkit-scrollbar-track { background: rgba(255,255,255,.06); border-radius: 2px; }
+    .live-feed-scroll::-webkit-scrollbar-thumb { background: rgba(110,168,255,.35); border-radius: 2px; }
+    .live-feed-scroll::-webkit-scrollbar-thumb:hover { background: rgba(110,168,255,.6); }
     .deal-chip {
       background: rgba(255,255,255,.055);
       border: 1px solid rgba(255,255,255,.1);
@@ -901,6 +907,26 @@
       }
 
       fetchLiveDeals(window._geoCountry, window._geoSymbol);
+
+      // Drag-to-scroll on the live feed strip
+      if (scroll) {
+        let isDragging = false, startX = 0, startScroll = 0;
+        scroll.addEventListener('mousedown', e => {
+          isDragging = true;
+          startX = e.pageX - scroll.offsetLeft;
+          startScroll = scroll.scrollLeft;
+          scroll.classList.add('is-dragging');
+        });
+        window.addEventListener('mousemove', e => {
+          if (!isDragging) return;
+          const dx = e.pageX - scroll.offsetLeft - startX;
+          scroll.scrollLeft = startScroll - dx;
+        });
+        window.addEventListener('mouseup', () => {
+          isDragging = false;
+          scroll.classList.remove('is-dragging');
+        });
+      }
 
       // Auto-suggest top local airport if origin hasn't been set
       const originInput  = document.getElementById('origin');
