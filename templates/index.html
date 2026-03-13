@@ -822,32 +822,19 @@
 {% endif %}
 
 <!-- BLOG / GUIDES -->
-{% if not seo_page %}
+{% if not seo_page and blog_cards %}
 <section class="blog-section">
   <div class="blog-section-title">
     <i class="fa fa-compass"></i> Flight Deal Guides
   </div>
   <div class="blog-grid">
-    <a href="{{ url_for('blog_post', slug='cheapest-flights-from-london') }}" class="blog-card">
-      <span class="blog-card-emoji">🏙️</span>
-      <div class="blog-card-title">Cheapest places to fly from London</div>
-      <div class="blog-card-meta">Heathrow, Gatwick, Stansted &amp; Luton</div>
+    {% for post in blog_cards %}
+    <a href="{{ url_for('blog_post', slug=post.slug) }}" class="blog-card">
+      <span class="blog-card-emoji">{{ post.emoji if post.emoji else '✈️' }}</span>
+      <div class="blog-card-title">{{ post.title }}</div>
+      <div class="blog-card-meta">{{ post.airport_names }}</div>
     </a>
-    <a href="{{ url_for('blog_post', slug='cheapest-flights-from-manchester') }}" class="blog-card">
-      <span class="blog-card-emoji">✈️</span>
-      <div class="blog-card-title">Cheapest places to fly from Manchester</div>
-      <div class="blog-card-meta">Manchester Airport (MAN)</div>
-    </a>
-    <a href="{{ url_for('blog_post', slug='cheapest-flights-from-edinburgh') }}" class="blog-card">
-      <span class="blog-card-emoji">🏴󠁧󠁢󠁳󠁣󠁴󠁿</span>
-      <div class="blog-card-title">Cheapest places to fly from Edinburgh</div>
-      <div class="blog-card-meta">Edinburgh Airport (EDI)</div>
-    </a>
-    <a href="{{ url_for('blog_post', slug='cheapest-flights-from-bristol') }}" class="blog-card">
-      <span class="blog-card-emoji">🌞</span>
-      <div class="blog-card-title">Cheapest places to fly from Bristol</div>
-      <div class="blog-card-meta">Bristol Airport (BRS)</div>
-    </a>
+    {% endfor %}
   </div>
 </section>
 {% endif %}

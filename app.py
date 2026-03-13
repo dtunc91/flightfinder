@@ -151,6 +151,7 @@ GEO_CACHE_TTL = 3600
 # ---- Blog post content ----
 BLOG_POSTS = {
     'cheapest-flights-from-london': {
+        'emoji': '🏙️',
         'title': 'Cheapest Places to Fly from London',
         'subtitle': "Where to go when you just need to get away — without breaking the bank",
         'airport_names': 'Heathrow, Gatwick, Stansted, Luton & London City',
@@ -195,6 +196,7 @@ BLOG_POSTS = {
         ],
     },
     'cheapest-flights-from-manchester': {
+        'emoji': '✈️',
         'title': 'Cheapest Places to Fly from Manchester',
         'subtitle': "Great routes, strong competition, and no need to travel south for a deal",
         'airport_names': 'Manchester Airport (MAN)',
@@ -239,6 +241,7 @@ BLOG_POSTS = {
         ],
     },
     'cheapest-flights-from-edinburgh': {
+        'emoji': '🏴󠁧󠁢󠁳󠁣󠁴󠁿',
         'title': 'Cheapest Places to Fly from Edinburgh',
         'subtitle': "Scotland's busiest airport punches well above its weight for cheap European routes",
         'airport_names': 'Edinburgh Airport (EDI)',
@@ -282,6 +285,7 @@ BLOG_POSTS = {
         ],
     },
     'cheapest-flights-from-bristol': {
+        'emoji': '🌞',
         'title': 'Cheapest Places to Fly from Bristol',
         'subtitle': "The southwest's gateway to Europe — with more cheap routes than you might expect",
         'airport_names': 'Bristol Airport (BRS)',
@@ -684,13 +688,28 @@ def index():
     airport_index = _get_airport_index()
     origin_country = airport_index.get(form_data.get('origin_code', ''), {}).get('country', '')
 
+    all_posts = _get_all_blog_posts()
+    # Show up to 6 cards: newest disk posts first, then static fallbacks
+    disk = _load_disk_blog_posts()
+    sorted_disk = sorted(disk.values(),
+                         key=lambda p: p.get('published_at', ''),
+                         reverse=True)
+    shown_slugs = [p['slug'] for p in sorted_disk[:6]]
+    for slug in all_posts:
+        if slug not in shown_slugs:
+            shown_slugs.append(slug)
+        if len(shown_slugs) >= 6:
+            break
+    blog_cards = [all_posts[s] for s in shown_slugs if s in all_posts]
+
     return render_template(
         'index.html',
         flights=flights,
         origin_label=origin_label,
         origin_country=origin_country,
         date=date,
-        form_data=form_data
+        form_data=form_data,
+        blog_cards=blog_cards,
     )
 
 # ---- Content pages ----
@@ -983,10 +1002,40 @@ def api_live_deals():
     return jsonify(results)
 
 
-# ---- Blog posts ----
+# ---- Blog posts: load from data/blog/*.json (generated) + BLOG_POSTS (static) ----
+_BLOG_DISK_CACHE = {"data": {}, "mtime_sum": 0}
+BLOG_DIR = os.path.join(DATA_DIR, 'blog')
+
+def _load_disk_blog_posts() -> dict:
+    """Load all *.json files from data/blog/, caching by aggregate mtime."""
+    if not os.path.isdir(BLOG_DIR):
+        return {}
+    files = [f for f in os.listdir(BLOG_DIR) if f.endswith('.json') and not f.startswith('.')]
+    mtime_sum = sum(os.path.getmtime(os.path.join(BLOG_DIR, f)) for f in files)
+    if _BLOG_DISK_CACHE["mtime_sum"] == mtime_sum and _BLOG_DISK_CACHE["data"]:
+        return _BLOG_DISK_CACHE["data"]
+    posts = {}
+    for fn in files:
+        try:
+            with open(os.path.join(BLOG_DIR, fn), encoding='utf-8') as f:
+                p = json.load(f)
+            slug = p.get('slug') or fn[:-5]
+            # Ensure related is list of lists (JSON tuples come back as lists — that's fine)
+            posts[slug] = p
+        except Exception:
+            pass
+    _BLOG_DISK_CACHE.update({"data": posts, "mtime_sum": mtime_sum})
+    return posts
+
+def _get_all_blog_posts() -> dict:
+    """Merged view: disk-generated posts take precedence over static BLOG_POSTS."""
+    merged = dict(BLOG_POSTS)
+    merged.update(_load_disk_blog_posts())
+    return merged
+
 @app.route('/blog/<string:slug>')
 def blog_post(slug):
-    post = BLOG_POSTS.get(slug)
+    post = _get_all_blog_posts().get(slug)
     if not post:
         abort(404)
     return render_template('blog_post.html', post=post)
@@ -1003,7 +1052,7 @@ def sitemap():
         ('https://getmeoutofhere.live/privacy', '0.3'),
         ('https://getmeoutofhere.live/terms', '0.3'),
     ]
-    for slug in BLOG_POSTS:
+    for slug in _get_all_blog_posts():
         pages.append((f'https://getmeoutofhere.live/blog/{slug}', '0.7'))
     for code in SEO_AIRPORTS:
         if code in airport_index:
@@ -1037,6 +1086,26 @@ def debug_templates():
         return "<br>".join(sorted(os.listdir(app.template_folder)))
     except Exception as e:
         return f"Error reading templates: {e}", 500
+
+# ---- Weekly blog scheduler ----
+# Runs every Monday at 08:00 server time.
+# The lock file in blog_generator prevents duplicate runs across gunicorn workers.
+def _scheduled_blog_run():
+    try:
+        import blog_generator
+        blog_generator.run_next()
+    except Exception as exc:
+        app.logger.error(f"Blog scheduler error: {exc}")
+
+# Only start scheduler in the real process (not in Werkzeug's reloader watcher)
+if not (app.debug and os.environ.get('WERKZEUG_RUN_MAIN') != 'true'):
+    try:
+        from apscheduler.schedulers.background import BackgroundScheduler
+        _scheduler = BackgroundScheduler(daemon=True)
+        _scheduler.add_job(_scheduled_blog_run, 'cron', day_of_week='mon', hour=8, minute=0)
+        _scheduler.start()
+    except ImportError:
+        pass  # APScheduler not installed — run blog_generator.py manually or via cron
 
 if __name__ == '__main__':
     app.run(debug=True)
