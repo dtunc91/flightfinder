@@ -468,10 +468,16 @@
       display: flex;
       gap: 8px;
       overflow-x: auto;
-      padding-bottom: 4px;
-      scrollbar-width: none;
+      padding-bottom: 10px;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(110,168,255,.35) rgba(255,255,255,.06);
+      cursor: grab;
     }
-    .live-feed-scroll::-webkit-scrollbar { display: none; }
+    .live-feed-scroll.is-dragging { cursor: grabbing; user-select: none; }
+    .live-feed-scroll::-webkit-scrollbar { height: 4px; }
+    .live-feed-scroll::-webkit-scrollbar-track { background: rgba(255,255,255,.06); border-radius: 2px; }
+    .live-feed-scroll::-webkit-scrollbar-thumb { background: rgba(110,168,255,.35); border-radius: 2px; }
+    .live-feed-scroll::-webkit-scrollbar-thumb:hover { background: rgba(110,168,255,.6); }
     .deal-chip {
       background: rgba(255,255,255,.055);
       border: 1px solid rgba(255,255,255,.1);
@@ -713,12 +719,15 @@
         <button class="sort-btn" id="sortDesc" onclick="sortFlights('desc')">
           <i class="fa fa-arrow-down-wide-short me-1"></i>Priciest first
         </button>
+        <button class="sort-btn" id="directOnlyBtn" onclick="toggleDirectOnly()">
+          <i class="fa fa-plane me-1"></i>Direct only
+        </button>
       </div>
     </div>
 
     <div id="flightsList">
       {% for flight in flights %}
-      <div class="flight-card" data-price="{{ flight.price }}" data-country="{{ flight.destination_country }}">
+      <div class="flight-card" data-price="{{ flight.price }}" data-country="{{ flight.destination_country }}" data-stops="{{ flight.num_stops }}">
         <div class="flight-dest">
           <div class="flight-dest-top">
             <span class="flight-city">
@@ -813,32 +822,19 @@
 {% endif %}
 
 <!-- BLOG / GUIDES -->
-{% if not seo_page %}
+{% if not seo_page and blog_cards %}
 <section class="blog-section">
   <div class="blog-section-title">
     <i class="fa fa-compass"></i> Flight Deal Guides
   </div>
   <div class="blog-grid">
-    <a href="{{ url_for('blog_post', slug='cheapest-flights-from-london') }}" class="blog-card">
-      <span class="blog-card-emoji">🏙️</span>
-      <div class="blog-card-title">Cheapest places to fly from London</div>
-      <div class="blog-card-meta">Heathrow, Gatwick, Stansted &amp; Luton</div>
+    {% for post in blog_cards %}
+    <a href="{{ url_for('blog_post', slug=post.slug) }}" class="blog-card">
+      <span class="blog-card-emoji">{{ post.emoji if post.emoji else '✈️' }}</span>
+      <div class="blog-card-title">{{ post.title }}</div>
+      <div class="blog-card-meta">{{ post.airport_names }}</div>
     </a>
-    <a href="{{ url_for('blog_post', slug='cheapest-flights-from-manchester') }}" class="blog-card">
-      <span class="blog-card-emoji">✈️</span>
-      <div class="blog-card-title">Cheapest places to fly from Manchester</div>
-      <div class="blog-card-meta">Manchester Airport (MAN)</div>
-    </a>
-    <a href="{{ url_for('blog_post', slug='cheapest-flights-from-edinburgh') }}" class="blog-card">
-      <span class="blog-card-emoji">🏴󠁧󠁢󠁳󠁣󠁴󠁿</span>
-      <div class="blog-card-title">Cheapest places to fly from Edinburgh</div>
-      <div class="blog-card-meta">Edinburgh Airport (EDI)</div>
-    </a>
-    <a href="{{ url_for('blog_post', slug='cheapest-flights-from-bristol') }}" class="blog-card">
-      <span class="blog-card-emoji">🌞</span>
-      <div class="blog-card-title">Cheapest places to fly from Bristol</div>
-      <div class="blog-card-meta">Bristol Airport (BRS)</div>
-    </a>
+    {% endfor %}
   </div>
 </section>
 {% endif %}
@@ -898,6 +894,26 @@
       }
 
       fetchLiveDeals(window._geoCountry, window._geoSymbol);
+
+      // Drag-to-scroll on the live feed strip
+      if (scroll) {
+        let isDragging = false, startX = 0, startScroll = 0;
+        scroll.addEventListener('mousedown', e => {
+          isDragging = true;
+          startX = e.pageX - scroll.offsetLeft;
+          startScroll = scroll.scrollLeft;
+          scroll.classList.add('is-dragging');
+        });
+        window.addEventListener('mousemove', e => {
+          if (!isDragging) return;
+          const dx = e.pageX - scroll.offsetLeft - startX;
+          scroll.scrollLeft = startScroll - dx;
+        });
+        window.addEventListener('mouseup', () => {
+          isDragging = false;
+          scroll.classList.remove('is-dragging');
+        });
+      }
 
       // Auto-suggest top local airport if origin hasn't been set
       const originInput  = document.getElementById('origin');
@@ -1005,6 +1021,16 @@ document.addEventListener('DOMContentLoaded', () => {
     }, 300);
   });
 
+  // ── Show popular airports on focus when input is empty ──
+  input.addEventListener('focus', () => {
+    if (input.value.trim() || list.children.length) return;
+    const country = window._geoCountry || 'GB';
+    fetch(`/api/airports?country=${encodeURIComponent(country)}`)
+      .then(r => r.json())
+      .then(items => { if (items.length && !input.value.trim()) render(items); })
+      .catch(() => {});
+  });
+
   // ── Search button ───────────────────────────────────
   searchBtn.onclick = () => {
     if (!hidden.value) {
@@ -1089,8 +1115,9 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('sortDesc').classList.toggle('active', order === 'desc');
   };
 
-  // ── Flight type filter (domestic / international) ────
+  // ── Flight type + direct-only filters ───────────────
   const ORIGIN_COUNTRY = {{ origin_country | tojson }};
+  let _directOnly = false;
 
   function applyFlightTypeFilter() {
     const selected = document.querySelector('input[name="flight_type"]:checked')?.value || 'all';
@@ -1099,16 +1126,24 @@ document.addEventListener('DOMContentLoaded', () => {
     let visibleCount = 0;
     container.querySelectorAll('.flight-card').forEach(card => {
       const destCountry = card.dataset.country || '';
+      const stops = parseInt(card.dataset.stops ?? '0', 10);
       let show = true;
       if (selected === 'domestic')      show = ORIGIN_COUNTRY && destCountry === ORIGIN_COUNTRY;
       if (selected === 'international') show = !ORIGIN_COUNTRY || destCountry !== ORIGIN_COUNTRY;
+      if (_directOnly && stops !== 0)   show = false;
       card.style.display = show ? '' : 'none';
       if (show) visibleCount++;
     });
-    // update count label if present
     const countEl = document.querySelector('.results-count strong');
     if (countEl) countEl.textContent = visibleCount;
   }
+
+  window.toggleDirectOnly = function() {
+    _directOnly = !_directOnly;
+    const btn = document.getElementById('directOnlyBtn');
+    if (btn) btn.classList.toggle('active', _directOnly);
+    applyFlightTypeFilter();
+  };
 
   document.querySelectorAll('input[name="flight_type"]').forEach(r =>
     r.addEventListener('change', applyFlightTypeFilter)

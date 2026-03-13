@@ -151,6 +151,7 @@ GEO_CACHE_TTL = 3600
 # ---- Blog post content ----
 BLOG_POSTS = {
     'cheapest-flights-from-london': {
+        'emoji': '🏙️',
         'title': 'Cheapest Places to Fly from London',
         'subtitle': "Where to go when you just need to get away — without breaking the bank",
         'airport_names': 'Heathrow, Gatwick, Stansted, Luton & London City',
@@ -195,6 +196,7 @@ BLOG_POSTS = {
         ],
     },
     'cheapest-flights-from-manchester': {
+        'emoji': '✈️',
         'title': 'Cheapest Places to Fly from Manchester',
         'subtitle': "Great routes, strong competition, and no need to travel south for a deal",
         'airport_names': 'Manchester Airport (MAN)',
@@ -239,6 +241,7 @@ BLOG_POSTS = {
         ],
     },
     'cheapest-flights-from-edinburgh': {
+        'emoji': '🏴󠁧󠁢󠁳󠁣󠁴󠁿',
         'title': 'Cheapest Places to Fly from Edinburgh',
         'subtitle': "Scotland's busiest airport punches well above its weight for cheap European routes",
         'airport_names': 'Edinburgh Airport (EDI)',
@@ -282,6 +285,7 @@ BLOG_POSTS = {
         ],
     },
     'cheapest-flights-from-bristol': {
+        'emoji': '🌞',
         'title': 'Cheapest Places to Fly from Bristol',
         'subtitle': "The southwest's gateway to Europe — with more cheap routes than you might expect",
         'airport_names': 'Bristol Airport (BRS)',
@@ -356,6 +360,79 @@ DEFAULT_AIRPORTS = [
     {"code":"BCN","label":"Barcelona","city":"Barcelona"},
     {"code":"MAD","label":"Madrid","city":"Madrid"}
 ]
+
+# ---- OurAirports (worldwide, typed dataset — downloaded weekly) ----
+OURAIRPORTS_URL       = "https://davidmegginson.github.io/ourairports-data/airports.csv"
+OURAIRPORTS_CACHE_FILE = os.path.join(DATA_DIR, 'ourairports_cache.csv')
+OURAIRPORTS_CACHE_TTL  = 86400 * 7   # re-download once a week
+_OA_CACHE = {"by_code": {}, "by_country": {}, "all": [], "loaded": False, "fetched_at": 0}
+
+def _load_ourairports() -> dict:
+    """Download OurAirports CSV once a week, cache to disk, parse into memory.
+
+    Returns dict with:
+      by_code    – {IATA: airport_dict}   (all airports with IATA codes)
+      by_country – {CC: [airport_dict, ...]}  (large+medium only, large first)
+      all        – flat list for full-text search
+    """
+    now = time.time()
+    if _OA_CACHE["loaded"] and now - _OA_CACHE["fetched_at"] < OURAIRPORTS_CACHE_TTL:
+        return _OA_CACHE
+
+    # Download if cache file is missing or stale
+    needs_download = (
+        not os.path.exists(OURAIRPORTS_CACHE_FILE) or
+        now - os.path.getmtime(OURAIRPORTS_CACHE_FILE) >= OURAIRPORTS_CACHE_TTL
+    )
+    if needs_download:
+        try:
+            resp = requests.get(OURAIRPORTS_URL, timeout=20)
+            if resp.status_code == 200:
+                os.makedirs(DATA_DIR, exist_ok=True)
+                with open(OURAIRPORTS_CACHE_FILE, 'w', encoding='utf-8') as fh:
+                    fh.write(resp.text)
+        except Exception:
+            pass  # fall through and try to read whatever is on disk
+
+    if not os.path.exists(OURAIRPORTS_CACHE_FILE):
+        _OA_CACHE["loaded"] = True
+        _OA_CACHE["fetched_at"] = now
+        return _OA_CACHE
+
+    try:
+        by_code, by_country, all_airports = {}, {}, []
+        TYPE_RANK = {'large_airport': 0, 'medium_airport': 1}
+        with open(OURAIRPORTS_CACHE_FILE, 'r', encoding='utf-8') as fh:
+            for row in csv.DictReader(fh):
+                iata    = (row.get('iata_code') or '').strip().upper()
+                if not iata or len(iata) != 3:
+                    continue
+                atype   = (row.get('type') or '').strip()
+                name    = (row.get('name') or '').strip()
+                city    = (row.get('municipality') or '').strip()
+                country = (row.get('iso_country') or '').strip().upper()
+                entry = {
+                    "code": iata, "label": name, "city": city,
+                    "country": country, "type": atype,
+                    "name": _display_name(name, iata),
+                }
+                by_code[iata] = entry
+                all_airports.append(entry)
+                if atype in ('large_airport', 'medium_airport') and country:
+                    by_country.setdefault(country, []).append(entry)
+
+        for lst in by_country.values():
+            lst.sort(key=lambda x: (TYPE_RANK.get(x['type'], 2), x['label']))
+
+        _OA_CACHE.update({
+            "by_code": by_code, "by_country": by_country,
+            "all": all_airports, "loaded": True, "fetched_at": now,
+        })
+    except Exception:
+        _OA_CACHE["loaded"] = True
+        _OA_CACHE["fetched_at"] = now
+
+    return _OA_CACHE
 
 # ---- Local airports cache (offline coverage) ----
 _AIRPORTS_CACHE = {"data": [], "mtime": None}
@@ -441,7 +518,10 @@ def _search_local_airports(q: str, pool: list) -> list:
     return out[:25]
 
 def _get_airport_index() -> dict:
-    """Build {IATA_CODE: airport_dict} for O(1) lookups."""
+    """Build {IATA_CODE: airport_dict} for O(1) lookups. OurAirports-first."""
+    oa = _load_ourairports()
+    if oa["by_code"]:
+        return oa["by_code"]
     return {a['code']: a for a in _load_local_airports()}
 
 def _display_name(label: str, code: str) -> str:
@@ -608,13 +688,28 @@ def index():
     airport_index = _get_airport_index()
     origin_country = airport_index.get(form_data.get('origin_code', ''), {}).get('country', '')
 
+    all_posts = _get_all_blog_posts()
+    # Show up to 6 cards: newest disk posts first, then static fallbacks
+    disk = _load_disk_blog_posts()
+    sorted_disk = sorted(disk.values(),
+                         key=lambda p: p.get('published_at', ''),
+                         reverse=True)
+    shown_slugs = [p['slug'] for p in sorted_disk[:6]]
+    for slug in all_posts:
+        if slug not in shown_slugs:
+            shown_slugs.append(slug)
+        if len(shown_slugs) >= 6:
+            break
+    blog_cards = [all_posts[s] for s in shown_slugs if s in all_posts]
+
     return render_template(
         'index.html',
         flights=flights,
         origin_label=origin_label,
         origin_country=origin_country,
         date=date,
-        form_data=form_data
+        form_data=form_data,
+        blog_cards=blog_cards,
     )
 
 # ---- Content pages ----
@@ -642,7 +737,24 @@ def get_airports():
       { "code": "LHR", "label": "Heathrow", "city": "London", "name": "Heathrow (LHR)" }
     Your local airports.json labels may already include (CODE), and we avoid duplicating.
     """
-    q = (request.args.get('query') or "").strip()
+    q       = (request.args.get('query')   or "").strip()
+    country = (request.args.get('country') or "").strip().upper()
+
+    # No query but country provided → popular airports for that country (OurAirports-first)
+    if not q and country:
+        oa = _load_ourairports()
+        airports_for_country = oa["by_country"].get(country, [])
+        if not airports_for_country:
+            # Fallback to hardcoded list for unmapped countries
+            airports_for_country = [
+                {"code": c, "label": city, "city": city, "name": _display_name(city, c)}
+                for c, city in (COUNTRY_AIRPORTS.get(country) or COUNTRY_AIRPORTS.get('GB', []))
+            ]
+        return jsonify([
+            {"code": a["code"], "label": a["label"], "city": a.get("city", ""), "name": a["name"]}
+            for a in airports_for_country[:10]
+        ])
+
     if not q:
         return jsonify([])
 
@@ -665,7 +777,21 @@ def get_airports():
     except Exception:
         pass
 
-    # 2) Local file fallback
+    # 2) OurAirports (worldwide typed dataset — large airports ranked first)
+    if not results:
+        oa = _load_ourairports()
+        if oa["all"]:
+            TYPE_RANK = {'large_airport': 0, 'medium_airport': 1}
+            hits = _search_local_airports(q, oa["all"])
+            hits.sort(key=lambda x: TYPE_RANK.get(x.get('type'), 2))
+            results = [{
+                "code": a["code"],
+                "label": a["label"],
+                "city": a.get("city", ""),
+                "name": a["name"]
+            } for a in hits[:12]]
+
+    # 3) Local airports.json (static fallback)
     if not results:
         pool = _load_local_airports()
         hits = _search_local_airports(q, pool)
@@ -677,7 +803,7 @@ def get_airports():
                 "name": _display_name(a.get("label"), a.get("code"))
             } for a in hits]
 
-    # 3) Built-in defaults
+    # 4) Built-in defaults
     if not results:
         hits = _search_local_airports(q, DEFAULT_AIRPORTS)
         results = [{
@@ -766,9 +892,14 @@ def api_geo():
                 pass
 
     currency_code, symbol = COUNTRY_CURRENCY.get(country, ('eur', '€'))
-    # Top airports for this country (fall back to GB)
-    airports = COUNTRY_AIRPORTS.get(country, COUNTRY_AIRPORTS['GB'])
-    top_airport_code = airports[0][0] if airports else 'LHR'
+    # Top airports for this country via OurAirports, fall back to hardcoded list
+    oa = _load_ourairports()
+    oa_airports = oa["by_country"].get(country, [])
+    if oa_airports:
+        top_airport_code = oa_airports[0]["code"]
+    else:
+        fallback = COUNTRY_AIRPORTS.get(country, COUNTRY_AIRPORTS['GB'])
+        top_airport_code = fallback[0][0] if fallback else 'LHR'
 
     return jsonify({
         'country': country,
@@ -783,9 +914,6 @@ def api_geo():
 def api_live_deals():
     country = (request.args.get('country') or 'GB').upper()
     # Fall back to GB if country not in our mapping
-    if country not in COUNTRY_AIRPORTS:
-        country = 'GB'
-
     now = time.time()
     cached = _live_deals_cache.get(country)
     if cached and cached['data'] and now - cached['fetched_at'] < LIVE_DEALS_TTL:
@@ -794,7 +922,18 @@ def api_live_deals():
     if not API_TOKEN:
         return jsonify([])
 
-    origins = COUNTRY_AIRPORTS[country]
+    # Resolve origin airports: OurAirports large airports for this country,
+    # falling back to hardcoded COUNTRY_AIRPORTS, then GB.
+    oa = _load_ourairports()
+    oa_airports = oa["by_country"].get(country, [])
+    if oa_airports:
+        origins = [(a["code"], a["city"] or a["label"]) for a in oa_airports[:8]]
+    else:
+        origins = COUNTRY_AIRPORTS.get(country) or COUNTRY_AIRPORTS.get('GB', [])
+
+    if not origins:
+        return jsonify([])
+
     currency_code, currency_symbol = COUNTRY_CURRENCY.get(country, ('eur', '€'))
     airport_index = _get_airport_index()
     results = []
@@ -863,10 +1002,40 @@ def api_live_deals():
     return jsonify(results)
 
 
-# ---- Blog posts ----
+# ---- Blog posts: load from data/blog/*.json (generated) + BLOG_POSTS (static) ----
+_BLOG_DISK_CACHE = {"data": {}, "mtime_sum": 0}
+BLOG_DIR = os.path.join(DATA_DIR, 'blog')
+
+def _load_disk_blog_posts() -> dict:
+    """Load all *.json files from data/blog/, caching by aggregate mtime."""
+    if not os.path.isdir(BLOG_DIR):
+        return {}
+    files = [f for f in os.listdir(BLOG_DIR) if f.endswith('.json') and not f.startswith('.')]
+    mtime_sum = sum(os.path.getmtime(os.path.join(BLOG_DIR, f)) for f in files)
+    if _BLOG_DISK_CACHE["mtime_sum"] == mtime_sum and _BLOG_DISK_CACHE["data"]:
+        return _BLOG_DISK_CACHE["data"]
+    posts = {}
+    for fn in files:
+        try:
+            with open(os.path.join(BLOG_DIR, fn), encoding='utf-8') as f:
+                p = json.load(f)
+            slug = p.get('slug') or fn[:-5]
+            # Ensure related is list of lists (JSON tuples come back as lists — that's fine)
+            posts[slug] = p
+        except Exception:
+            pass
+    _BLOG_DISK_CACHE.update({"data": posts, "mtime_sum": mtime_sum})
+    return posts
+
+def _get_all_blog_posts() -> dict:
+    """Merged view: disk-generated posts take precedence over static BLOG_POSTS."""
+    merged = dict(BLOG_POSTS)
+    merged.update(_load_disk_blog_posts())
+    return merged
+
 @app.route('/blog/<string:slug>')
 def blog_post(slug):
-    post = BLOG_POSTS.get(slug)
+    post = _get_all_blog_posts().get(slug)
     if not post:
         abort(404)
     return render_template('blog_post.html', post=post)
@@ -883,7 +1052,7 @@ def sitemap():
         ('https://getmeoutofhere.live/privacy', '0.3'),
         ('https://getmeoutofhere.live/terms', '0.3'),
     ]
-    for slug in BLOG_POSTS:
+    for slug in _get_all_blog_posts():
         pages.append((f'https://getmeoutofhere.live/blog/{slug}', '0.7'))
     for code in SEO_AIRPORTS:
         if code in airport_index:
@@ -917,6 +1086,26 @@ def debug_templates():
         return "<br>".join(sorted(os.listdir(app.template_folder)))
     except Exception as e:
         return f"Error reading templates: {e}", 500
+
+# ---- Weekly blog scheduler ----
+# Runs every Monday at 08:00 server time.
+# The lock file in blog_generator prevents duplicate runs across gunicorn workers.
+def _scheduled_blog_run():
+    try:
+        import blog_generator
+        blog_generator.run_next()
+    except Exception as exc:
+        app.logger.error(f"Blog scheduler error: {exc}")
+
+# Only start scheduler in the real process (not in Werkzeug's reloader watcher)
+if not (app.debug and os.environ.get('WERKZEUG_RUN_MAIN') != 'true'):
+    try:
+        from apscheduler.schedulers.background import BackgroundScheduler
+        _scheduler = BackgroundScheduler(daemon=True)
+        _scheduler.add_job(_scheduled_blog_run, 'cron', day_of_week='mon', hour=8, minute=0)
+        _scheduler.start()
+    except ImportError:
+        pass  # APScheduler not installed — run blog_generator.py manually or via cron
 
 if __name__ == '__main__':
     app.run(debug=True)
