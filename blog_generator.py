@@ -455,6 +455,11 @@ Writing rules (follow all of these precisely):
   have a 2-sentence paragraph followed by a 5-sentence one.
 • Never sound like a brochure. Measured and honest beats enthusiastic and vague.
 • Do not open sections with "I" — vary your sentence openings
+• Never use em dashes (—) or double hyphens (--) anywhere. Use commas, full stops, or rewrite the sentence instead.
+• Never use colons to introduce a list — write it as a sentence instead
+• Never write parenthetical asides with brackets like (this) — weave the thought into the sentence naturally
+• Never start a sentence with "And" or "But" — rewrite to avoid it
+• Avoid overly structured writing — no "Firstly", "Secondly", "Finally", "The bottom line", "The truth is"
 
 Output: Return ONLY valid JSON. No markdown fences, no code blocks, no explanation text."""
 
@@ -638,6 +643,22 @@ def generate_post(topic: dict, dry_run: bool = False) -> dict | None:
     except json.JSONDecodeError as exc:
         print(f"[blog_generator] JSON parse error: {exc}\nRaw: {raw[:300]}", file=sys.stderr)
         return None
+
+    def _clean(text: str) -> str:
+        """Remove AI-tell punctuation patterns."""
+        import re
+        text = re.sub(r'\s*—\s*', ', ', text)   # em dash → comma
+        text = re.sub(r'--+', ',', text)          # double hyphen → comma
+        return text
+
+    for section in data.get('sections', []):
+        if 'body' in section:
+            section['body'] = _clean(section['body'])
+        if 'heading' in section:
+            section['heading'] = _clean(section['heading'])
+    for field in ('title', 'subtitle', 'meta'):
+        if field in data:
+            data[field] = _clean(data[field])
 
     post = {
         "slug":          topic['slug'],
