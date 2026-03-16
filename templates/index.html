@@ -939,7 +939,7 @@
       // Update hidden currency fields so they're correct if user submits form
       const currencyInput = document.getElementById('currency');
       const symbolInput   = document.getElementById('currency_symbol');
-      if (currencyInput && !currencyInput.value || currencyInput.value === 'gbp') {
+      if (currencyInput && (!currencyInput.value || currencyInput.value === 'gbp')) {
         if (currencyInput) currencyInput.value = geo.currency || 'gbp';
         if (symbolInput)   symbolInput.value   = geo.symbol   || '£';
       }

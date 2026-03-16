@@ -49,7 +49,7 @@ SEO_AIRPORTS = [
     # Popular international
     'CDG','AMS','FRA','MAD','BCN','FCO','DXB','JFK','LAX','BKK',
     'SIN','DUB','LIS','ATH','PRG','VIE','CPH','OSL','ARN','HEL',
-    'WAW','BUD','ZRH','GVA','MXP','FCO','IST','NRT','SYD','YYZ',
+    'WAW','BUD','ZRH','GVA','MXP','IST','NRT','SYD','YYZ',
 ]
 
 # ---- Live deals feed ----
@@ -362,7 +362,11 @@ API_TOKEN = os.getenv('API_TOKEN')  # Travelpayouts API token
 AMADEUS_CLIENT_ID = os.getenv('AMADEUS_CLIENT_ID')
 AMADEUS_CLIENT_SECRET = os.getenv('AMADEUS_CLIENT_SECRET')
 
-amadeus = Client(client_id=AMADEUS_CLIENT_ID, client_secret=AMADEUS_CLIENT_SECRET)
+try:
+    amadeus = Client(client_id=AMADEUS_CLIENT_ID, client_secret=AMADEUS_CLIENT_SECRET)
+except Exception as _e:
+    amadeus = None
+    app.logger.warning("Amadeus client not initialised: %s", _e)
 
 # ---- Template globals ----
 @app.context_processor
@@ -670,6 +674,12 @@ def index():
 
                 domestic_flights, international_flights = [], []
 
+                if not departure_date:
+                    return jsonify({'error': 'Departure date is required.'}), 400
+
+                depart_str = datetime.strptime(departure_date, '%Y-%m-%d').strftime('%d%m')
+                return_str = datetime.strptime(return_date, '%Y-%m-%d').strftime('%d%m') if trip_type == 'roundtrip' and return_date else None
+
                 for flight in data:
                     dest_code = flight.get('destination', 'N/A')
                     price = flight.get('value', 'N/A')
@@ -680,9 +690,7 @@ def index():
                     dest_city = dest_info.get('city', '')
                     dest_country = dest_info.get('country', '')
 
-                    depart_str = datetime.strptime(departure_date, '%Y-%m-%d').strftime('%d%m')
-                    if trip_type == 'roundtrip' and return_date:
-                        return_str = datetime.strptime(return_date, '%Y-%m-%d').strftime('%d%m')
+                    if return_str:
                         search_code = f"{origin_code}{depart_str}{dest_code}{return_str}"
                     else:
                         search_code = f"{origin_code}{depart_str}{dest_code}1"
@@ -956,6 +964,7 @@ def seo_airport(code):
         flights=[],
         origin_label=label,
         date='',
+        origin_country=info.get('country', ''),
         form_data={
             'origin': label,
             'origin_code': code,
@@ -963,6 +972,8 @@ def seo_airport(code):
             'return_date': '',
             'passengers': 1,
             'trip_type': 'oneway',
+            'currency': 'gbp',
+            'currency_symbol': '£',
         },
         seo_page={'code': code, 'label': label, 'city': city},
         seo_content=seo_content,
