@@ -1153,7 +1153,18 @@ def _startup_blog_generate():
         try:
             import blog_generator
             posts = blog_generator._published_slugs()
-            if not posts:
+            priority = [
+                "easter-flight-deals-uk-2026",
+                "summer-holidays-cheap-flights-uk",
+                "uk-bank-holiday-flight-deals",
+                "school-break-flights-uk-guide",
+                "september-christmas-flight-deals-uk",
+            ]
+            missing = [s for s in priority if s not in posts]
+            if missing:
+                app.logger.info(f"Generating {len(missing)} priority blog post(s) on startup: {missing}")
+                blog_generator.run_bulk(n=len(missing))
+            elif not posts:
                 app.logger.info("data/blog/ is empty — generating up to 5 posts on startup")
                 blog_generator.run_bulk(n=5)
         except Exception as exc:

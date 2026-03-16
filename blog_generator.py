@@ -46,6 +46,129 @@ STATIC_POSTS = [
 # best_months: calendar months when this topic is most SEO-relevant.
 # None = evergreen (publish any time once seasonal queue is clear).
 TOPIC_PIPELINE = [
+    # ── Priority queue: generate these first ────────────────────────────────
+    {
+        "slug":        "easter-flight-deals-uk-2026",
+        "emoji":       "🐣",
+        "title":       "Easter 2026 Flight Deals from the UK",
+        "subtitle":    "Four-day weekend. Direct flight. Prices still makeable if you book now.",
+        "airport_names": "UK Airports",
+        "cta_airport": "LHR",
+        "best_months": None,
+        "prompt_topic": (
+            "Easter 2026 flight deals from UK airports — Easter weekend is 2–6 April 2026. "
+            "Lead with specific prices on the best-value routes right now: "
+            "Seville from £39 one-way on Ryanair from Stansted, Porto from £44 on easyJet from Bristol, "
+            "Krakow from £31 on Ryanair from Luton, Marrakech from £67 return on easyJet from Gatwick, "
+            "Malta from £78 return on Ryanair. "
+            "Explain the Easter booking window — why booking 4-6 weeks out is the sweet spot vs leaving it late. "
+            "Cover the Friday vs Saturday departure price gap (Saturday out of Heathrow on Good Friday can be "
+            "£40-60 more than the same route Thursday night). "
+            "Name which cities actually work for 3-4 nights at Easter vs which get overcrowded. "
+            "Give a section on airport strategy: Stansted, Luton, and Bristol have far cheaper Easter fares "
+            "than Heathrow for most European routes. "
+            "End with 3 concrete route suggestions with prices and airlines for someone booking this week."
+        ),
+    },
+    {
+        "slug":        "summer-holidays-cheap-flights-uk",
+        "emoji":       "☀️",
+        "title":       "Cheap Summer Holiday Flights from the UK: 2026 Guide",
+        "subtitle":    "Book before April and you can still get family summer flights for under £100pp",
+        "airport_names": "UK Airports",
+        "cta_airport": "MAN",
+        "best_months": None,
+        "prompt_topic": (
+            "cheap summer holiday flights from UK airports in 2026 — covering July and August, when prices "
+            "spike hardest. Lead with specific prices visible right now: "
+            "Majorca from £89 return on Jet2 from Leeds Bradford, Corfu from £104 return on easyJet from Gatwick, "
+            "Faro (Algarve) from £79 return on Ryanair from Stansted, Tenerife from £119 return on easyJet from Manchester, "
+            "Lanzarote from £97 return on Ryanair from Birmingham. "
+            "Be specific about the booking window: summer fares from major UK airports are already rising — "
+            "what's available in mid-March vs what it'll look like in May. "
+            "Give the honest truth about August prices (brutal) vs late July (marginally better). "
+            "Cover the family angle: Jet2 vs TUI vs easyJet for families, which airports are calmer, "
+            "and why flying from a regional airport (Leeds, Bristol, Birmingham, Edinburgh) often saves "
+            "£50-100pp over flying from Heathrow or Gatwick. "
+            "Include 3 concrete summer route suggestions for different budgets: under £80pp, £80-130pp, £130+pp."
+        ),
+    },
+    {
+        "slug":        "uk-bank-holiday-flight-deals",
+        "emoji":       "📅",
+        "title":       "UK Bank Holiday Flight Deals: The Best Routes for Every Long Weekend",
+        "subtitle":    "May Day to August bank holiday — here's how to fly without paying peak prices",
+        "airport_names": "UK Airports",
+        "cta_airport": "STN",
+        "best_months": None,
+        "prompt_topic": (
+            "making the most of every UK bank holiday weekend in 2026 for cheap flights. Cover all four "
+            "remaining bank holidays: Easter (2-6 April), Early May bank holiday (4 May), Spring bank holiday "
+            "(25-26 May), and August bank holiday (29-31 August). "
+            "For each: name the best-value routes available, specific prices (e.g. Porto from £44 one-way for "
+            "May Day on easyJet from Bristol, Budapest from £31 on Wizz Air from Luton), departure airport "
+            "recommendations, and the booking timing sweet spot. "
+            "The key insight to drive: Thursday night or Tuesday return flights for bank holiday weekends save "
+            "£30-80 vs Friday out, Monday back. Give real examples. "
+            "Cover the bank holiday premium — how much extra you're typically paying vs the same route mid-week "
+            "in the same month. Some bank holidays are worse than others (August is brutal, May Day is often fine). "
+            "Include a section on the airports that handle bank holiday traffic best (Stansted and Bristol tend "
+            "to be less chaotic than Heathrow)."
+        ),
+    },
+    {
+        "slug":        "school-break-flights-uk-guide",
+        "emoji":       "🎒",
+        "title":       "School Holiday Flights from the UK: How to Beat the Price Spike",
+        "subtitle":    "Half term, summer, Christmas — the honest guide to flying during school breaks",
+        "airport_names": "UK Airports",
+        "cta_airport": "MAN",
+        "best_months": None,
+        "prompt_topic": (
+            "flying from the UK during school holidays — covering the real price reality and how to manage it. "
+            "Break it into the main school holiday windows: "
+            "Easter (2-6 April 2026), May half term (25-29 May), Summer (mid-July to start of September), "
+            "October half term (late October), and Christmas/New Year. "
+            "For each period, name the best-value destinations with specific prices: "
+            "Lanzarote in summer from £97 return on Ryanair from Bristol vs the same route in October half term "
+            "from £119 (still worth it). Majorca in May half term from £89 return on Jet2. "
+            "Krakow in October half term from £39 one-way on Ryanair (cheap, cold, but brilliant). "
+            "Be honest: summer holidays cost more. Show the price difference and explain when it's worth paying "
+            "it vs when you should shift your dates slightly. "
+            "Key tip: flying on the last Saturday of term (kids still in school) vs the first Saturday of holidays "
+            "can save £50-80pp. Cover this with real numbers. "
+            "Include the best family-friendly airports for school holiday travel: why Manchester, Bristol, and "
+            "Birmingham often beat Heathrow for stress and price."
+        ),
+    },
+    {
+        "slug":        "september-christmas-flight-deals-uk",
+        "emoji":       "🍂",
+        "title":       "September and Christmas Flight Deals from the UK",
+        "subtitle":    "Two of the UK's best windows to fly cheaply — here's what to book right now",
+        "airport_names": "UK Airports",
+        "cta_airport": "LGW",
+        "best_months": None,
+        "prompt_topic": (
+            "two of the best travel windows for UK flyers: September (post-summer price drop) and "
+            "Christmas/New Year. Write two distinct sections on each. "
+            "September: prices fall off a cliff after August. Give specific examples — "
+            "Athens from £67 return on easyJet in September vs £189 return in August (same route). "
+            "Split, Croatia from £79 return on Ryanair from Stansted in September. "
+            "Istanbul from £89 return on Turkish Airlines or Pegasus from Heathrow. "
+            "Rome from £54 return on Ryanair from Stansted. "
+            "Explain why September is the UK's best-kept travel secret: 24-27 degrees in most of southern Europe, "
+            "no school holiday surcharge if you don't have kids, flights half the August price. "
+            "Christmas/New Year: be specific about the price dynamics — "
+            "flying out on 23 Dec vs 24 Dec (24th is often £40-60 cheaper). "
+            "New Year's Eve city breaks: Prague, Lisbon, and Amsterdam from £89-139 return. "
+            "Best cheap Christmas sun routes: Tenerife from £107 return on Jet2 over Christmas week, "
+            "Lanzarote from £97 return on easyJet. "
+            "Practical Christmas booking tips: January is when the Christmas flight deals appear — book now "
+            "for December and lock in prices before the summer rush inflates everything further."
+        ),
+    },
+    # ── Main pipeline (original topics below) ───────────────────────────────
     {
         "slug":        "march-flight-deals-uk",
         "emoji":       "🌱",
