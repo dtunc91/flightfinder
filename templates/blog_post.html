@@ -4,8 +4,38 @@
 {% block meta_description %}{{ post.meta }}{% endblock %}
 {% block og_title %}{{ post.title }} | GetMeOutOfHere.Live{% endblock %}
 {% block og_description %}{{ post.meta }}{% endblock %}
+{% block og_type %}article{% endblock %}
 {% block twitter_title %}{{ post.title }} | GetMeOutOfHere.Live{% endblock %}
 {% block twitter_description %}{{ post.meta }}{% endblock %}
+
+{% block extra_head %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": {{ post.title | tojson }},
+  "description": {{ post.meta | tojson }},
+  "author": {
+    "@type": "Organization",
+    "name": "GetMeOutOfHere.Live",
+    "url": "https://getmeoutofhere.live"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "GetMeOutOfHere.Live",
+    "url": "https://getmeoutofhere.live",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://getmeoutofhere.live/static/og-image.webp"
+    }
+  },
+  "url": "https://getmeoutofhere.live/blog/{{ post.slug }}",
+  "mainEntityOfPage": "https://getmeoutofhere.live/blog/{{ post.slug }}"{% if post.published_at %},
+  "datePublished": "{{ post.published_at[:10] }}",
+  "dateModified": "{{ post.published_at[:10] }}"{% endif %}
+}
+</script>
+{% endblock %}
 
 {% block content %}
 <style>

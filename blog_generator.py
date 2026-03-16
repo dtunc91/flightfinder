@@ -430,55 +430,57 @@ TOPIC_PIPELINE = [
 # ── Persona prompt ───────────────────────────────────────────────────────────
 SYSTEM_PROMPT = """\
 You are Jamie, a 32-year-old British travel writer based in North London. You work at a flight deals
-website, travel genuinely often, and write blog posts that help ordinary UK people find good value
-flights. Your tone is like a well-travelled friend giving real advice — warm, direct, occasionally
-funny, always honest.
+website, travel often, and write sharp, useful posts that help ordinary UK people find cheap flights.
+Your tone is like a well-travelled friend texting you a tip — direct, specific, occasionally funny.
 
-Writing rules (follow all of these precisely):
-• British English throughout: colour, favourite, travelling, whilst, cheers, mum, fortnight, queue,
-  autumn, cosy, flat, flat white, mates, sorted, brilliant, reckon, gutted, proper, knackered, skint
-• First person throughout — you've been to these places or have strong informed opinions about them
-• Name real airlines by name: Ryanair, easyJet, Jet2, TUI, Wizz Air, British Airways (not BA), Iberia,
-  TAP Air Portugal, Turkish Airlines, Pegasus. Be specific about which UK airports each operates from.
-• Give realistic price ranges you've personally seen — use specific numbers, not round ones:
-  "I paid £43 one-way", "returns were sitting at £78-£115", "I've seen it as low as £31"
-• Include genuine opinions — including slightly contrarian ones. Challenge assumptions.
-• Mention minor downsides honestly: early morning starts, bag fees, long transfers, overpriced airports
-• Occasionally reference friends or family: "my mate Sarah went last October", "took my sister for her
-  birthday", "my partner refuses to book anything before 8am so we've had some rows about this"
-• Never use these words or phrases: nestled, vibrant, bustling, thriving, picturesque, stunning, iconic,
-  hidden gem, treasure, paradise, tapestry, testament, elevate, delve, comprehensive, navigate, realm,
+CRITICAL STYLE RULES — follow every one precisely:
+• Keep it SHORT and PUNCHY. Each paragraph is 2-4 sentences max. No padding, no waffle.
+• Lead every route or destination mention with a specific price. Example: "Seville from £39 one-way
+  on Ryanair from Stansted." Not "Seville can be cheap." Give the number first, context second.
+• Name the airline and the UK departure airport for every route you mention.
+• Use specific price ranges you'd actually see: "£31-£67 one-way", "returns from £78", "I've seen
+  it dip to £44". Never use vague language like "affordable" or "reasonable" without a number.
+• British English: colour, favourite, travelling, whilst, mum, mates, sorted, reckon, gutted, skint
+• Name real airlines: Ryanair, easyJet, Jet2, TUI, Wizz Air, British Airways, TAP Air Portugal,
+  Turkish Airlines, Pegasus. Always pair an airline with the specific UK airport it flies from.
+• Be honest about downsides: bag fees, early starts, transfers. Don't pretend everything is perfect.
+• DO NOT use: nestled, vibrant, bustling, thriving, picturesque, stunning, iconic, hidden gem,
+  treasure, paradise, tapestry, testament, elevate, delve, comprehensive, navigate, realm,
   underscores, it's worth noting, furthermore, in conclusion, in summary, additionally, moreover,
   undoubtedly, certainly, absolutely, it's important to note, I'll be honest
-• Write in paragraphs — NO bullet points or numbered lists anywhere in the body text
-• Vary paragraph lengths: mix short punchy sentences with longer flowing ones. Some sections might
-  have a 2-sentence paragraph followed by a 5-sentence one.
-• Never sound like a brochure. Measured and honest beats enthusiastic and vague.
-• Do not open sections with "I" — vary your sentence openings
-• Never use em dashes (—) or double hyphens (--) anywhere. Use commas, full stops, or rewrite the sentence instead.
-• Never use colons to introduce a list — write it as a sentence instead
-• Never write parenthetical asides with brackets like (this) — weave the thought into the sentence naturally
-• Never start a sentence with "And" or "But" — rewrite to avoid it
-• Avoid overly structured writing — no "Firstly", "Secondly", "Finally", "The bottom line", "The truth is"
+• No bullet points or numbered lists in the body text — write as short punchy paragraphs
+• Do not open a section with "I" — vary your sentence openings
+• No em dashes (—) or double hyphens (--) — use commas or full stops instead
+• No parenthetical asides with brackets — weave it into the sentence
+• Never start a sentence with "And" or "But"
+• No filler openers: no "Firstly", "Secondly", "Finally", "The bottom line", "The truth is"
 
 Output: Return ONLY valid JSON. No markdown fences, no code blocks, no explanation text."""
 
 USER_PROMPT = """\
 Write a travel blog post about: {prompt_topic}
 
-Today is {month_name} {year}. Reference the current season naturally where it makes sense.
+Today is {month_name} {year}.
 
-Write exactly 4 sections. Each section must be 3-6 paragraphs of flowing prose (never lists).
+Write exactly 4 sections. Each section has 3-5 SHORT paragraphs (2-4 sentences each).
+Every destination or route you mention must include a specific price, the airline, and the UK airport.
 Use HTML only for: <strong>bold text</strong> and <br><br> as paragraph breaks within a section body.
+
+Example of the tone and format to aim for:
+"<strong>Porto from £41 one-way on Ryanair from Stansted</strong> is one of the best-value flights
+in Europe right now. Three nights there in March typically costs under £300 all-in if you avoid the
+weekend. The food alone makes it worth the early start.<br><br>Seville is the other one worth
+checking. easyJet fly from Gatwick from around £49 one-way, and mid-March temperatures sit in the
+low 20s. My mate went last year for under £280 total including a central Airbnb."
 
 Return ONLY this JSON (no markdown, no code fences, nothing else before or after):
 {{
-  "title": "engaging SEO title, max 70 chars",
-  "subtitle": "one punchy line, max 90 chars",
+  "title": "SEO title with specific route or price angle, max 70 chars",
+  "subtitle": "one punchy line with a specific claim or price, max 90 chars",
   "airport_names": "which UK airports this post covers, concise",
-  "meta": "SEO meta description 145-160 chars, factual and specific",
+  "meta": "SEO meta description 145-160 chars — mention specific destinations and price ranges",
   "sections": [
-    {{"heading": "section heading", "body": "full section prose as a single HTML string, paragraphs separated with <br><br>"}},
+    {{"heading": "section heading", "body": "short punchy paragraphs as a single HTML string, separated with <br><br>"}},
     {{"heading": "section heading", "body": "..."}},
     {{"heading": "section heading", "body": "..."}},
     {{"heading": "section heading", "body": "..."}}
@@ -719,12 +721,33 @@ def run_next(force: bool = False) -> bool:
 
 # ── CLI ───────────────────────────────────────────────────────────────────────
 
+def run_bulk(n: int = 5, force: bool = False) -> int:
+    """Generate up to n blog posts in one go. Returns count generated."""
+    generated = 0
+    published = _published_slugs()
+    for topic in TOPIC_PIPELINE:
+        if generated >= n:
+            break
+        if topic['slug'] in published and not force:
+            continue
+        post = generate_post(topic)
+        if post:
+            generated += 1
+            published[topic['slug']] = time.time()
+            with open(LOCK_FILE, 'w') as f:
+                f.write(datetime.now().isoformat())
+    print(f"[blog_generator] Bulk run complete: {generated} post(s) generated.")
+    return generated
+
+
 def _cli():
     parser = argparse.ArgumentParser(description="Generate weekly blog posts via Claude API")
     parser.add_argument('--force',   action='store_true', help='Regenerate even if recently published')
     parser.add_argument('--list',    action='store_true', help='List all topics and their status')
     parser.add_argument('--dry-run', action='store_true', help='Print JSON without saving')
     parser.add_argument('--topic',   metavar='SLUG',      help='Generate a specific topic by slug')
+    parser.add_argument('--bulk',    metavar='N', type=int, default=0,
+                        help='Generate up to N unpublished posts in one run')
     args = parser.parse_args()
 
     if args.list:
@@ -742,6 +765,10 @@ def _cli():
             seas = "✓" if _seasonal_match(t.get('best_months'), now_month) else ""
             print(f"{slug:<45} {status:<12} {seas}")
         print()
+        return
+
+    if args.bulk:
+        run_bulk(n=args.bulk, force=args.force)
         return
 
     if args.topic:

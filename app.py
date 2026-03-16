@@ -1154,8 +1154,8 @@ def _startup_blog_generate():
             import blog_generator
             posts = blog_generator._published_slugs()
             if not posts:
-                app.logger.info("data/blog/ is empty — running startup blog generation")
-                blog_generator.run_next(force=True)
+                app.logger.info("data/blog/ is empty — generating up to 5 posts on startup")
+                blog_generator.run_bulk(n=5)
         except Exception as exc:
             app.logger.error(f"Startup blog generation error: {exc}")
     threading.Thread(target=_run, daemon=True).start()
