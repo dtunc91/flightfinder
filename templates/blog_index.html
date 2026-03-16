@@ -9,7 +9,7 @@
 <style>
   .blog-index-hero { text-align: center; padding: 40px 16px 28px; }
   .blog-index-hero h1 { font-size: 1.8rem; font-weight: 800; margin-bottom: 10px; }
-  .blog-index-hero p { color: #9fb0ff; max-width: 480px; margin: 0 auto; font-size: 0.95rem; }
+  .blog-index-hero p { color: #4b5563; max-width: 480px; margin: 0 auto; font-size: 0.95rem; }
 
   .post-grid {
     display: grid;
@@ -20,41 +20,41 @@
     padding: 0 16px 60px;
   }
   .post-card {
-    background: rgba(255,255,255,.04);
-    border: 1px solid rgba(255,255,255,.08);
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
     border-radius: 16px;
     padding: 20px;
     text-decoration: none;
     display: flex;
     flex-direction: column;
-    transition: background .15s, transform .1s;
+    transition: box-shadow .15s, transform .1s;
   }
   .post-card:hover {
-    background: rgba(255,255,255,.07);
+    box-shadow: 0 4px 16px rgba(0,0,0,.08);
     transform: translateY(-2px);
   }
   .post-card .airport-tag {
     display: inline-flex; align-items: center; gap: 5px;
-    background: rgba(110,168,255,.1); border: 1px solid rgba(110,168,255,.2);
+    background: #eff6ff; border: 1px solid #bfdbfe;
     border-radius: 20px; padding: 3px 10px;
-    font-size: 0.72rem; color: #9fb0ff; margin-bottom: 10px;
+    font-size: 0.72rem; color: #2563eb; margin-bottom: 10px;
     width: fit-content;
   }
   .post-card h2 {
-    font-size: 0.97rem; font-weight: 700; color: #eaf0ff;
+    font-size: 0.97rem; font-weight: 700; color: #111827;
     line-height: 1.35; margin-bottom: 8px;
   }
   .post-card p {
-    font-size: 0.82rem; color: #8a9bc8; line-height: 1.6;
+    font-size: 0.82rem; color: #4b5563; line-height: 1.6;
     flex: 1;
   }
   .post-card .read-more {
     margin-top: 14px; font-size: 0.8rem; font-weight: 600;
-    color: #6ea8ff;
+    color: #2563eb;
   }
   .no-posts {
     text-align: center; padding: 60px 16px;
-    color: #5a6e9e; font-size: 0.9rem;
+    color: #6b7280; font-size: 0.9rem;
   }
 </style>
 
@@ -66,8 +66,9 @@
 <div class="post-grid">
   {% for post in posts %}
   <a href="{{ url_for('blog_post', slug=post.slug) }}" class="post-card">
-    {% if post.airport_code %}
-    <span class="airport-tag"><i class="fa fa-location-dot"></i> {{ post.airport_code }}</span>
+    {% set _airport_tag = post.airport_code or (post.airport_names.split(',')[0] if post.airport_names else '') %}
+    {% if _airport_tag %}
+    <span class="airport-tag"><i class="fa fa-location-dot"></i> {{ _airport_tag }}</span>
     {% endif %}
     <h2>{{ post.title }}</h2>
     <p>{{ post.meta }}</p>

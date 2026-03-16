@@ -141,7 +141,7 @@
   <h3><i class="fa fa-magnifying-glass me-2" style="color:#2563eb"></i>Search live prices now</h3>
   <p>The prices above are typical ranges — actual fares change every day. Use our search tool for real-time prices from Aviasales.</p>
   <a href="{{ url_for('index') }}" class="btn-cta">
-    Search cheap flights from {{ post.airport_names.split(',')[0] }} <i class="fa fa-arrow-right ms-2"></i>
+    Search cheap flights{% if post.airport_names %} from {{ post.airport_names.split(',')[0] }}{% endif %} <i class="fa fa-arrow-right ms-2"></i>
   </a>
 </div>
 
