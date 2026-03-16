@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+
+{% block title %}Flight Deal Guides & Travel Tips | GetMeOutOfHere.Live{% endblock %}
+{% block meta_description %}Flight deal guides, budget travel tips, and airport breakdowns from the GetMeOutOfHere team. Find cheap flights before everyone else.{% endblock %}
+{% block og_title %}Flight Deal Guides & Travel Tips | GetMeOutOfHere.Live{% endblock %}
+{% block og_description %}Flight deal guides, budget travel tips, and airport breakdowns from the GetMeOutOfHere team.{% endblock %}
+
+{% block content %}
+<style>
+  .blog-index-hero { text-align: center; padding: 40px 16px 28px; }
+  .blog-index-hero h1 { font-size: 1.8rem; font-weight: 800; margin-bottom: 10px; }
+  .blog-index-hero p { color: #9fb0ff; max-width: 480px; margin: 0 auto; font-size: 0.95rem; }
+
+  .post-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 16px;
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 0 16px 60px;
+  }
+  .post-card {
+    background: rgba(255,255,255,.04);
+    border: 1px solid rgba(255,255,255,.08);
+    border-radius: 16px;
+    padding: 20px;
+    text-decoration: none;
+    display: flex;
+    flex-direction: column;
+    transition: background .15s, transform .1s;
+  }
+  .post-card:hover {
+    background: rgba(255,255,255,.07);
+    transform: translateY(-2px);
+  }
+  .post-card .airport-tag {
+    display: inline-flex; align-items: center; gap: 5px;
+    background: rgba(110,168,255,.1); border: 1px solid rgba(110,168,255,.2);
+    border-radius: 20px; padding: 3px 10px;
+    font-size: 0.72rem; color: #9fb0ff; margin-bottom: 10px;
+    width: fit-content;
+  }
+  .post-card h2 {
+    font-size: 0.97rem; font-weight: 700; color: #eaf0ff;
+    line-height: 1.35; margin-bottom: 8px;
+  }
+  .post-card p {
+    font-size: 0.82rem; color: #8a9bc8; line-height: 1.6;
+    flex: 1;
+  }
+  .post-card .read-more {
+    margin-top: 14px; font-size: 0.8rem; font-weight: 600;
+    color: #6ea8ff;
+  }
+  .no-posts {
+    text-align: center; padding: 60px 16px;
+    color: #5a6e9e; font-size: 0.9rem;
+  }
+</style>
+
+<div class="blog-index-hero">
+  <h1>Flight Deal Guides ✈️</h1>
+  <p>Tips, breakdowns, and cheap flight intel from the GetMeOutOfHere team.</p>
+</div>
+
+<div class="post-grid">
+  {% for post in posts %}
+  <a href="{{ url_for('blog_post', slug=post.slug) }}" class="post-card">
+    {% if post.airport_code %}
+    <span class="airport-tag"><i class="fa fa-location-dot"></i> {{ post.airport_code }}</span>
+    {% endif %}
+    <h2>{{ post.title }}</h2>
+    <p>{{ post.meta }}</p>
+    <span class="read-more">Read more →</span>
+  </a>
+  {% else %}
+  <div class="no-posts">No posts yet — check back soon.</div>
+  {% endfor %}
+</div>
+{% endblock %}

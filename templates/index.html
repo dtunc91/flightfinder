@@ -574,6 +574,7 @@
   </div>
   <div class="d-flex gap-3">
     <a href="{{ url_for('about') }}">About</a>
+    <a href="{{ url_for('blog_index') }}">Blog</a>
     <a href="{{ url_for('faq') }}">FAQ</a>
     <a href="{{ url_for('privacy') }}">Privacy</a>
     <a href="{{ url_for('terms') }}">Terms</a>
@@ -882,6 +883,14 @@
 {% endif %}
 
 <footer class="container py-4 text-center" style="color:#4a5880; font-size:0.82rem;">
+  <div class="d-flex flex-wrap justify-content-center gap-3 mb-2" style="font-size:0.83rem;">
+    <a href="{{ url_for('about') }}" style="color:#6b7eb5;">About</a>
+    <a href="{{ url_for('blog_index') }}" style="color:#6b7eb5;">Blog</a>
+    <a href="{{ url_for('faq') }}" style="color:#6b7eb5;">FAQ</a>
+    <a href="{{ url_for('privacy') }}" style="color:#6b7eb5;">Privacy</a>
+    <a href="{{ url_for('terms') }}" style="color:#6b7eb5;">Terms</a>
+    <a href="mailto:hello@getmeoutofhere.live" style="color:#6b7eb5;">Contact</a>
+  </div>
   © {{ current_year if current_year else 2025 }} GetMeOutOfHere.Live &nbsp;·&nbsp;
   Prices sourced from <a href="https://www.aviasales.com" target="_blank" rel="noopener" style="color:#6b7eb5;">Aviasales</a>
 </footer>
