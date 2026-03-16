@@ -49,9 +49,12 @@
   <script src="{{ url_for('static', filename='fontawesome-free-6.7.2-web/js/all.js') }}"></script>
   <script defer data-domain="getmeoutofhere.live" src="https://plausible.io/js/script.js"></script>
   <style>
-    body{color:#eaf0ff;background: radial-gradient(1200px 600px at 80% -10%, rgba(130,255,210,0.12), transparent 60%),
-                      radial-gradient(1200px 600px at 10% 10%, rgba(110,168,255,0.14), transparent 60%),
-                      #0b1020;}
+    body.background{
+      color:#eaf0ff;
+      background-image: radial-gradient(1200px 600px at 80% -10%, rgba(130,255,210,0.12), transparent 60%),
+                        radial-gradient(1200px 600px at 10% 10%, rgba(110,168,255,0.14), transparent 60%) !important;
+      background-color: #0b1020 !important;
+    }
     .top-nav a{ color:#9fb0ff; text-decoration:none; font-weight:600 }
     .top-nav a:hover{ color:#cfe0ff; text-decoration:underline }
     .container-narrow{max-width:900px}
