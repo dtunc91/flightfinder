@@ -1140,6 +1140,26 @@ def _scheduled_blog_run():
     except Exception as exc:
         app.logger.error(f"Blog scheduler error: {exc}")
 
+def _startup_blog_generate():
+    """
+    Run on startup: if data/blog/ has no posts (e.g. after a fresh Render deploy
+    wiped the ephemeral filesystem), regenerate the most relevant article so the
+    homepage doesn't sit empty.  Runs in a background thread so it doesn't delay
+    the server coming up.
+    """
+    import threading, time
+    def _run():
+        time.sleep(5)   # let the server finish starting before hitting the API
+        try:
+            import blog_generator
+            posts = blog_generator._published_slugs()
+            if not posts:
+                app.logger.info("data/blog/ is empty — running startup blog generation")
+                blog_generator.run_next(force=True)
+        except Exception as exc:
+            app.logger.error(f"Startup blog generation error: {exc}")
+    threading.Thread(target=_run, daemon=True).start()
+
 # Only start scheduler in the real process (not in Werkzeug's reloader watcher)
 if not (app.debug and os.environ.get('WERKZEUG_RUN_MAIN') != 'true'):
     try:
@@ -1149,6 +1169,7 @@ if not (app.debug and os.environ.get('WERKZEUG_RUN_MAIN') != 'true'):
         _scheduler.start()
     except ImportError:
         pass  # APScheduler not installed — run blog_generator.py manually or via cron
+    _startup_blog_generate()
 
 if __name__ == '__main__':
     app.run(debug=True)
