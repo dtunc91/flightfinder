@@ -1009,6 +1009,14 @@ def api_live_deals():
                 if not week_data:
                     continue  # no this-week deals for this origin
 
+                # Drop domestic flights (dest in same country as origin)
+                week_data = [
+                    f for f in week_data
+                    if airport_index.get(f.get('destination', ''), {}).get('country', '').upper() != country
+                ]
+                if not week_data:
+                    continue
+
                 best = min(week_data, key=lambda x: x.get('value', 9999))
                 dest_code = best.get('destination', '')
                 price = best.get('value', 0)
