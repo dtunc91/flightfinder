@@ -799,6 +799,48 @@
 
 </main>
 
+{% if seo_page and seo_content %}
+<section style="max-width:700px; margin:0 auto 48px; padding:0 16px;">
+
+  <div style="margin-bottom:28px;">
+    <h2 style="font-size:1.15rem; font-weight:700; color:#eaf0ff; margin-bottom:10px;">
+      About {{ seo_page.city }} Airport
+    </h2>
+    <p style="font-size:0.92rem; color:#c0ccee; line-height:1.75;">{{ seo_content.about }}</p>
+  </div>
+
+  <div style="margin-bottom:28px;">
+    <h2 style="font-size:1.15rem; font-weight:700; color:#eaf0ff; margin-bottom:14px;">
+      Popular Routes from {{ seo_page.city }}
+    </h2>
+    <div style="display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:10px;">
+      {% for dest, iata, price, airline in seo_content.routes %}
+      <div style="background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.08);
+                  border-radius:12px; padding:14px 16px; display:flex; justify-content:space-between; align-items:center;">
+        <div>
+          <div style="font-weight:600; font-size:0.92rem; color:#eaf0ff;">{{ dest }}</div>
+          <div style="font-size:0.78rem; color:#6ea8ff; margin-top:2px;">{{ airline }}</div>
+        </div>
+        <div style="font-size:1rem; font-weight:700; color:#82ffd2;">from {{ price }}</div>
+      </div>
+      {% endfor %}
+    </div>
+    <p style="font-size:0.75rem; color:#5a6e9e; margin-top:10px;">
+      <i class="fa fa-circle-info" style="margin-right:4px;"></i>
+      Prices shown are typical one-way fares seen on this route. Actual prices vary by date — use the search above for live prices.
+    </p>
+  </div>
+
+  <div>
+    <h2 style="font-size:1.15rem; font-weight:700; color:#eaf0ff; margin-bottom:10px;">
+      Tips for Flying from {{ seo_page.city }}
+    </h2>
+    <p style="font-size:0.92rem; color:#c0ccee; line-height:1.75;">{{ seo_content.tips }}</p>
+  </div>
+
+</section>
+{% endif %}
+
 <!-- GENERAL NEWSLETTER (shown when no search has been done yet) -->
 {% if not form_data.origin_code %}
 <div class="newsletter-section">
