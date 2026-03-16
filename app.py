@@ -9,6 +9,8 @@ import re
 import time
 import unicodedata
 from dotenv import load_dotenv
+import gspread
+from google.oauth2.service_account import Credentials as SACredentials
 
 load_dotenv()
 
@@ -16,6 +18,28 @@ app = Flask(__name__, template_folder='templates', static_folder='static')
 
 DATA_DIR = os.path.join(os.path.dirname(__file__), 'data')
 SUBSCRIBERS_FILE = os.path.join(DATA_DIR, 'subscribers.csv')
+
+_sheets_client = None
+
+def _get_sheet():
+    """Return the subscribers Google Sheet worksheet, caching the client."""
+    global _sheets_client
+    creds_json = os.environ.get('GOOGLE_SHEETS_CREDENTIALS')
+    sheet_id   = os.environ.get('GOOGLE_SHEETS_SPREADSHEET_ID')
+    if not creds_json or not sheet_id:
+        return None
+    if _sheets_client is None:
+        info = json.loads(creds_json)
+        scopes = ['https://www.googleapis.com/auth/spreadsheets']
+        creds = SACredentials.from_service_account_info(info, scopes=scopes)
+        _sheets_client = gspread.authorize(creds)
+    spreadsheet = _sheets_client.open_by_key(sheet_id)
+    try:
+        return spreadsheet.worksheet('subscribers')
+    except gspread.WorksheetNotFound:
+        ws = spreadsheet.add_worksheet(title='subscribers', rows=1, cols=4)
+        ws.append_row(['email', 'airport_code', 'airport_name', 'signed_up_at'])
+        return ws
 
 # Major airports for SEO landing pages + sitemap
 SEO_AIRPORTS = [
@@ -849,18 +873,29 @@ def subscribe():
     airport_name = (request.form.get('airport_name') or '').strip()
     if not email or '@' not in email or '.' not in email.split('@')[-1]:
         return jsonify({'ok': False, 'error': 'Please enter a valid email address.'}), 400
-    os.makedirs(DATA_DIR, exist_ok=True)
-    new_file = not os.path.exists(SUBSCRIBERS_FILE)
-    with open(SUBSCRIBERS_FILE, 'a', newline='', encoding='utf-8') as f:
-        w = csv.DictWriter(f, fieldnames=['email', 'airport_code', 'airport_name', 'signed_up_at'])
-        if new_file:
-            w.writeheader()
-        w.writerow({
-            'email': email,
-            'airport_code': airport_code,
-            'airport_name': airport_name,
-            'signed_up_at': datetime.utcnow().isoformat(),
-        })
+
+    row = [email, airport_code, airport_name, datetime.utcnow().isoformat()]
+
+    # Primary: Google Sheets
+    sheets_ok = False
+    try:
+        ws = _get_sheet()
+        if ws:
+            ws.append_row(row, value_input_option='RAW')
+            sheets_ok = True
+    except Exception as exc:
+        print(f"[subscribe] Sheets error: {exc}", file=__import__('sys').stderr)
+
+    # Fallback: local CSV (always written if Sheets failed)
+    if not sheets_ok:
+        os.makedirs(DATA_DIR, exist_ok=True)
+        new_file = not os.path.exists(SUBSCRIBERS_FILE)
+        with open(SUBSCRIBERS_FILE, 'a', newline='', encoding='utf-8') as f:
+            w = csv.DictWriter(f, fieldnames=['email', 'airport_code', 'airport_name', 'signed_up_at'])
+            if new_file:
+                w.writeheader()
+            w.writerow(dict(zip(['email', 'airport_code', 'airport_name', 'signed_up_at'], row)))
+
     return jsonify({'ok': True})
 
 # ---- Geo detection API ----
