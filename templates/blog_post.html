@@ -4,8 +4,38 @@
 {% block meta_description %}{{ post.meta }}{% endblock %}
 {% block og_title %}{{ post.title }} | GetMeOutOfHere.Live{% endblock %}
 {% block og_description %}{{ post.meta }}{% endblock %}
+{% block og_type %}article{% endblock %}
 {% block twitter_title %}{{ post.title }} | GetMeOutOfHere.Live{% endblock %}
 {% block twitter_description %}{{ post.meta }}{% endblock %}
+
+{% block extra_head %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": {{ post.title | tojson }},
+  "description": {{ post.meta | tojson }},
+  "author": {
+    "@type": "Organization",
+    "name": "GetMeOutOfHere.Live",
+    "url": "https://getmeoutofhere.live"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "GetMeOutOfHere.Live",
+    "url": "https://getmeoutofhere.live",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://getmeoutofhere.live/static/og-image.webp"
+    }
+  },
+  "url": "https://getmeoutofhere.live/blog/{{ post.slug }}",
+  "mainEntityOfPage": "https://getmeoutofhere.live/blog/{{ post.slug }}"{% if post.published_at %},
+  "datePublished": "{{ post.published_at[:10] }}",
+  "dateModified": "{{ post.published_at[:10] }}"{% endif %}
+}
+</script>
+{% endblock %}
 
 {% block content %}
 <style>
@@ -110,7 +140,7 @@
 <div class="cta-box">
   <h3><i class="fa fa-magnifying-glass me-2" style="color:#2563eb"></i>Search live prices now</h3>
   <p>The prices above are typical ranges — actual fares change every day. Use our search tool for real-time prices from Aviasales.</p>
-  <a href="{{ url_for('seo_airport', code=post.cta_airport) }}" class="btn-cta">
+  <a href="{{ url_for('index') }}" class="btn-cta">
     Search cheap flights from {{ post.airport_names.split(',')[0] }} <i class="fa fa-arrow-right ms-2"></i>
   </a>
 </div>
