@@ -840,6 +840,107 @@ def get_airports():
     return jsonify(results)
 
 # ---- SEO landing pages ----
+
+# Static route/price copy for major UK airports
+_AIRPORT_SEO_CONTENT = {
+    'LHR': {
+        'about': "London Heathrow (LHR) is the UK's largest airport and serves virtually every destination on the planet. For European city breaks, easyJet and British Airways compete hard on short-haul routes — which keeps prices honest. Gatwick often undercuts Heathrow on budget routes, so it's worth checking both.",
+        'routes': [
+            ('Barcelona', 'BCN', '£49', 'Vueling/BA'),
+            ('Lisbon', 'LIS', '£67', 'TAP Air Portugal'),
+            ('New York (JFK)', 'JFK', '£289', 'British Airways/Virgin'),
+            ('Dubai', 'DXB', '£219', 'Emirates'),
+            ('Amsterdam', 'AMS', '£54', 'KLM/BA'),
+            ('Rome', 'FCO', '£72', 'British Airways'),
+        ],
+        'tips': "Tuesday and Wednesday departures from Heathrow are typically £20-40 cheaper than weekends. For European routes, Stansted or Gatwick often beat Heathrow on price — worth comparing before you book.",
+    },
+    'LGW': {
+        'about': "London Gatwick (LGW) is the UK's second-busiest airport and a hub for easyJet and Norwegian. It punches well above its weight on value — especially for Southern Europe, the Canaries, and long-haul leisure routes. The South Terminal handles most easyJet flights; North Terminal is British Airways and Norwegian.",
+        'routes': [
+            ('Malaga', 'AGP', '£39', 'easyJet'),
+            ('Faro (Algarve)', 'FAO', '£44', 'easyJet'),
+            ('Tenerife', 'TFS', '£79', 'easyJet/Norwegian'),
+            ('Athens', 'ATH', '£67', 'easyJet'),
+            ('New York', 'JFK', '£249', 'Norwegian/BA'),
+            ('Split', 'SPU', '£54', 'easyJet'),
+        ],
+        'tips': "Gatwick is one of the best UK airports for last-minute European deals — easyJet regularly drops unsold seats to £29-39 in the week before departure. Set a price alert and be flexible on destination.",
+    },
+    'MAN': {
+        'about': "Manchester Airport (MAN) is the UK's busiest airport outside London and serves an enormous range of destinations directly — meaning northern England travellers rarely need to go via Heathrow. Jet2, TUI, easyJet and Ryanair all operate heavily from here, and transatlantic routes have expanded significantly.",
+        'routes': [
+            ('Majorca', 'PMI', '£69', 'Jet2/easyJet'),
+            ('Lanzarote', 'ACE', '£89', 'Jet2/TUI'),
+            ('Dubai', 'DXB', '£279', 'Emirates'),
+            ('New York', 'JFK', '£319', 'American/Virgin'),
+            ('Seville', 'SVQ', '£54', 'Ryanair'),
+            ('Corfu', 'CFU', '£79', 'Jet2'),
+        ],
+        'tips': "Manchester is excellent for family package deals — Jet2 and TUI both operate heavily here and their all-in pricing (bags, meals, transfers) often beats building a trip yourself in peak school holidays.",
+    },
+    'STN': {
+        'about': "London Stansted (STN) is Ryanair's main UK base — which means it has some of the cheapest European fares available from any UK airport. The trade-off is it's an hour from central London on the Stansted Express. For Eastern Europe, the Balkans, and budget Southern Europe routes, Stansted is hard to beat.",
+        'routes': [
+            ('Krakow', 'KRK', '£29', 'Ryanair'),
+            ('Porto', 'OPO', '£39', 'Ryanair'),
+            ('Warsaw', 'WAW', '£31', 'Ryanair/Wizz Air'),
+            ('Budapest', 'BUD', '£34', 'Ryanair/Wizz Air'),
+            ('Seville', 'SVQ', '£44', 'Ryanair'),
+            ('Bucharest', 'OTP', '£39', 'Ryanair/Wizz Air'),
+        ],
+        'tips': "Stansted has the cheapest average fares of any London airport. If you're flexible on destination, search here first — Ryanair's flash sales regularly drop European one-ways to under £20.",
+    },
+    'LTN': {
+        'about': "London Luton (LTN) is dominated by Wizz Air and easyJet, making it the go-to airport for Eastern Europe and budget Mediterranean routes. It's 30 minutes from central London by Thameslink. Smaller and less chaotic than Heathrow or Gatwick, it's a favourite for quick getaways.",
+        'routes': [
+            ('Budapest', 'BUD', '£29', 'Wizz Air'),
+            ('Bucharest', 'OTP', '£34', 'Wizz Air'),
+            ('Alicante', 'ALC', '£39', 'easyJet'),
+            ('Marrakech', 'RAK', '£54', 'easyJet'),
+            ('Prague', 'PRG', '£41', 'Wizz Air/easyJet'),
+            ('Sofia', 'SOF', '£37', 'Wizz Air'),
+        ],
+        'tips': "Wizz Air's base at Luton means Eastern European routes are often £10-20 cheaper here than from Gatwick or Heathrow. If you're heading to Romania, Bulgaria, Hungary or Poland — check Luton first.",
+    },
+    'BHX': {
+        'about': "Birmingham Airport (BHX) serves the Midlands and is a solid alternative to London airports for anyone in the region. Ryanair, easyJet, Jet2 and TUI all operate from here, with a strong network of leisure routes to Spain, Portugal, Greece and the Canaries.",
+        'routes': [
+            ('Palma, Majorca', 'PMI', '£59', 'Jet2/Ryanair'),
+            ('Alicante', 'ALC', '£44', 'Ryanair'),
+            ('Faro', 'FAO', '£49', 'Ryanair/easyJet'),
+            ('Lanzarote', 'ACE', '£84', 'Jet2/TUI'),
+            ('Tenerife', 'TFS', '£89', 'Jet2/TUI'),
+            ('Dubai', 'DXB', '£234', 'Emirates'),
+        ],
+        'tips': "Birmingham is often overlooked, but for Midlands travellers it saves significant time and often money vs driving to a London airport. Emirates' direct Dubai service makes it especially useful for long-haul.",
+    },
+    'EDI': {
+        'about': "Edinburgh Airport (EDI) is Scotland's busiest airport and has excellent connections across Europe and to North America. Ryanair, easyJet and Jet2 dominate the leisure routes, with British Airways and American Airlines covering transatlantic. It's compact, easy to navigate, and rarely as chaotic as London airports.",
+        'routes': [
+            ('London', 'LHR', '£49', 'British Airways'),
+            ('Amsterdam', 'AMS', '£54', 'KLM/easyJet'),
+            ('Faro', 'FAO', '£59', 'Ryanair/easyJet'),
+            ('New York', 'JFK', '£299', 'American Airlines'),
+            ('Paris', 'CDG', '£67', 'easyJet/Air France'),
+            ('Krakow', 'KRK', '£39', 'Ryanair'),
+        ],
+        'tips': "Edinburgh has grown significantly in recent years — transatlantic routes especially. New York direct with American is often competitive with routing via London, without the Heathrow connection stress.",
+    },
+    'BRS': {
+        'about': "Bristol Airport (BRS) is the main airport for South West England and South Wales. easyJet operates the most routes from here, with Ryanair and Jet2 covering popular holiday destinations. It's compact and quick to get through — a genuine alternative to Heathrow for anyone within range.",
+        'routes': [
+            ('Lisbon', 'LIS', '£44', 'easyJet'),
+            ('Porto', 'OPO', '£41', 'easyJet/Ryanair'),
+            ('Malaga', 'AGP', '£39', 'easyJet'),
+            ('Amsterdam', 'AMS', '£49', 'easyJet/KLM'),
+            ('Tenerife', 'TFS', '£84', 'easyJet/Jet2'),
+            ('Rome', 'FCO', '£57', 'easyJet'),
+        ],
+        'tips': "Bristol is one of the best UK regional airports for Portugal routes — both Lisbon and Porto are served frequently by easyJet, often cheaper than flying from Heathrow.",
+    },
+}
+
 @app.route('/cheap-flights-from/<string:code>')
 def seo_airport(code):
     code = code.upper()
@@ -849,6 +950,7 @@ def seo_airport(code):
         abort(404)
     label = _display_name(info.get('label') or code, code)
     city = info.get('city', '') or label
+    seo_content = _AIRPORT_SEO_CONTENT.get(code)
     return render_template(
         'index.html',
         flights=[],
@@ -863,6 +965,7 @@ def seo_airport(code):
             'trip_type': 'oneway',
         },
         seo_page={'code': code, 'label': label, 'city': city},
+        seo_content=seo_content,
     )
 
 # ---- Email price-alert signup ----
