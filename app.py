@@ -1179,6 +1179,13 @@ def _get_all_blog_posts() -> dict:
     merged.update(_load_disk_blog_posts())
     return merged
 
+@app.route('/blog')
+def blog_index():
+    posts = sorted(_get_all_blog_posts().values(),
+                   key=lambda p: p.get('published_at', ''), reverse=True)
+    return render_template('blog_index.html', posts=posts)
+
+
 @app.route('/blog/<string:slug>')
 def blog_post(slug):
     post = _get_all_blog_posts().get(slug)
@@ -1197,6 +1204,7 @@ def sitemap():
     # (url, priority, lastmod, changefreq)
     pages = [
         ('https://getmeoutofhere.live/',         '1.0', today,  'daily'),
+        ('https://getmeoutofhere.live/blog',      '0.8', today,  'weekly'),
         ('https://getmeoutofhere.live/about',     '0.5', today,  'monthly'),
         ('https://getmeoutofhere.live/faq',       '0.5', today,  'monthly'),
         ('https://getmeoutofhere.live/privacy',   '0.3', today,  'yearly'),
