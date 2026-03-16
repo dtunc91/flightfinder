@@ -1087,25 +1087,54 @@ def blog_post(slug):
 # ---- Sitemap ----
 @app.route('/sitemap.xml')
 def sitemap():
+    from datetime import timezone
     airport_index = _get_airport_index()
+    today = datetime.now(timezone.utc).strftime('%Y-%m-%d')
+
+    # (url, priority, lastmod, changefreq)
     pages = [
-        ('https://getmeoutofhere.live/', '1.0'),
-        ('https://getmeoutofhere.live/about', '0.5'),
-        ('https://getmeoutofhere.live/faq', '0.5'),
-        ('https://getmeoutofhere.live/privacy', '0.3'),
-        ('https://getmeoutofhere.live/terms', '0.3'),
+        ('https://getmeoutofhere.live/',         '1.0', today,  'daily'),
+        ('https://getmeoutofhere.live/about',     '0.5', today,  'monthly'),
+        ('https://getmeoutofhere.live/faq',       '0.5', today,  'monthly'),
+        ('https://getmeoutofhere.live/privacy',   '0.3', today,  'yearly'),
+        ('https://getmeoutofhere.live/terms',     '0.3', today,  'yearly'),
     ]
-    for slug in _get_all_blog_posts():
-        pages.append((f'https://getmeoutofhere.live/blog/{slug}', '0.7'))
+
+    # Blog posts — use published_at date if available
+    blog_dir = os.path.join(app.root_path, 'data', 'blog')
+    if os.path.isdir(blog_dir):
+        for fn in sorted(os.listdir(blog_dir)):
+            if not fn.endswith('.json'):
+                continue
+            slug = fn[:-5]
+            lastmod = today
+            try:
+                with open(os.path.join(blog_dir, fn)) as f:
+                    post = json.load(f)
+                if post.get('published_at'):
+                    lastmod = post['published_at'][:10]
+            except Exception:
+                pass
+            pages.append((f'https://getmeoutofhere.live/blog/{slug}', '0.8', lastmod, 'monthly'))
+
+    # SEO airport landing pages
     for code in SEO_AIRPORTS:
         if code in airport_index:
-            pages.append((f'https://getmeoutofhere.live/cheap-flights-from/{code}', '0.8'))
+            pages.append((f'https://getmeoutofhere.live/cheap-flights-from/{code}', '0.7', today, 'weekly'))
+
     lines = [
         '<?xml version="1.0" encoding="UTF-8"?>',
         '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">',
     ]
-    for url, priority in pages:
-        lines.append(f'  <url><loc>{url}</loc><priority>{priority}</priority></url>')
+    for url, priority, lastmod, changefreq in pages:
+        lines.append(
+            f'  <url>'
+            f'<loc>{url}</loc>'
+            f'<lastmod>{lastmod}</lastmod>'
+            f'<changefreq>{changefreq}</changefreq>'
+            f'<priority>{priority}</priority>'
+            f'</url>'
+        )
     lines.append('</urlset>')
     return '\n'.join(lines), 200, {'Content-Type': 'application/xml'}
 
