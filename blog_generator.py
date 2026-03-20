@@ -23,6 +23,8 @@ import time
 from datetime import datetime
 
 import anthropic
+from dotenv import load_dotenv
+load_dotenv()
 
 # ── Paths ────────────────────────────────────────────────────────────────────
 _HERE     = os.path.dirname(os.path.abspath(__file__))

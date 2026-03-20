@@ -977,6 +977,7 @@ def seo_airport(code):
         },
         seo_page={'code': code, 'label': label, 'city': city},
         seo_content=seo_content,
+        blog_cards=[],
     )
 
 # ---- Email price-alert signup ----
