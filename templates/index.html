@@ -14,6 +14,23 @@
 {% block twitter_title %}{{ self.og_title() }}{% endblock %}
 {% block twitter_description %}{{ self.og_description() }}{% endblock %}
 
+{% block extra_head %}
+{{ super() }}
+{% if seo_page %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {"@type": "ListItem", "position": 1, "name": "Home", "item": "https://getmeoutofhere.live"},
+    {"@type": "ListItem", "position": 2, "name": "Cheap Flights", "item": "https://getmeoutofhere.live"},
+    {"@type": "ListItem", "position": 3, "name": "Cheap Flights from {{ seo_page.city }}", "item": "https://getmeoutofhere.live/cheap-flights-from/{{ seo_page.code }}"}
+  ]
+}
+</script>
+{% endif %}
+{% endblock %}
+
 {% block main_class %}{% endblock %}
 
 {% block content %}
@@ -275,6 +292,59 @@
     transition: opacity .15s;
   }
   .hotel-link:hover { opacity: 1; color: #cfe0ff; }
+  .klook-link { color: #ff6b35; margin-top: 4px; }
+  .klook-link:hover { color: #ff9a6c; }
+
+  /* compensair banner */
+  .compensair-banner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    background: rgba(110, 168, 255, 0.07);
+    border: 1px solid rgba(110, 168, 255, 0.2);
+    border-radius: 14px;
+    padding: 16px 20px;
+    margin: 16px auto 0;
+    max-width: 700px;
+    text-decoration: none;
+    transition: background .2s, border-color .2s;
+  }
+  .compensair-banner:hover {
+    background: rgba(110, 168, 255, 0.13);
+    border-color: rgba(110, 168, 255, 0.4);
+  }
+  .compensair-banner-left {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  .compensair-icon {
+    font-size: 1.4rem;
+    color: #6ea8ff;
+    flex-shrink: 0;
+  }
+  .compensair-title {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #eaf0ff;
+  }
+  .compensair-sub {
+    font-size: 0.78rem;
+    color: #8a9cc8;
+    margin-top: 3px;
+  }
+  .compensair-cta {
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: #6ea8ff;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  @media (max-width: 520px) {
+    .compensair-banner { flex-direction: column; align-items: flex-start; }
+    .compensair-cta { align-self: flex-end; }
+  }
 
   /* ── EMAIL CAPTURE ────────────────────────────────── */
   .email-capture {
@@ -667,10 +737,10 @@
             <span class="flight-iata">{{ flight.destination_code }}</span>
           </div>
           <div class="flight-airport-name">{{ flight.destination_label }}</div>
-          <a class="hotel-link"
-             href="https://www.hotellook.com/search?destination={{ (flight.destination_city or flight.destination_code) | urlencode }}&marker=617752"
+<a class="hotel-link klook-link"
+             href="https://klook.tpm.li/17VmdJ38"
              target="_blank" rel="noopener">
-            <i class="fa fa-hotel"></i> Find hotels
+            <i class="fa fa-map-marker"></i> Things to do
           </a>
         </div>
 
@@ -703,6 +773,19 @@
     <p>No cheap flights found from <strong>{{ origin_label }}</strong>.<br>
     Try a different date or airport.</p>
   </div>
+  {% endif %}
+
+  {% if flights %}
+  <a href="https://compensair.tpm.li/ZgAo57Hu" target="_blank" rel="noopener" class="compensair-banner">
+    <div class="compensair-banner-left">
+      <span class="compensair-icon"><i class="fa fa-shield-halved"></i></span>
+      <div>
+        <div class="compensair-title">Had a delayed or cancelled flight?</div>
+        <div class="compensair-sub">You could be owed up to €600 in compensation — free to claim, no win no fee.</div>
+      </div>
+    </div>
+    <div class="compensair-cta">Check my claim <i class="fa fa-arrow-right ms-1"></i></div>
+  </a>
   {% endif %}
 
   <!-- EMAIL CAPTURE -->
@@ -768,15 +851,34 @@
     <p style="font-size:0.92rem; color:#c0ccee; line-height:1.75;">{{ seo_content.tips }}</p>
   </div>
 
+  {% if blog_cards %}
+  <div style="margin-top:28px;">
+    <h2 style="font-size:0.75rem; font-weight:700; color:#9fb0ff; text-transform:uppercase; letter-spacing:.07em; margin-bottom:12px;">
+      <i class="fa fa-compass me-1"></i> Flight Deal Guides
+    </h2>
+    <div style="display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:8px;">
+      {% for post in blog_cards[:4] %}
+      <a href="{{ url_for('blog_post', slug=post.slug) }}"
+         style="background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.08); border-radius:12px;
+                padding:14px; text-decoration:none; display:block; transition:border-color .2s, background .2s;"
+         onmouseover="this.style.background='rgba(255,255,255,.08)';this.style.borderColor='rgba(110,168,255,.3)'"
+         onmouseout="this.style.background='rgba(255,255,255,.04)';this.style.borderColor='rgba(255,255,255,.08)'">
+        <span style="font-size:1.2rem; display:block; margin-bottom:6px;">{{ post.emoji if post.emoji else '✈️' }}</span>
+        <div style="font-size:0.82rem; font-weight:600; color:#eaf0ff; line-height:1.35;">{{ post.title }}</div>
+      </a>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+
 </section>
 {% endif %}
 
-<!-- GENERAL NEWSLETTER (shown when no search has been done yet) -->
-{% if not form_data.origin_code %}
+<!-- GENERAL NEWSLETTER (always shown) -->
 <div class="newsletter-section">
   <div class="newsletter-box">
     <h3><i class="fa fa-envelope me-2" style="color:#6ea8ff"></i>Get the week's cheapest deals to your inbox</h3>
-    <p>Free. No spam. The best UK flight deals, every week.</p>
+    <p>Free. No spam. The best flight deals, every week.</p>
     <form id="newsletterForm" onsubmit="handleNewsletter(event)">
       <input type="hidden" name="airport_code" value="">
       <input type="hidden" name="airport_name" value="Newsletter">
@@ -791,7 +893,6 @@
     </form>
   </div>
 </div>
-{% endif %}
 
 <!-- BLOG / GUIDES -->
 {% if not seo_page and blog_cards %}
