@@ -1311,17 +1311,49 @@ def _startup_blog_generate():
                 "uk-bank-holiday-flight-deals",
                 "school-break-flights-uk-guide",
                 "september-christmas-flight-deals-uk",
+                # US market priority posts
+                "cheap-flights-spring-break-us",
+                "memorial-day-weekend-flights-us",
+                "cheap-domestic-flights-us-guide",
+                "cheap-flights-from-nyc-us",
+                "budget-airlines-us-guide",
             ]
             missing = [s for s in priority if s not in posts]
             if missing:
                 app.logger.info(f"Generating {len(missing)} priority blog post(s) on startup: {missing}")
                 blog_generator.run_bulk(n=len(missing))
             elif not posts:
-                app.logger.info("data/blog/ is empty — generating up to 5 posts on startup")
-                blog_generator.run_bulk(n=5)
+                app.logger.info("data/blog/ is empty — generating up to 10 posts on startup")
+                blog_generator.run_bulk(n=10)
         except Exception as exc:
             app.logger.error(f"Startup blog generation error: {exc}")
     threading.Thread(target=_run, daemon=True).start()
+
+
+@app.route('/admin/generate-posts')
+def admin_generate_posts():
+    """
+    Manually trigger blog post generation.
+    Protected by API_TOKEN query param.
+    Usage: /admin/generate-posts?token=YOUR_API_TOKEN&n=3
+    """
+    token = request.args.get('token', '')
+    if not API_TOKEN or token != API_TOKEN:
+        return jsonify({"error": "Unauthorized"}), 401
+
+    n = min(int(request.args.get('n', 3)), 10)
+    force = request.args.get('force', '').lower() == 'true'
+
+    import threading
+    def _run():
+        try:
+            import blog_generator
+            blog_generator.run_bulk(n=n, force=force)
+        except Exception as exc:
+            app.logger.error(f"Admin generate-posts error: {exc}")
+    threading.Thread(target=_run, daemon=True).start()
+
+    return jsonify({"status": "started", "n": n, "force": force})
 
 # Only start scheduler in the real process (not in Werkzeug's reloader watcher)
 if not (app.debug and os.environ.get('WERKZEUG_RUN_MAIN') != 'true'):
