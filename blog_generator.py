@@ -664,6 +664,339 @@ TOPIC_PIPELINE = [
         ),
     },
 
+    # ── UK gaps ──────────────────────────────────────────────────────────────
+    {
+        "slug":        "cheap-flights-birmingham-airport",
+        "emoji":       "🇬🇧",
+        "title":       "Cheapest Flights from Birmingham Airport: Routes Worth Booking Now",
+        "subtitle":    "The Midlands has a seriously underrated airport — here's how to use it",
+        "airport_names": "Birmingham Airport (BHX)",
+        "cta_airport": "BHX",
+        "market":      "uk",
+        "best_months": None,
+        "prompt_topic": (
+            "the best cheap flight routes from Birmingham Airport (BHX) — written for Midlands "
+            "travellers who are tired of hearing everything is easier from London. Lead with specific "
+            "prices: Alicante from £44 one-way on Ryanair, Faro from £49 on easyJet, Lanzarote from "
+            "£84 return on Jet2, Dubai from £234 on Emirates direct, Tenerife from £89 on Jet2. "
+            "Cover the airlines that operate from BHX: Ryanair, easyJet, Jet2, TUI, Emirates, Wizz Air. "
+            "Be specific about which routes are better from Birmingham vs driving to Heathrow or Stansted "
+            "— Emirates' Dubai service alone makes BHX worth considering for long-haul. "
+            "Give the honest parking/transport reality: BHX is easier to get to and cheaper to park at "
+            "than London airports for anyone within 60 miles. "
+            "Include the best seasons for each route and 3 specific trip suggestions with prices."
+        ),
+    },
+    {
+        "slug":        "greek-islands-flights-from-uk",
+        "emoji":       "🏛️",
+        "title":       "Cheap Flights to the Greek Islands from the UK: Which to Choose",
+        "subtitle":    "Corfu, Crete, Zante, Rhodes, Santorini — flights compared honestly",
+        "airport_names": "UK Airports",
+        "cta_airport": "LGW",
+        "market":      "uk",
+        "best_months": [2, 3, 4, 5, 6, 7, 8],
+        "prompt_topic": (
+            "a practical guide to flying from UK airports to the Greek islands — covering all the "
+            "main ones with honest takes on which are worth the flight price and which are overrated. "
+            "Lead with specific prices: Corfu from £67 return on easyJet from Gatwick, "
+            "Heraklion (Crete) from £79 return on easyJet from Luton, "
+            "Zante (Zakynthos) from £89 return on Jet2 from Manchester, "
+            "Rhodes from £84 return on Ryanair from Stansted, "
+            "Santorini from £134 return on easyJet from Gatwick (cheapest you'll realistically find). "
+            "Be direct about Santorini: it's expensive on the island itself, crowds are insane in July "
+            "and August, and the flights reflect that. Suggest alternatives — Naxos, Milos, Paros — "
+            "cheaper both to fly to and to stay on. "
+            "Cover the best time to visit each island: shoulder season (May/June, September) vs peak "
+            "summer. Name which airlines fly to each island and from which UK airports. "
+            "Include a section on Crete as the best-value large island — multiple airports (Heraklion "
+            "and Chania), good flight competition, and something for everyone."
+        ),
+    },
+    {
+        "slug":        "croatia-flights-from-uk",
+        "emoji":       "🌊",
+        "title":       "Cheap Flights to Croatia from the UK: Split, Dubrovnik and Beyond",
+        "subtitle":    "Croatia keeps getting more popular — but the flights are still reasonable",
+        "airport_names": "UK Airports",
+        "cta_airport": "LGW",
+        "market":      "uk",
+        "best_months": [3, 4, 5, 6, 7, 8, 9],
+        "prompt_topic": (
+            "flying from UK airports to Croatia — covering Split, Dubrovnik, and Zadar, with honest "
+            "takes on each destination and the flight options. Lead with prices: "
+            "Split from £57 one-way on easyJet from Gatwick, "
+            "Dubrovnik from £79 one-way on easyJet from Gatwick (pricier because it's more popular), "
+            "Zadar from £49 one-way on Ryanair from Stansted (the underrated option). "
+            "Be direct about Dubrovnik: it's genuinely overcrowded in July and August and the flight "
+            "premium reflects the demand. Split is a better base — easier to get around, cheaper, and "
+            "equally beautiful. Zadar barely anyone talks about but it's brilliant. "
+            "Cover the shoulder season argument for Croatia: May and September are significantly "
+            "cheaper to fly and the Adriatic is still warm enough for swimming. "
+            "Give the island-hopping angle: flying into Split, island-hopping to Hvar/Brač/Vis, "
+            "flying home from Dubrovnik — one of the best holiday formats from the UK. "
+            "Include which UK airports serve each Croatian city and whether it's worth going via a hub."
+        ),
+    },
+    {
+        "slug":        "canary-islands-winter-flights-uk",
+        "emoji":       "🌴",
+        "title":       "Canary Islands from the UK: The Reliable Winter Sun That Actually Delivers",
+        "subtitle":    "Tenerife, Lanzarote, Gran Canaria, Fuerteventura — which is worth the flight?",
+        "airport_names": "UK Airports",
+        "cta_airport": "MAN",
+        "market":      "uk",
+        "best_months": [9, 10, 11, 12, 1, 2, 3],
+        "prompt_topic": (
+            "the Canary Islands as a winter sun destination from UK airports — the four main islands "
+            "compared honestly for UK travellers: Tenerife, Lanzarote, Gran Canaria, Fuerteventura. "
+            "Lead with specific prices: "
+            "Tenerife South (TFS) from £89 return on easyJet from Manchester, "
+            "Lanzarote (ACE) from £79 return on Ryanair from Bristol, "
+            "Gran Canaria (LPA) from £84 return on Jet2 from Birmingham, "
+            "Fuerteventura (FUE) from £74 return on Ryanair from Stansted. "
+            "Give an honest island comparison: Tenerife is the most varied (Mount Teide, proper towns, "
+            "beaches), Lanzarote is volcanic and interesting if you explore, Gran Canaria has the best "
+            "all-round infrastructure, Fuerteventura is all about beaches and wind sports. "
+            "Cover which months are best for Canary Islands travel from the UK — the whole point is "
+            "reliable winter sun, so give the actual temperature and sunshine hours honestly. "
+            "Name which UK airports serve each island and which airlines dominate. "
+            "Include a section on the family vs couples angle — Tenerife and Lanzarote tend to be more "
+            "family-heavy in the resort areas; Gran Canaria has better options for couples."
+        ),
+    },
+    {
+        "slug":        "flight-delay-compensation-guide-uk",
+        "emoji":       "⚖️",
+        "title":       "Flight Delay Compensation: How to Claim What You're Owed",
+        "subtitle":    "Most passengers don't claim. The ones who do get up to €600 back.",
+        "airport_names": "UK & EU Airports",
+        "cta_airport": "LHR",
+        "market":      "uk",
+        "best_months": None,
+        "prompt_topic": (
+            "a practical guide to flight delay and cancellation compensation for UK passengers — "
+            "specifically how UK261 (the retained EU regulation) works and what passengers are "
+            "actually entitled to. This is an important consumer rights topic most passengers don't "
+            "know about. Cover: "
+            "What you're entitled to: for delays over 3 hours on routes departing the UK, or arriving "
+            "into the UK on a UK/EU carrier, passengers are owed €250-€600 depending on flight distance. "
+            "Under 1,500km = €250. 1,500-3,500km = €400. Over 3,500km = €600. "
+            "The key rule most people miss: the airline must prove 'extraordinary circumstances' to "
+            "avoid paying. Bad weather counts. Air traffic control strikes count. But technical faults "
+            "on the plane do NOT — that's the airline's responsibility. "
+            "How to make a claim: you can do it yourself by emailing the airline's customer relations "
+            "team with your flight details, delay length, and a reference to UK261/EU261. Most airlines "
+            "have a claims form on their website. Give the specific approach for Ryanair, easyJet, BA. "
+            "When to use a claims service: services like Compensair handle everything on a no-win no-fee "
+            "basis, taking roughly 25-35% commission on what they recover. Worth it if you've been "
+            "rejected by the airline or don't want the hassle of following up. "
+            "Realistic timeline: claims can take 4-12 weeks if the airline plays ball; up to 18 months "
+            "if it goes to arbitration or court. "
+            "Common rejection excuses airlines use and how to counter them. "
+            "End with a clear action step: if your flight was delayed 3+ hours in the last 6 years, "
+            "it's worth checking whether you have a claim."
+        ),
+    },
+    {
+        "slug":        "cheap-flights-turkey-from-uk",
+        "emoji":       "🕌",
+        "title":       "Turkey from the UK: Still the Best Value Beach Holiday in 2026?",
+        "subtitle":    "Antalya, Dalaman, Istanbul — the honest price check",
+        "airport_names": "UK Airports",
+        "cta_airport": "LGW",
+        "market":      "uk",
+        "best_months": [3, 4, 5, 6, 7, 8, 9, 10],
+        "prompt_topic": (
+            "Turkey as a flight destination from UK airports in 2026 — covering both the beach "
+            "resorts (Antalya and Dalaman) and Istanbul as a city break. Lead with prices: "
+            "Antalya from £119 return on Jet2 from Manchester, "
+            "Dalaman from £104 return on TUI from Birmingham, "
+            "Istanbul from £89 return on Turkish Airlines from Heathrow, "
+            "Bodrum from £114 return on easyJet from Gatwick. "
+            "Be honest about the Turkey value proposition: the Turkish lira has weakened significantly, "
+            "meaning UK visitors' money goes much further on the ground than 3-4 years ago. "
+            "A week all-inclusive in Antalya can still be done for £600-800pp including flights — "
+            "give the specific breakdown. "
+            "Cover the Istanbul angle separately: it's one of the great European (well, Eurasian) cities "
+            "and Turkish Airlines flights from Heathrow are often excellent value. "
+            "Name which UK airports serve Turkish beach resorts (charter flights via Jet2, TUI dominate) "
+            "vs Istanbul (Turkish Airlines direct from LHR, easyJet from various). "
+            "Include the honest travel advisory context — Turkey is generally very safe for tourists "
+            "in resort areas and Istanbul but check the FCO advice for border regions."
+        ),
+    },
+    # ── US gaps ───────────────────────────────────────────────────────────────
+    {
+        "slug":        "cheap-flights-from-los-angeles",
+        "emoji":       "🌴",
+        "title":       "Cheapest Flights from Los Angeles: LAX and the Alternatives",
+        "subtitle":    "LA has three usable airports — here's how to get the cheapest fare out",
+        "airport_names": "LAX, Burbank & Long Beach",
+        "cta_airport": "LAX",
+        "market":      "us",
+        "best_months": None,
+        "prompt_topic": (
+            "cheap flights from Los Angeles — covering LAX as the main hub but also Burbank (BUR) "
+            "and Long Beach (LGB) as budget alternatives worth checking. Lead with specific prices: "
+            "New York from $99 one-way on JetBlue from LAX, "
+            "Las Vegas from $39 one-way on Spirit from LAX (45 minutes, why people fly it), "
+            "Tokyo from $499 round-trip on Japan Airlines from LAX, "
+            "Cancun from $199 round-trip on Delta from LAX, "
+            "San Francisco from $49 one-way on Southwest from Burbank. "
+            "The Burbank and Long Beach angle: Southwest dominates Burbank — no bag fees, cheaper on "
+            "many routes than LAX, and the airport is dramatically easier to get through. For anyone "
+            "in the San Fernando Valley or Pasadena, Burbank beats LAX on nearly every measure. "
+            "Cover the best international routes from LAX: Pacific routes (Japan, Korea, Australia, "
+            "Philippines) where LAX has the most direct options and competitive fares. "
+            "Give the domestic sweet spots: routes where LA has the most competition and therefore "
+            "cheapest fares — Vegas, San Francisco, Seattle, Denver. "
+            "Include the booking window that works for transpacific vs domestic."
+        ),
+    },
+    {
+        "slug":        "cheap-flights-from-chicago",
+        "emoji":       "🌬️",
+        "title":       "Cheapest Flights from Chicago: O'Hare vs Midway Compared",
+        "subtitle":    "Two airports, one city — knowing which to use can save you $50-100",
+        "airport_names": "O'Hare (ORD) & Midway (MDW)",
+        "cta_airport": "ORD",
+        "market":      "us",
+        "best_months": None,
+        "prompt_topic": (
+            "cheap flights from Chicago — specifically how to use both O'Hare (ORD) and Midway (MDW) "
+            "to find the best fares. Lead with specific prices: "
+            "New York from $79 one-way on Frontier from O'Hare, "
+            "Miami from $89 one-way on Spirit from O'Hare, "
+            "Las Vegas from $59 one-way on Southwest from Midway, "
+            "Los Angeles from $99 one-way on United from O'Hare, "
+            "Cancun from $159 round-trip on American from O'Hare. "
+            "The key Chicago insight: Midway is Southwest's hub. Southwest doesn't appear on Google "
+            "Flights or most search engines, so Midway fares are systematically invisible to people "
+            "who don't check southwest.com directly. On many domestic routes, Midway beats O'Hare "
+            "on price when you factor in free bags. "
+            "Cover O'Hare's strengths: it's a massive United and American hub with unbeatable "
+            "international connectivity — transatlantic and transpacific routes that Midway can't touch. "
+            "Give the honest getting-there comparison: both airports are roughly 45 minutes from the "
+            "Loop by El train, similar cost. "
+            "Include the best seasons for cheap fares out of Chicago and 3 specific trip picks."
+        ),
+    },
+    {
+        "slug":        "cheap-flights-from-miami",
+        "emoji":       "🌊",
+        "title":       "Cheapest Flights from Miami: Latin America, Caribbean and Beyond",
+        "subtitle":    "Miami is one of the most connected airports in the western hemisphere — use it",
+        "airport_names": "Miami International (MIA) & Fort Lauderdale (FLL)",
+        "cta_airport": "MIA",
+        "market":      "us",
+        "best_months": None,
+        "prompt_topic": (
+            "cheap flights from Miami — covering both Miami International (MIA) and Fort Lauderdale "
+            "(FLL) as two airports 30 miles apart with very different airline profiles. Lead with prices: "
+            "Bogota from $179 round-trip on American from MIA, "
+            "San Juan Puerto Rico from $99 round-trip on Spirit from MIA, "
+            "London from $299 round-trip on British Airways from MIA, "
+            "Cancun from $99 round-trip on Spirit from FLL, "
+            "New York from $79 one-way on JetBlue from MIA. "
+            "The Fort Lauderdale angle: Spirit's main South Florida hub is FLL, not MIA. For Caribbean "
+            "and domestic routes on Spirit, FLL often has more flights and lower fares than MIA. "
+            "Southwest also operates from FLL. For anyone in Broward County, FLL is the obvious choice. "
+            "Cover Miami's Latin America dominance: American Airlines hubs here with the most "
+            "comprehensive Latin America network in the US — if you're flying anywhere in Central "
+            "or South America, check Miami first regardless of where you live. "
+            "Include the Caribbean sweet spots from South Florida: Bahamas, Jamaica, Aruba, Dominican "
+            "Republic — give specific prices and which airline wins on each route."
+        ),
+    },
+    {
+        "slug":        "cheap-flights-from-atlanta",
+        "emoji":       "✈️",
+        "title":       "Cheapest Flights from Atlanta: How to Use the World's Busiest Airport",
+        "subtitle":    "Delta's hub means connectivity — here's how to find the actual deals",
+        "airport_names": "Hartsfield-Jackson Atlanta (ATL)",
+        "cta_airport": "ATL",
+        "market":      "us",
+        "best_months": None,
+        "prompt_topic": (
+            "cheap flights from Atlanta Hartsfield-Jackson (ATL) — the world's busiest airport and "
+            "Delta's main hub. Lead with specific prices: "
+            "New York from $79 one-way on Delta/Spirit from ATL, "
+            "Los Angeles from $79 one-way on Spirit from ATL, "
+            "Cancun from $139 round-trip on Delta from ATL, "
+            "London from $329 round-trip on Delta/Virgin from ATL, "
+            "Paris from $349 round-trip on Delta/Air France from ATL. "
+            "The Atlanta dynamic: Delta dominates, which means excellent SkyMiles value for frequent "
+            "flyers but sometimes inflated cash fares. The counter: Spirit and Frontier both operate "
+            "heavily from ATL and regularly undercut Delta by 40-60% on leisure routes. "
+            "Cover the international options that are genuinely competitive from Atlanta: Delta's "
+            "direct routes to Europe (London, Paris, Amsterdam, Rome) are frequently price-competitive "
+            "because Delta hubs here — no connection premium. "
+            "Give the Southeast domestic sweet spots from Atlanta: routes where ATL's position as a "
+            "hub creates genuine competition — Miami, Orlando, Nashville, Charlotte, New Orleans. "
+            "Include 3 specific trip picks with prices for different traveler types."
+        ),
+    },
+    {
+        "slug":        "cheap-flights-from-san-francisco",
+        "emoji":       "🌁",
+        "title":       "Cheapest Flights from San Francisco: SFO, Oakland and San Jose",
+        "subtitle":    "Three Bay Area airports — the one you ignore is often the cheapest",
+        "airport_names": "SFO, Oakland (OAK) & San Jose (SJC)",
+        "cta_airport": "SFO",
+        "market":      "us",
+        "best_months": None,
+        "prompt_topic": (
+            "cheap flights from the San Francisco Bay Area — covering all three usable airports: "
+            "SFO (main hub), Oakland (OAK, Southwest-dominated), and San Jose (SJC, good for South Bay). "
+            "Lead with specific prices: "
+            "New York from $109 one-way on United from SFO, "
+            "Los Angeles from $49 one-way on Southwest from OAK, "
+            "Seattle from $69 one-way on Alaska from SFO, "
+            "Tokyo from $489 round-trip on ANA from SFO, "
+            "Las Vegas from $39 one-way on Southwest from OAK. "
+            "The Oakland argument: Southwest's OAK hub means no-bag-fee flights on dozens of domestic "
+            "routes. For anyone on BART's line to Coliseum, getting to OAK is just as easy as SFO "
+            "and often $30-60 cheaper. Give specific route comparisons: LA, Vegas, Denver, Phoenix "
+            "where OAK wins. "
+            "SFO's strength: transpacific routes. United, ANA, JAL, Korean Air, Cathay Pacific all "
+            "hub or focus here — Tokyo, Seoul, Hong Kong, Sydney fares are genuinely competitive "
+            "because of the competition level. "
+            "Cover San Jose: useful for South Bay residents, Alaska Airlines has solid service, "
+            "and it's dramatically easier to get through than SFO."
+        ),
+    },
+    {
+        "slug":        "us-to-europe-cheap-flights-guide",
+        "emoji":       "🌍",
+        "title":       "Cheap Flights from the US to Europe: What to Pay and When to Book",
+        "subtitle":    "Transatlantic doesn't have to cost $1,000+ — if you know the angles",
+        "airport_names": "Major US Airports",
+        "cta_airport": "JFK",
+        "market":      "us",
+        "best_months": [1, 2, 3, 9, 10, 11],
+        "prompt_topic": (
+            "a guide to finding affordable transatlantic flights from US airports to Europe — "
+            "written for Americans who assume Europe is automatically expensive to fly to. Lead with "
+            "specific prices on the best-value routes right now: "
+            "London from $349 round-trip on Norse Atlantic from JFK, "
+            "Reykjavik from $329 round-trip on Icelandair from multiple US gateways, "
+            "Lisbon from $389 round-trip on TAP Air Portugal from Newark, "
+            "Dublin from $399 round-trip on Aer Lingus from JFK, "
+            "Rome from $449 round-trip on ITA Airways from JFK. "
+            "The gateway city strategy: flying into Lisbon, Dublin or Reykjavik is consistently "
+            "cheaper than London or Paris, and they're excellent bases to explore from. Give the "
+            "price differential with examples. "
+            "Budget transatlantic carriers: Norse Atlantic and Icelandair — explain what the base fare "
+            "actually includes (not much) and the bag fee reality. When they're worth it vs when to "
+            "pay a bit more for a legacy carrier. "
+            "The seasonal price reality: January and February are the cheapest months to fly to Europe "
+            "from the US — give the specific price difference vs peak summer ($200-400 cheaper). "
+            "The booking window: 3-4 months for summer departures; 6-8 weeks for off-peak. "
+            "Which US departure cities have the most transatlantic competition: JFK, Newark, Boston, "
+            "Miami, Atlanta, Chicago, LAX — ranked by route availability and typical fares."
+        ),
+    },
     # ── US market topics ─────────────────────────────────────────────────────
     {
         "slug":        "cheap-flights-spring-break-us",
