@@ -295,6 +295,57 @@
   .klook-link { color: #ff6b35; margin-top: 4px; }
   .klook-link:hover { color: #ff9a6c; }
 
+  /* compensair banner */
+  .compensair-banner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    background: rgba(110, 168, 255, 0.07);
+    border: 1px solid rgba(110, 168, 255, 0.2);
+    border-radius: 14px;
+    padding: 16px 20px;
+    margin: 16px auto 0;
+    max-width: 700px;
+    text-decoration: none;
+    transition: background .2s, border-color .2s;
+  }
+  .compensair-banner:hover {
+    background: rgba(110, 168, 255, 0.13);
+    border-color: rgba(110, 168, 255, 0.4);
+  }
+  .compensair-banner-left {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  .compensair-icon {
+    font-size: 1.4rem;
+    color: #6ea8ff;
+    flex-shrink: 0;
+  }
+  .compensair-title {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #eaf0ff;
+  }
+  .compensair-sub {
+    font-size: 0.78rem;
+    color: #8a9cc8;
+    margin-top: 3px;
+  }
+  .compensair-cta {
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: #6ea8ff;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  @media (max-width: 520px) {
+    .compensair-banner { flex-direction: column; align-items: flex-start; }
+    .compensair-cta { align-self: flex-end; }
+  }
+
   /* ── EMAIL CAPTURE ────────────────────────────────── */
   .email-capture {
     background: rgba(110,168,255,.07);
@@ -722,6 +773,19 @@
     <p>No cheap flights found from <strong>{{ origin_label }}</strong>.<br>
     Try a different date or airport.</p>
   </div>
+  {% endif %}
+
+  {% if flights %}
+  <a href="https://compensair.tpm.li/ClbQeAmI" target="_blank" rel="noopener" class="compensair-banner">
+    <div class="compensair-banner-left">
+      <span class="compensair-icon"><i class="fa fa-shield-halved"></i></span>
+      <div>
+        <div class="compensair-title">Had a delayed or cancelled flight?</div>
+        <div class="compensair-sub">You could be owed up to €600 in compensation — free to claim, no win no fee.</div>
+      </div>
+    </div>
+    <div class="compensair-cta">Check my claim <i class="fa fa-arrow-right ms-1"></i></div>
+  </a>
   {% endif %}
 
   <!-- EMAIL CAPTURE -->
