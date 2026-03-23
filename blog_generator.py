@@ -551,6 +551,119 @@ TOPIC_PIPELINE = [
         ),
     },
 
+    {
+        "slug":        "best-time-to-book-flights-uk",
+        "emoji":       "📅",
+        "title":       "Best Time to Book Flights from the UK: What Actually Works",
+        "subtitle":    "Forget the Tuesday myth — here's what the data actually says",
+        "airport_names": "UK Airports",
+        "cta_airport": "STN",
+        "best_months": None,
+        "prompt_topic": (
+            "a practical guide to when to book cheap flights from UK airports — cutting through the "
+            "myths and giving real, useful advice. Cover: "
+            "The booking window sweet spot for short-haul European flights from the UK: typically "
+            "6-10 weeks ahead is where the best prices cluster. Give specific examples: Ryanair "
+            "from Stansted to Krakow, how the price moves from 12 weeks out to 2 weeks out. "
+            "When the Tuesday booking rule does and doesn't apply — airlines don't systematically "
+            "drop prices on Tuesdays anymore, but some flash sales do land midweek. "
+            "The Christmas and Easter booking window: why leaving it past September for Christmas "
+            "flights costs significantly more, with rough price differences. "
+            "Summer flights: the February-March window for July-August is the sweet spot before "
+            "prices spike when schools start booking. "
+            "Last-minute flights: when they work (short-haul on routes with low demand, flying "
+            "off-peak days) and when they're a gamble you'll lose (Bank Holidays, school holidays). "
+            "Price alerts: how to use them properly rather than checking daily. "
+            "Write from experience of watching flight prices move over time — give specific route "
+            "examples with rough price points at each booking stage."
+        ),
+    },
+    {
+        "slug":        "ryanair-vs-easyjet-comparison-uk",
+        "emoji":       "⚖️",
+        "title":       "Ryanair vs easyJet: Which Is Actually Cheaper in 2025?",
+        "subtitle":    "The honest all-in price comparison — bags, seats, and real totals",
+        "airport_names": "UK Airports",
+        "cta_airport": "STN",
+        "best_months": None,
+        "prompt_topic": (
+            "an honest, practical comparison of Ryanair and easyJet for UK travellers — covering "
+            "which is genuinely cheaper when you account for everything. Cover: "
+            "Base fare comparison on a few specific competitive routes: Stansted to Malaga, "
+            "Gatwick to Barcelona, Manchester to Lisbon — Ryanair typically wins on base fare but "
+            "by how much, and what the all-in looks like once you add a cabin bag. "
+            "The bag fee reality: Ryanair's small personal item (under seat only) is free, but a "
+            "10kg cabin bag costs £12-25 depending on when you book; hold bags from £20. easyJet's "
+            "small cabin bag is free, large cabin bag from £9, hold from £18. Walk through the "
+            "maths on a return trip for a couple — who wins when you include bags. "
+            "Seat selection: both charge for it, both can be skipped if you don't mind random "
+            "assignment. Ryanair charges £4-15 per seat per flight; easyJet similar. "
+            "On-time performance: easyJet's has been better historically — matters for connections. "
+            "Which airports each flies from: Ryanair dominates Stansted, Dublin, and secondary "
+            "regional airports; easyJet is stronger at Gatwick, Bristol, Edinburgh, Manchester. "
+            "The verdict: when Ryanair wins (carry-on only, flying from Stansted, booking early), "
+            "when easyJet wins (Gatwick routes, checked luggage needed, needing flexibility). "
+            "Write from genuine experience booking both regularly."
+        ),
+    },
+    {
+        "slug":        "stansted-vs-luton-comparison-uk",
+        "emoji":       "🛫",
+        "title":       "Stansted vs Luton: Which London Airport Is Cheaper to Fly From?",
+        "subtitle":    "Both are budget airline hubs — but they're not the same",
+        "airport_names": "London Stansted & Luton",
+        "cta_airport": "STN",
+        "best_months": None,
+        "prompt_topic": (
+            "a practical comparison of London Stansted (STN) and London Luton (LTN) airports for "
+            "budget travellers from London — covering prices, routes, and the travel-in logistics. "
+            "Route comparison: Stansted is Ryanair's UK hub — the route network is bigger, "
+            "especially for Eastern Europe (Krakow from £31, Bucharest from £39, Warsaw from £34), "
+            "Iberia, and Morocco. Luton is Wizz Air's UK base plus easyJet and Ryanair. "
+            "Price differences on specific routes: Stansted to Krakow vs Luton to Krakow — often "
+            "similar, but worth checking both. Wizz Air from Luton can undercut Ryanair from "
+            "Stansted on some Central/Eastern European routes. "
+            "Getting there: both are roughly 30-40 minutes from central London by train or bus. "
+            "Stansted Express from Liverpool Street is faster but more expensive (from £18 "
+            "single); the Luton train (Thameslink from St Pancras) is cheaper. National Express "
+            "coaches serve both and are cheaper but slower. "
+            "Airport experience: Stansted is larger and more modern; Luton is functional but more "
+            "cramped, especially at peak times. "
+            "The verdict: for Eastern Europe, check both — Luton's Wizz Air routes often win on "
+            "price. For Spain, Portugal, and Morocco, Stansted usually wins on frequency and fare. "
+            "Write from personal experience using both airports."
+        ),
+    },
+    {
+        "slug":        "cheap-flights-nyc-to-europe",
+        "emoji":       "🌍",
+        "title":       "Cheap Flights from New York to Europe: What to Pay and When",
+        "subtitle":    "Transatlantic doesn't have to mean expensive — if you know the angles",
+        "airport_names": "JFK & Newark",
+        "cta_airport": "JFK",
+        "market":      "us",
+        "best_months": [1, 2, 3, 9, 10, 11],
+        "prompt_topic": (
+            "a guide to finding affordable transatlantic flights from New York to Europe — "
+            "specifically from JFK and Newark. Lead with specific prices: "
+            "London from $349 round-trip on Norse Atlantic from JFK, "
+            "Reykjavik from $329 round-trip on Icelandair from JFK, "
+            "Dublin from $399 round-trip on Aer Lingus from JFK, "
+            "Lisbon from $389 round-trip on TAP Air Portugal from Newark, "
+            "Paris from $449 round-trip on Air France from JFK. "
+            "The budget transatlantic carriers: Norse Atlantic, Icelandair. What the low base fare "
+            "actually gets you (very little), what bag fees look like all-in, and when they're "
+            "worth it vs when to pay a bit more for a legacy carrier. "
+            "Seasonal pricing: January and February are the cheapest months — give the price "
+            "difference vs peak summer. The shoulder season sweet spots (late March, October). "
+            "The booking window: transatlantic needs more lead time than domestic — 3-4 months "
+            "for summer, 6-8 weeks for off-peak. "
+            "European gateway cities worth flying into instead of London: Lisbon and Dublin are "
+            "consistently cheaper to fly into and excellent bases to explore further. "
+            "Write from experience booking transatlantic flights regularly."
+        ),
+    },
+
     # ── US market topics ─────────────────────────────────────────────────────
     {
         "slug":        "cheap-flights-spring-break-us",

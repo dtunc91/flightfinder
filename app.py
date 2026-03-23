@@ -959,6 +959,8 @@ def seo_airport(code):
     label = _display_name(info.get('label') or code, code)
     city = info.get('city', '') or label
     seo_content = _AIRPORT_SEO_CONTENT.get(code)
+    all_posts = _get_all_blog_posts()
+    seo_blog_cards = list(all_posts.values())[:4]
     return render_template(
         'index.html',
         flights=[],
@@ -977,7 +979,7 @@ def seo_airport(code):
         },
         seo_page={'code': code, 'label': label, 'city': city},
         seo_content=seo_content,
-        blog_cards=[],
+        blog_cards=seo_blog_cards,
     )
 
 # ---- Email price-alert signup ----

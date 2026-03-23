@@ -14,6 +14,23 @@
 {% block twitter_title %}{{ self.og_title() }}{% endblock %}
 {% block twitter_description %}{{ self.og_description() }}{% endblock %}
 
+{% block extra_head %}
+{{ super() }}
+{% if seo_page %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {"@type": "ListItem", "position": 1, "name": "Home", "item": "https://getmeoutofhere.live"},
+    {"@type": "ListItem", "position": 2, "name": "Cheap Flights", "item": "https://getmeoutofhere.live"},
+    {"@type": "ListItem", "position": 3, "name": "Cheap Flights from {{ seo_page.city }}", "item": "https://getmeoutofhere.live/cheap-flights-from/{{ seo_page.code }}"}
+  ]
+}
+</script>
+{% endif %}
+{% endblock %}
+
 {% block main_class %}{% endblock %}
 
 {% block content %}
@@ -768,15 +785,34 @@
     <p style="font-size:0.92rem; color:#c0ccee; line-height:1.75;">{{ seo_content.tips }}</p>
   </div>
 
+  {% if blog_cards %}
+  <div style="margin-top:28px;">
+    <h2 style="font-size:0.75rem; font-weight:700; color:#9fb0ff; text-transform:uppercase; letter-spacing:.07em; margin-bottom:12px;">
+      <i class="fa fa-compass me-1"></i> Flight Deal Guides
+    </h2>
+    <div style="display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:8px;">
+      {% for post in blog_cards[:4] %}
+      <a href="{{ url_for('blog_post', slug=post.slug) }}"
+         style="background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.08); border-radius:12px;
+                padding:14px; text-decoration:none; display:block; transition:border-color .2s, background .2s;"
+         onmouseover="this.style.background='rgba(255,255,255,.08)';this.style.borderColor='rgba(110,168,255,.3)'"
+         onmouseout="this.style.background='rgba(255,255,255,.04)';this.style.borderColor='rgba(255,255,255,.08)'">
+        <span style="font-size:1.2rem; display:block; margin-bottom:6px;">{{ post.emoji if post.emoji else '✈️' }}</span>
+        <div style="font-size:0.82rem; font-weight:600; color:#eaf0ff; line-height:1.35;">{{ post.title }}</div>
+      </a>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+
 </section>
 {% endif %}
 
-<!-- GENERAL NEWSLETTER (shown when no search has been done yet) -->
-{% if not form_data.origin_code %}
+<!-- GENERAL NEWSLETTER (always shown) -->
 <div class="newsletter-section">
   <div class="newsletter-box">
     <h3><i class="fa fa-envelope me-2" style="color:#6ea8ff"></i>Get the week's cheapest deals to your inbox</h3>
-    <p>Free. No spam. The best UK flight deals, every week.</p>
+    <p>Free. No spam. The best flight deals, every week.</p>
     <form id="newsletterForm" onsubmit="handleNewsletter(event)">
       <input type="hidden" name="airport_code" value="">
       <input type="hidden" name="airport_name" value="Newsletter">
@@ -791,7 +827,6 @@
     </form>
   </div>
 </div>
-{% endif %}
 
 <!-- BLOG / GUIDES -->
 {% if not seo_page and blog_cards %}

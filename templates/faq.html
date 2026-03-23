@@ -1,17 +1,123 @@
 {% extends "base.html" %}
+
+{% block title %}Frequently Asked Questions | GetMeOutOfHere.Live{% endblock %}
+{% block meta_description %}Answers to common questions about GetMeOutOfHere.Live — how prices work, when to book, which airlines are cheapest, and how to find the best flight deals.{% endblock %}
+
+{% block extra_head %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Do the prices shown include taxes and fees?",
+      "acceptedAnswer": {"@type": "Answer", "text": "Yes — prices shown are estimates that typically include taxes and carrier-imposed fees. The final confirmed price is shown on the booking site before you pay. Budget airlines like Ryanair and easyJet may add bag fees on top, so always check what's included before confirming."}
+    },
+    {
+      "@type": "Question",
+      "name": "Why do flight prices change so often?",
+      "acceptedAnswer": {"@type": "Answer", "text": "Airlines use dynamic pricing — fares update constantly based on demand, how many seats are left, and how far out the flight is. A fare you saw an hour ago may be different now. Use the search tool for real-time prices and book quickly when you find a good deal."}
+    },
+    {
+      "@type": "Question",
+      "name": "Can I book flights directly on this site?",
+      "acceptedAnswer": {"@type": "Answer", "text": "No. GetMeOutOfHere.Live is a flight search and discovery tool. When you click Book Now, you're taken directly to the airline or travel provider's website (via Aviasales) to complete your booking safely. We never handle payment details."}
+    },
+    {
+      "@type": "Question",
+      "name": "Do you charge any fees or commissions?",
+      "acceptedAnswer": {"@type": "Answer", "text": "Never. Searching flights on this site is completely free. We earn a small referral fee from Aviasales when you click through to book — this doesn't change the price you pay."}
+    },
+    {
+      "@type": "Question",
+      "name": "How far in advance should I book to get the cheapest flights?",
+      "acceptedAnswer": {"@type": "Answer", "text": "For European short-haul flights, 6–10 weeks ahead tends to offer the best combination of price and availability. For peak periods like Christmas, Easter, and summer school holidays, book 3–5 months ahead. Last-minute deals do exist but are unpredictable — don't rely on them for important trips."}
+    },
+    {
+      "@type": "Question",
+      "name": "What is the cheapest day to fly?",
+      "acceptedAnswer": {"@type": "Answer", "text": "Tuesday and Wednesday departures are often cheaper than Friday or Sunday, when demand from leisure travellers peaks. Flying on the day itself (for flexible travellers) can also throw up last-minute deals. The difference isn't always huge — sometimes it's £10–30, occasionally much more on popular routes."}
+    },
+    {
+      "@type": "Question",
+      "name": "What is the cheapest day to book flights?",
+      "acceptedAnswer": {"@type": "Answer", "text": "The idea that Tuesday is the best day to book is largely a myth — airlines don't reliably drop prices on specific days anymore. What matters more is booking during a sale window or using a price alert to catch a drop when it happens. Sign up to our weekly deals email to hear about the best fares as they appear."}
+    },
+    {
+      "@type": "Question",
+      "name": "Is it cheaper to book one-way or return flights?",
+      "acceptedAnswer": {"@type": "Answer", "text": "On budget carriers like Ryanair, easyJet, and Wizz Air, two one-way tickets often cost less than a return — especially if you're flexible on outbound and inbound airports. On full-service airlines, returns are usually cheaper. It's worth checking both options before booking."}
+    },
+    {
+      "@type": "Question",
+      "name": "Which are the cheapest airlines to fly within Europe?",
+      "acceptedAnswer": {"@type": "Answer", "text": "Ryanair and Wizz Air consistently have the lowest base fares. easyJet is slightly more expensive but includes more flexibility. Jet2 is good value for holiday destinations and includes more bags. Always compare all-in prices including luggage — budget carrier base fares can look cheap but add up quickly with fees."}
+    },
+    {
+      "@type": "Question",
+      "name": "Does flying from a different airport save money?",
+      "acceptedAnswer": {"@type": "Answer", "text": "Often, yes. Stansted and Luton typically have lower fares than Heathrow and Gatwick for European budget routes. Manchester, Bristol, and Edinburgh can be significantly cheaper than London airports for certain destinations. The GetMeOutOfHere.Live search tool works for any UK airport — just type your nearest one."}
+    },
+    {
+      "@type": "Question",
+      "name": "What is the cheapest time of year to fly?",
+      "acceptedAnswer": {"@type": "Answer", "text": "January and February (excluding school half-term) are the cheapest months for European leisure travel. November is also good. Summer (July–August), Easter, Christmas, and all UK bank holiday weekends command a significant premium. If you can travel in term time, you'll typically pay 30–50% less."}
+    },
+    {
+      "@type": "Question",
+      "name": "How do I get flight price alerts for my airport?",
+      "acceptedAnswer": {"@type": "Answer", "text": "Search for flights from your airport using the tool on the homepage, then use the email alert signup that appears with your results. We'll notify you when prices from your airport drop. You can also sign up to the weekly deals newsletter for a curated list of the week's best fares."}
+    }
+  ]
+}
+</script>
+{% endblock %}
+
 {% block content %}
-<div class="container py-5">
-  <h1>FAQ</h1>
-  <h5>Do prices include taxes and fees?</h5>
-  <p>Yes — the prices shown are estimates that usually include taxes. The final fare is confirmed on the booking site.</p>
+<div class="container py-5" style="max-width:760px;">
+  <h1 style="font-size:1.6rem; font-weight:800; color:#eaf0ff; margin-bottom:6px;">Frequently Asked Questions</h1>
+  <p style="color:#9fb0ff; font-size:0.9rem; margin-bottom:36px;">Everything you need to know about using GetMeOutOfHere.Live.</p>
 
-  <h5>Why do prices change?</h5>
-  <p>Airline prices update constantly. What you see here is the latest we can fetch at the time of your search.</p>
+  {% set faqs = [
+    ("Do the prices shown include taxes and fees?",
+     "Yes — prices shown are estimates that typically include taxes and carrier-imposed fees. The final confirmed price is shown on the booking site before you pay. Budget airlines like Ryanair and easyJet may add bag fees on top, so always check what's included before confirming."),
+    ("Why do flight prices change so often?",
+     "Airlines use dynamic pricing — fares update constantly based on demand, remaining seats, and how far out the flight is. A fare from an hour ago may already be different. Use the search for real-time prices, and book quickly when you find something good."),
+    ("Can I book flights directly on this site?",
+     "No. GetMeOutOfHere.Live is a flight search and discovery tool. Clicking Book Now takes you directly to the airline or travel provider's site (via Aviasales) to complete your booking safely. We never handle payment details."),
+    ("Do you charge any fees or commissions?",
+     "Never. Searching is completely free. We earn a small referral fee from Aviasales when you click through to book — this doesn't change the price you pay."),
+    ("How far in advance should I book to get the cheapest flights?",
+     "For European short-haul, 6–10 weeks ahead tends to offer the best combination of price and availability. For Christmas, Easter, and summer school holidays, book 3–5 months ahead. Last-minute deals exist but are unpredictable — don't rely on them for important trips."),
+    ("What is the cheapest day to fly?",
+     "Tuesday and Wednesday departures are often cheaper than Friday or Sunday, when leisure demand peaks. The difference varies — sometimes £10–30, occasionally more on popular routes. Early morning and late night flights also tend to be cheaper than peak departure times."),
+    ("What is the cheapest day to book flights?",
+     "The Tuesday-booking myth is largely just that — airlines don't reliably drop prices on specific days anymore. What matters more is booking during a sale window or catching a fare drop with a price alert. Sign up to our weekly deals email to hear about the best fares as they appear."),
+    ("Is it cheaper to book one-way or return flights?",
+     "On budget carriers like Ryanair, easyJet, and Wizz Air, two one-way tickets often cost less than a return — especially if you mix airports on the way out and back. On full-service airlines, returns are usually cheaper. Always check both options."),
+    ("Which are the cheapest airlines to fly within Europe?",
+     "Ryanair and Wizz Air consistently have the lowest base fares. easyJet is slightly more expensive but offers more flexibility. Jet2 is good value for holiday destinations and is more generous with bags. Always compare all-in prices including luggage — a &ldquo;£19&rdquo; fare can become £80+ once you add a hold bag."),
+    ("Does flying from a different airport save money?",
+     "Often, yes. Stansted and Luton typically have lower fares than Heathrow and Gatwick for budget European routes. Manchester, Bristol, and Edinburgh can be significantly cheaper for certain destinations. The search tool works for any UK airport — just type your nearest one and compare."),
+    ("What is the cheapest time of year to fly?",
+     "January and February (outside half-term) are the cheapest months for European leisure travel. November is also quiet. Summer school holidays, Easter, Christmas, and bank holiday weekends all command a big premium. Travelling in term time typically saves 30–50%."),
+    ("How do I get flight price alerts for my airport?",
+     "Search from your airport on the homepage, then use the email alert signup that appears with your results. We'll notify you when prices drop from your airport. The weekly deals newsletter is another good option — sign up at the bottom of the homepage.")
+  ] %}
 
-  <h5>Can I book directly on this site?</h5>
-  <p>No. Clicking “Book Now” takes you to the airline or travel provider to complete your booking safely.</p>
+  {% for question, answer in faqs %}
+  <div style="margin-bottom:24px; padding-bottom:24px; border-bottom:1px solid rgba(255,255,255,.07);">
+    <h2 style="font-size:1rem; font-weight:700; color:#eaf0ff; margin-bottom:8px;">{{ question }}</h2>
+    <p style="font-size:0.92rem; color:#c0ccee; line-height:1.75; margin:0;">{{ answer }}</p>
+  </div>
+  {% endfor %}
 
-  <h5>Do you charge any extra fees?</h5>
-  <p>Never. We don’t add fees. We just help you find cheap flights.</p>
+  <div style="margin-top:32px; padding:20px 24px; background:rgba(110,168,255,.07); border:1px solid rgba(110,168,255,.2); border-radius:14px; text-align:center;">
+    <p style="font-size:0.9rem; color:#9fb0ff; margin-bottom:12px;">Still have a question?</p>
+    <a href="mailto:hello@getmeoutofhere.live" style="color:#6ea8ff; font-weight:600; font-size:0.9rem;">
+      <i class="fa fa-envelope me-1"></i> hello@getmeoutofhere.live
+    </a>
+  </div>
 </div>
 {% endblock %}
