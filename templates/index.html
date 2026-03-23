@@ -191,6 +191,15 @@
     gap: 16px;
     transition: border-color .2s, background .2s;
   }
+  .flight-flag {
+    width: 48px;
+    height: 32px;
+    object-fit: cover;
+    border-radius: 6px;
+    flex-shrink: 0;
+    opacity: 0.88;
+    box-shadow: 0 2px 6px rgba(0,0,0,.35);
+  }
   .flight-card:hover {
     background: rgba(255,255,255,.09);
     border-color: rgba(110,168,255,.3);
@@ -408,6 +417,7 @@
       flex-direction: column;
       align-items: flex-start;
     }
+    .flight-flag { display: none; }
     .flight-right {
       width: 100%;
       justify-content: space-between;
@@ -729,6 +739,13 @@
     <div id="flightsList">
       {% for flight in flights %}
       <div class="flight-card" data-price="{{ flight.price }}" data-country="{{ flight.destination_country }}" data-stops="{{ flight.num_stops }}">
+        {% if flight.destination_country %}
+        <img class="flight-flag"
+             src="https://flagcdn.com/w80/{{ flight.destination_country|lower }}.png"
+             alt="{{ flight.destination_country }}"
+             loading="lazy"
+             onerror="this.style.display='none'">
+        {% endif %}
         <div class="flight-dest">
           <div class="flight-dest-top">
             <span class="flight-city">
