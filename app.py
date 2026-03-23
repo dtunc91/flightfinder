@@ -947,6 +947,103 @@ _AIRPORT_SEO_CONTENT = {
         ],
         'tips': "Bristol is one of the best UK regional airports for Portugal routes — both Lisbon and Porto are served frequently by easyJet, often cheaper than flying from Heathrow.",
     },
+    # ── US Airports ──────────────────────────────────────────────────────────
+    'JFK': {
+        'about': "John F. Kennedy International Airport (JFK) is New York's main international gateway and one of the busiest airports in the world. It's a hub for American Airlines, Delta, and JetBlue, with extensive routes to Europe, the Caribbean, Latin America, and Asia. Terminal 4 handles most international arrivals; JetBlue operates from Terminal 5.",
+        'routes': [
+            ('London (LHR)', 'LHR', '$289', 'British Airways/Virgin'),
+            ('Paris (CDG)', 'CDG', '$319', 'Air France/Delta'),
+            ('Cancún', 'CUN', '$179', 'JetBlue/American'),
+            ('Los Angeles', 'LAX', '$99', 'JetBlue/Delta'),
+            ('Miami', 'MIA', '$79', 'American Airlines'),
+            ('Amsterdam (AMS)', 'AMS', '$349', 'KLM/Delta'),
+        ],
+        'tips': "Tuesday and Wednesday are typically the cheapest days to fly out of JFK. For transatlantic routes, booking 6–10 weeks ahead and avoiding school holidays (June–August, Christmas) can save $150–300 per person. JetBlue often has the best domestic fares from JFK.",
+    },
+    'LAX': {
+        'about': "Los Angeles International Airport (LAX) is the primary airport for Southern California and the second-busiest in the US. It's a major Pacific gateway with strong competition across Asia and Australia routes, and dozens of carriers offering domestic flights across the country. United, American, Delta, and Southwest all operate heavily here.",
+        'routes': [
+            ('New York (JFK)', 'JFK', '$99', 'JetBlue/Delta'),
+            ('Tokyo (NRT)', 'NRT', '$499', 'Japan Airlines/ANA'),
+            ('London (LHR)', 'LHR', '$379', 'British Airways/Virgin'),
+            ('Las Vegas', 'LAS', '$49', 'Southwest/Spirit'),
+            ('Cancún', 'CUN', '$199', 'American/Delta'),
+            ('Sydney (SYD)', 'SYD', '$649', 'Qantas/United'),
+        ],
+        'tips': "LAX has strong competition on transcontinental and transpacific routes — use Google Flights' price calendar to find the cheapest week. For domestic routes, Southwest (which doesn't appear on most search engines) often has the lowest fares; check southwest.com directly.",
+    },
+    'ORD': {
+        'about': "Chicago O'Hare International Airport (ORD) is one of the world's busiest airports and a major hub for both American Airlines and United Airlines. Its central location makes it an excellent connecting point for both coasts and transatlantic routes. Midway Airport (MDW) on the south side is worth checking for Southwest fares.",
+        'routes': [
+            ('New York (JFK)', 'JFK', '$89', 'American/United'),
+            ('London (LHR)', 'LHR', '$349', 'American/British Airways'),
+            ('Cancún', 'CUN', '$159', 'American/United'),
+            ('Los Angeles', 'LAX', '$89', 'American/United'),
+            ('Miami', 'MIA', '$79', 'American Airlines'),
+            ('Frankfurt (FRA)', 'FRA', '$379', 'Lufthansa/United'),
+        ],
+        'tips': "O'Hare is highly competitive for transatlantic routes — Lufthansa and United both hub here, which drives European fares down. Also check Chicago Midway for Southwest fares on domestic routes, which are frequently $20–40 cheaper than O'Hare equivalents.",
+    },
+    'DFW': {
+        'about': "Dallas/Fort Worth International Airport (DFW) is American Airlines' primary hub and one of the largest airports in the world by land area. It offers some of the most extensive domestic connectivity in the US, plus strong international routes to Latin America, Europe, and Asia. The airport's five terminals are connected by the Skylink automated train.",
+        'routes': [
+            ('New York (JFK)', 'JFK', '$99', 'American Airlines'),
+            ('London (LHR)', 'LHR', '$359', 'American/British Airways'),
+            ('Cancún', 'CUN', '$149', 'American Airlines'),
+            ('Los Angeles', 'LAX', '$79', 'American/Southwest'),
+            ('Mexico City (MEX)', 'MEX', '$129', 'American/Aeromexico'),
+            ('Tokyo (NRT)', 'NRT', '$549', 'American/Japan Airlines'),
+        ],
+        'tips': "American Airlines dominates DFW, which means loyalty programme members get excellent value — but comparison shopping with United and Delta on major routes often reveals competitive alternatives. Latin America routes from DFW are frequently among the cheapest in the country.",
+    },
+    'ATL': {
+        'about': "Hartsfield-Jackson Atlanta International Airport (ATL) is the world's busiest airport by passenger numbers and Delta Air Lines' main hub. Its position in the southeast makes it the most connected airport in the US for domestic travel, and it has extensive international routes to Europe, Latin America, and Africa.",
+        'routes': [
+            ('New York (JFK)', 'JFK', '$79', 'Delta/American'),
+            ('London (LHR)', 'LHR', '$329', 'Delta/Virgin'),
+            ('Cancún', 'CUN', '$139', 'Delta/Southwest'),
+            ('Los Angeles', 'LAX', '$79', 'Delta/Spirit'),
+            ('Paris (CDG)', 'CDG', '$349', 'Delta/Air France'),
+            ('Miami', 'MIA', '$59', 'Delta/American'),
+        ],
+        'tips': "Atlanta is Delta's fortress hub — SkyMiles members get exceptional value on international routes. For budget domestic travel, Spirit and Frontier both operate heavily from ATL and regularly undercut Delta by 40–60% on leisure routes.",
+    },
+    'DEN': {
+        'about': "Denver International Airport (DEN) is the fifth-busiest airport in the US and a key hub for United Airlines and Southwest. Its central location in the Rockies makes it a natural gateway for the Mountain West, and it has grown into a major connecting hub for both coasts. Frontier Airlines is also based here.",
+        'routes': [
+            ('New York (JFK)', 'JFK', '$89', 'United/Frontier'),
+            ('Los Angeles', 'LAX', '$69', 'United/Southwest'),
+            ('London (LHR)', 'LHR', '$389', 'United/British Airways'),
+            ('Chicago (ORD)', 'ORD', '$79', 'United/American'),
+            ('Cancún', 'CUN', '$169', 'United/Southwest'),
+            ('San Francisco', 'SFO', '$69', 'United/Southwest'),
+        ],
+        'tips': "Denver is one of the best airports in the US for budget airline competition — Frontier is based here and Spirit also operates heavily, keeping fares low on domestic routes. For ski season (Dec–Mar), book at least 8 weeks ahead as prices spike sharply around the holiday period.",
+    },
+    'SFO': {
+        'about': "San Francisco International Airport (SFO) is the primary gateway for the Bay Area and a major Pacific hub for United Airlines. It has exceptional connectivity to Asia — especially Japan, China, Korea, and Southeast Asia — and strong transatlantic routes. Alaska Airlines also operates heavily here for West Coast domestic routes.",
+        'routes': [
+            ('New York (JFK)', 'JFK', '$109', 'United/JetBlue'),
+            ('Tokyo (NRT)', 'NRT', '$489', 'United/ANA/Japan Airlines'),
+            ('London (LHR)', 'LHR', '$399', 'United/British Airways'),
+            ('Los Angeles', 'LAX', '$59', 'Alaska/Southwest'),
+            ('Seoul (ICN)', 'ICN', '$449', 'Korean Air/Asiana'),
+            ('Cancún', 'CUN', '$219', 'United/Alaska'),
+        ],
+        'tips': "SFO has some of the best Asia-Pacific fares in the US due to intense competition between US and Asian carriers. For domestic flights, also check Oakland (OAK) and San Jose (SJC) — both are 45–60 minutes from SF and Southwest/Alaska often offer significantly cheaper fares.",
+    },
+    'MIA': {
+        'about': "Miami International Airport (MIA) is American Airlines' second-largest hub and the top US gateway for Latin America and the Caribbean. If you're flying anywhere in Central or South America, Miami is almost always the cheapest and most direct option. It's also a major transatlantic hub with strong routes to Europe.",
+        'routes': [
+            ('London (LHR)', 'LHR', '$299', 'British Airways/American'),
+            ('Bogotá (BOG)', 'BOG', '$179', 'American/Avianca'),
+            ('Cancún', 'CUN', '$99', 'American/Spirit'),
+            ('New York (JFK)', 'JFK', '$79', 'American/JetBlue'),
+            ('Lima (LIM)', 'LIM', '$249', 'American/LATAM'),
+            ('Madrid (MAD)', 'MAD', '$319', 'Iberia/American'),
+        ],
+        'tips': "Miami is unbeatable for Latin America — American Airlines hubs here and competes with LATAM and Avianca on virtually every South American route, keeping prices low. For Caribbean islands, Spirit and Frontier run frequent flash sales from MIA that can drop fares to $39–79 one-way.",
+    },
 }
 
 @app.route('/cheap-flights-from/<string:code>')
