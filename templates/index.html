@@ -686,12 +686,7 @@
             <span class="flight-iata">{{ flight.destination_code }}</span>
           </div>
           <div class="flight-airport-name">{{ flight.destination_label }}</div>
-          <a class="hotel-link"
-             href="https://www.hotellook.com/search?destination={{ (flight.destination_city or flight.destination_code) | urlencode }}&marker=617752"
-             target="_blank" rel="noopener">
-            <i class="fa fa-hotel"></i> Find hotels
-          </a>
-          <a class="hotel-link klook-link"
+<a class="hotel-link klook-link"
              href="https://klook.tpm.li/17VmdJ38"
              target="_blank" rel="noopener">
             <i class="fa fa-map-marker"></i> Things to do
