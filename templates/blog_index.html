@@ -9,7 +9,7 @@
 <style>
   .blog-index-hero { text-align: center; padding: 40px 16px 28px; }
   .blog-index-hero h1 { font-size: 1.8rem; font-weight: 800; margin-bottom: 10px; }
-  .blog-index-hero p { color: #4b5563; max-width: 480px; margin: 0 auto; font-size: 0.95rem; }
+  .blog-index-hero p { color: #9fb0ff; max-width: 480px; margin: 0 auto; font-size: 0.95rem; }
 
   .post-grid {
     display: grid;
@@ -20,41 +20,41 @@
     padding: 0 16px 60px;
   }
   .post-card {
-    background: #ffffff;
-    border: 1px solid #e5e7eb;
+    background: rgba(255,255,255,.055);
+    border: 1px solid rgba(255,255,255,.1);
     border-radius: 16px;
     padding: 20px;
     text-decoration: none;
     display: flex;
     flex-direction: column;
-    transition: box-shadow .15s, transform .1s;
+    transition: border-color .2s, background .2s;
   }
   .post-card:hover {
-    box-shadow: 0 4px 16px rgba(0,0,0,.08);
-    transform: translateY(-2px);
+    background: rgba(255,255,255,.09);
+    border-color: rgba(110,168,255,.3);
   }
   .post-card .airport-tag {
     display: inline-flex; align-items: center; gap: 5px;
-    background: #eff6ff; border: 1px solid #bfdbfe;
+    background: rgba(110,168,255,.2); border: 1px solid rgba(110,168,255,.3);
     border-radius: 20px; padding: 3px 10px;
-    font-size: 0.72rem; color: #2563eb; margin-bottom: 10px;
+    font-size: 0.72rem; color: #6ea8ff; margin-bottom: 10px;
     width: fit-content;
   }
   .post-card h2 {
-    font-size: 0.97rem; font-weight: 700; color: #111827;
+    font-size: 0.97rem; font-weight: 700; color: #eaf0ff;
     line-height: 1.35; margin-bottom: 8px;
   }
   .post-card p {
-    font-size: 0.82rem; color: #4b5563; line-height: 1.6;
+    font-size: 0.82rem; color: #9fb0ff; line-height: 1.6;
     flex: 1;
   }
   .post-card .read-more {
     margin-top: 14px; font-size: 0.8rem; font-weight: 600;
-    color: #2563eb;
+    color: #6ea8ff;
   }
   .no-posts {
     text-align: center; padding: 60px 16px;
-    color: #6b7280; font-size: 0.9rem;
+    color: #9fb0ff; font-size: 0.9rem;
   }
 </style>
 

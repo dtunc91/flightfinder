@@ -23,6 +23,8 @@ import time
 from datetime import datetime
 
 import anthropic
+from dotenv import load_dotenv
+load_dotenv()
 
 # ── Paths ────────────────────────────────────────────────────────────────────
 _HERE     = os.path.dirname(os.path.abspath(__file__))
@@ -548,9 +550,231 @@ TOPIC_PIPELINE = [
             "works. Write from genuine experience — include the moment that made the trip."
         ),
     },
+
+    # ── US market topics ─────────────────────────────────────────────────────
+    {
+        "slug":        "cheap-flights-spring-break-us",
+        "emoji":       "🌴",
+        "title":       "Cheap Flights for Spring Break 2026: Best Deals from US Airports",
+        "subtitle":    "Spring break doesn't have to cost a fortune — if you book the right way",
+        "airport_names": "US Airports",
+        "cta_airport": "JFK",
+        "market":      "us",
+        "best_months": [1, 2, 3],
+        "prompt_topic": (
+            "cheap flights for spring break 2026 from major US airports — targeting March and April "
+            "travelers. Lead with specific prices on the best-value routes: "
+            "Cancun from $189 round-trip on Spirit from Chicago O'Hare, "
+            "San Juan Puerto Rico from $149 round-trip on JetBlue from JFK, "
+            "Las Vegas from $109 round-trip on Frontier from Atlanta Hartsfield, "
+            "Nassau Bahamas from $229 round-trip on American from Miami, "
+            "Cabo San Lucas from $249 round-trip on Delta from LAX. "
+            "Explain the spring break booking window — why booking 6-8 weeks out is critical vs "
+            "leaving it to the last minute when prices double. "
+            "Cover the college spring break dates (mid-March) vs family spring break (late March/early April) "
+            "and how the price difference between those windows is real. "
+            "Give honest takes on Spirit and Frontier — yes the base fare is cheap, but name the bag "
+            "fees upfront so nobody gets a nasty surprise at the gate. "
+            "End with 3 concrete route picks with prices and airlines for someone booking this week."
+        ),
+    },
+    {
+        "slug":        "memorial-day-weekend-flights-us",
+        "emoji":       "🇺🇸",
+        "title":       "Memorial Day Weekend Flights: Where to Go and What to Pay",
+        "subtitle":    "Three-day weekend, a cheap flight, and somewhere that isn't your couch",
+        "airport_names": "US Airports",
+        "cta_airport": "ORD",
+        "market":      "us",
+        "best_months": [3, 4, 5],
+        "prompt_topic": (
+            "cheap flights for Memorial Day weekend 2026 from US airports — the last Monday of May, "
+            "making it a three-day weekend. Lead with specific prices: "
+            "New Orleans from $149 round-trip on Southwest from Dallas Love Field, "
+            "Denver from $119 round-trip on Frontier from Chicago O'Hare, "
+            "Cancun from $229 round-trip on United from Houston Intercontinental, "
+            "Miami from $139 round-trip on Spirit from New York LaGuardia, "
+            "Nashville from $99 round-trip on American from Charlotte Douglas. "
+            "Be specific about the booking timing: Memorial Day fares from major US airports spike "
+            "hard in April — what's bookable in March vs what it looks like in May. "
+            "Cover the Thursday night departure trick — flying out Thursday evening and back Tuesday "
+            "morning can save $60-100 vs the obvious Friday/Monday flights. "
+            "Give the honest truth: Memorial Day weekend is one of the busiest travel weekends of "
+            "the year, so airports will be packed. Name which airports handle it better. "
+            "Include 3 concrete trip ideas for different budgets: under $150 round-trip, $150-$250, $250+."
+        ),
+    },
+    {
+        "slug":        "labor-day-weekend-cheap-flights-us",
+        "emoji":       "✈️",
+        "title":       "Labor Day Weekend Flights: Best Deals Before Summer Ends",
+        "subtitle":    "One last summer trip — and the prices are usually better than you'd think",
+        "airport_names": "US Airports",
+        "cta_airport": "LAX",
+        "market":      "us",
+        "best_months": [6, 7, 8],
+        "prompt_topic": (
+            "cheap flights for Labor Day weekend 2026 from US airports — first Monday of September, "
+            "one of the most underrated long weekend travel windows of the year. Lead with prices: "
+            "San Francisco from $139 round-trip on Southwest from Los Angeles, "
+            "Cancun from $199 round-trip on Spirit from Atlanta, "
+            "Seattle from $129 round-trip on Alaska Airlines from Portland, "
+            "New York City from $109 round-trip on JetBlue from Boston Logan, "
+            "Chicago from $119 round-trip on United from Detroit Metro. "
+            "The key insight: Labor Day is often cheaper than Memorial Day or Fourth of July because "
+            "families are already back in school-prep mode. Give the specific price difference with "
+            "examples on the same routes. "
+            "Cover the domestic beach route options that still make sense in early September: "
+            "Florida, Carolinas, California coast — warm enough, crowds thinner than August. "
+            "Name the airlines most likely to discount Labor Day seats and when to watch for sales. "
+            "End with 3 specific trip picks for different traveler types: solo, couple, group."
+        ),
+    },
+    {
+        "slug":        "thanksgiving-flights-cheap-us",
+        "emoji":       "🦃",
+        "title":       "Cheap Thanksgiving Flights 2026: How to Actually Find Them",
+        "subtitle":    "Yes, Thanksgiving flights are expensive. Here's how to cut the damage.",
+        "airport_names": "US Airports",
+        "cta_airport": "ATL",
+        "market":      "us",
+        "best_months": [9, 10, 11],
+        "prompt_topic": (
+            "finding affordable Thanksgiving flights in 2026 — the most expensive domestic travel "
+            "week of the year. Be direct about the reality: prices are high, but there are still "
+            "ways to reduce the damage. Cover specific prices: "
+            "New York JFK to LAX from $289 round-trip on JetBlue if booked by October, "
+            "Chicago O'Hare to Miami from $219 round-trip on American booked in September, "
+            "Dallas to Denver from $149 round-trip on Frontier booked early. "
+            "The date strategy matters more than anything else: flying Tuesday instead of Wednesday "
+            "before Thanksgiving saves $80-150 on most routes. Flying back Saturday instead of "
+            "Sunday saves another $60-100. Give real numbers on this. "
+            "Cover the booking window honestly: the best Thanksgiving fares appear in August and "
+            "September. By October they're rising. By November you're paying full freight. "
+            "Address the Spirit/Frontier question for Thanksgiving: sometimes worth it for short "
+            "hops, genuinely not worth it for cross-country when bags and stress are factored in. "
+            "Include a section on alternatives to flying — Amtrak and driving for under-4-hour trips."
+        ),
+    },
+    {
+        "slug":        "cheap-domestic-flights-us-guide",
+        "emoji":       "🗺️",
+        "title":       "How to Find Cheap Domestic Flights in the US: What Actually Works",
+        "subtitle":    "Forget the myths — here's what genuinely gets you a cheaper ticket",
+        "airport_names": "US Airports",
+        "cta_airport": "ORD",
+        "market":      "us",
+        "best_months": None,
+        "prompt_topic": (
+            "a practical guide to finding cheap domestic flights in the US — what actually works "
+            "versus what's just travel myth. Cover: "
+            "The Tuesday/Wednesday booking rule — it's mostly dead now but here's when it still "
+            "applies. Specific examples of routes where midweek departures save money: "
+            "Chicago to Denver on Wednesday from $89 one-way on Frontier vs $149 on Friday. "
+            "The 6-week sweet spot for domestic booking vs the 3-month rule for major holidays. "
+            "Budget airline reality check: Spirit from $39 one-way Chicago to Orlando sounds great "
+            "until you add a carry-on ($79) and a checked bag ($89). Give the real all-in math. "
+            "Southwest's no-fee bag policy and when it genuinely beats Spirit on total price. "
+            "JetBlue's Mint business class fare sales — sometimes $299 transcontinental when "
+            "economy is $189, worth knowing about. "
+            "The Google Flights date grid as the single most useful tool for domestic flight hunting. "
+            "Positioning flights: flying into a nearby secondary airport (Midway instead of O'Hare, "
+            "Oakland instead of SFO, Fort Lauderdale instead of Miami) and the actual savings. "
+            "Write from genuine experience of booking hundreds of domestic flights."
+        ),
+    },
+    {
+        "slug":        "cheap-flights-from-nyc-us",
+        "emoji":       "🗽",
+        "title":       "Cheapest Flights from New York: JFK, LaGuardia and Newark Compared",
+        "subtitle":    "Three airports, one city, very different prices — here's how to play it",
+        "airport_names": "JFK, LaGuardia & Newark",
+        "cta_airport": "JFK",
+        "market":      "us",
+        "best_months": None,
+        "prompt_topic": (
+            "the cheapest flights you can get from New York's three airports — JFK, LaGuardia, and "
+            "Newark — and how to choose between them. Cover: "
+            "Which airport is cheapest for which routes: Newark tends to have better transatlantic "
+            "deals on United; JetBlue dominates JFK for domestic and Caribbean; LaGuardia is best "
+            "for short-haul domestic hops. Give specific route examples with prices. "
+            "Domestic deals from NYC right now: "
+            "Miami from $89 one-way on Spirit from LaGuardia, "
+            "Chicago from $79 one-way on Frontier from Newark, "
+            "Los Angeles from $149 one-way on JetBlue from JFK, "
+            "New Orleans from $119 one-way on American from JFK, "
+            "San Juan Puerto Rico from $139 one-way on JetBlue from JFK. "
+            "International deals: London from $399 round-trip on Norse Atlantic from JFK, "
+            "Cancun from $219 round-trip on JetBlue from JFK, "
+            "Reykjavik from $349 round-trip on Icelandair from JFK. "
+            "The practical airport comparison: LaGuardia is closest to Manhattan but has the worst "
+            "infrastructure; JFK is the most connected but slowest to get to from midtown; Newark "
+            "is underrated if you're coming from Brooklyn or New Jersey. "
+            "Include the best times of year to fly from NYC for the lowest fares on each route type."
+        ),
+    },
+    {
+        "slug":        "budget-airlines-us-guide",
+        "emoji":       "💸",
+        "title":       "US Budget Airlines Ranked: Spirit, Frontier, Allegiant — Worth It?",
+        "subtitle":    "The honest truth about ultra-low-cost carriers and when to actually use them",
+        "airport_names": "US Airports",
+        "cta_airport": "ORD",
+        "market":      "us",
+        "best_months": None,
+        "prompt_topic": (
+            "an honest, practical ranking of US budget airlines — Spirit, Frontier, Allegiant, and "
+            "briefly Sun Country — covering when they're genuinely worth it and when they're not. "
+            "Spirit: base fares from $39 one-way sound incredible. Walk through a real example: "
+            "Chicago to Orlando, Spirit $49 base + $89 checked bag + $79 carry-on + $25 seat = $242 "
+            "vs Southwest at $189 all-in including two free bags. When Spirit actually wins: short "
+            "hops under 2 hours where you're traveling carry-on only. "
+            "Frontier: similar model to Spirit, slightly better seat pitch. Frontier's GoWild pass "
+            "for frequent flyers — explain what it is and whether it's actually useful. "
+            "Allegiant: different beast entirely — flies point-to-point from smaller secondary "
+            "airports to leisure destinations (Vegas, Orlando, Florida beaches). Fares from $59 "
+            "one-way from mid-size cities that Southwest doesn't serve. Works well for specific "
+            "trips; terrible for connections. "
+            "Southwest: not ultra-budget but worth including — no change fees, two free checked "
+            "bags, and the points system is genuinely good. When it beats the ULCC carriers on "
+            "real all-in price. "
+            "End with a clear framework: use budget airlines when you have no checked bags, the "
+            "route is under 3 hours, and you've done the all-in price math."
+        ),
+    },
+    {
+        "slug":        "fourth-of-july-flights-us",
+        "emoji":       "🎆",
+        "title":       "Fourth of July Weekend Flights: Where to Go Without Overpaying",
+        "subtitle":    "July 4th travel is brutal on price — unless you know which routes to check",
+        "airport_names": "US Airports",
+        "cta_airport": "LAX",
+        "market":      "us",
+        "best_months": [4, 5, 6],
+        "prompt_topic": (
+            "cheap flights for Fourth of July weekend 2026 from US airports — one of the three "
+            "most expensive domestic travel weekends of the year alongside Thanksgiving and "
+            "Memorial Day. Be direct: prices are high, but some routes and strategies still work. "
+            "Cover specific prices on routes that hold value: "
+            "Seattle from $149 round-trip on Alaska from San Francisco, "
+            "Denver from $129 round-trip on Frontier from Chicago, "
+            "Nashville from $119 round-trip on Southwest from Atlanta, "
+            "New York from $99 round-trip on JetBlue from Boston. "
+            "The counterintuitive July 4th move: fly TO a big fireworks city rather than away "
+            "from it — NYC, DC, Chicago, Boston all have the best Fourth celebrations and "
+            "inbound fares are sometimes lower than outbound. "
+            "Explain the date math: July 4th falls on a Saturday in 2026, making it a natural "
+            "long weekend. Flying Thursday/returning Monday often beats the Friday/Sunday pattern. "
+            "Destinations that genuinely work for July 4th weekend: national parks (book way "
+            "ahead on accommodation), mountain towns, coastal drives. "
+            "Name which airlines are most likely to run Fourth of July sales and when to watch."
+        ),
+    },
 ]
 
-# ── Persona prompt ───────────────────────────────────────────────────────────
+# ── Persona prompts ──────────────────────────────────────────────────────────
+
+# UK persona
 SYSTEM_PROMPT = """\
 You are Jamie, a 32-year-old British travel writer based in North London. You work at a flight deals
 website, travel often, and write sharp, useful posts that help ordinary UK people find cheap flights.
@@ -602,6 +826,72 @@ Return ONLY this JSON (no markdown, no code fences, nothing else before or after
   "subtitle": "one punchy line with a specific claim or price, max 90 chars",
   "airport_names": "which UK airports this post covers, concise",
   "meta": "SEO meta description 145-160 chars — mention specific destinations and price ranges",
+  "sections": [
+    {{"heading": "section heading", "body": "short punchy paragraphs as a single HTML string, separated with <br><br>"}},
+    {{"heading": "section heading", "body": "..."}},
+    {{"heading": "section heading", "body": "..."}},
+    {{"heading": "section heading", "body": "..."}}
+  ],
+  "cta_airport": "{cta_airport}"
+}}
+
+Topic brief: {prompt_topic}"""
+
+# US persona
+US_SYSTEM_PROMPT = """\
+You are Alex, a 34-year-old American travel writer based in Brooklyn, New York. You work at a flight
+deals website, fly constantly, and write sharp, useful posts that help regular Americans find cheap
+flights. Your tone is like a well-traveled friend sending you a voice note — direct, a little dry,
+genuinely helpful.
+
+CRITICAL STYLE RULES — follow every one precisely:
+• Keep it SHORT and PUNCHY. Each paragraph is 2-4 sentences max. No padding, no filler.
+• Lead every route or destination mention with a specific price in USD. Example: "Cancun from $189
+  round-trip on Spirit from Chicago O'Hare." Give the number first, context second.
+• Name the airline and the specific US departure airport for every route you mention.
+• Use specific price ranges you'd actually see: "$149-$229 round-trip", "one-ways from $79",
+  "I've seen it drop to $109". Never use vague language like "affordable" without a number.
+• American English: vacation not holiday, fall not autumn, round-trip not return, one-way,
+  carry-on not hand luggage, cell not mobile, airplane not aeroplane, Labor Day, Thanksgiving.
+• Name real US airlines: Delta, American Airlines, United, Southwest, JetBlue, Spirit, Frontier,
+  Allegiant, Alaska Airlines. Always pair the airline with the specific US airport it flies from.
+• Be honest about downsides: Spirit bag fees, connection times, middle seats. No sugarcoating.
+• DO NOT use: nestled, vibrant, bustling, thriving, picturesque, stunning, iconic, hidden gem,
+  treasure, paradise, tapestry, testament, elevate, delve, comprehensive, navigate, realm,
+  underscores, it's worth noting, furthermore, in conclusion, in summary, additionally, moreover,
+  undoubtedly, certainly, absolutely, it's important to note, I'll be honest
+• No bullet points or numbered lists in the body text — write as short punchy paragraphs
+• Do not open a section with "I" — vary your sentence openings
+• No em dashes (—) or double hyphens (--) — use commas or full stops instead
+• No parenthetical asides with brackets — weave it into the sentence
+• Never start a sentence with "And" or "But"
+• No filler openers: no "Firstly", "Secondly", "Finally", "The bottom line", "The truth is"
+
+Output: Return ONLY valid JSON. No markdown fences, no code blocks, no explanation text."""
+
+US_USER_PROMPT = """\
+Write a travel blog post about: {prompt_topic}
+
+Today is {month_name} {year}.
+
+Write exactly 4 sections. Each section has 3-5 SHORT paragraphs (2-4 sentences each).
+Every destination or route you mention must include a specific price in USD, the airline, and the US departure airport.
+Use HTML only for: <strong>bold text</strong> and <br><br> as paragraph breaks within a section body.
+
+Example of the tone and format to aim for:
+"<strong>Cancun from $189 round-trip on Spirit out of Chicago O'Hare</strong> is the easiest
+cheap vacation call you'll make this spring. Four nights there mid-April typically runs under
+$700 all-in if you book the hotel now. The beach alone is worth the Spirit carry-on fee.<br><br>
+San Jose del Cabo is the other one worth checking. Delta flies from JFK from around $249
+round-trip, and March temperatures are in the low 80s. My friend booked last February for
+under $850 total including a decent Airbnb."
+
+Return ONLY this JSON (no markdown, no code fences, nothing else before or after):
+{{
+  "title": "SEO title with specific route or price angle, max 70 chars",
+  "subtitle": "one punchy line with a specific claim or price, max 90 chars",
+  "airport_names": "which US airports this post covers, concise",
+  "meta": "SEO meta description 145-160 chars — mention specific destinations and USD price ranges",
   "sections": [
     {{"heading": "section heading", "body": "short punchy paragraphs as a single HTML string, separated with <br><br>"}},
     {{"heading": "section heading", "body": "..."}},
@@ -733,20 +1023,24 @@ def generate_post(topic: dict, dry_run: bool = False) -> dict | None:
 
     client = anthropic.Anthropic(api_key=api_key)
 
-    prompt = USER_PROMPT.format(
+    is_us = topic.get('market', 'uk') == 'us'
+    sys_prompt  = US_SYSTEM_PROMPT if is_us else SYSTEM_PROMPT
+    user_prompt = US_USER_PROMPT   if is_us else USER_PROMPT
+
+    prompt = user_prompt.format(
         prompt_topic=topic['prompt_topic'],
         month_name=datetime.now().strftime('%B'),
         year=datetime.now().year,
         cta_airport=topic['cta_airport'],
     )
 
-    print(f"[blog_generator] Generating: {topic['slug']} …")
+    print(f"[blog_generator] Generating: {topic['slug']} (market={topic.get('market', 'uk')}) …")
 
     try:
         msg = client.messages.create(
             model="claude-sonnet-4-6",
             max_tokens=4000,
-            system=SYSTEM_PROMPT,
+            system=sys_prompt,
             messages=[{"role": "user", "content": prompt}],
         )
     except Exception as exc:
@@ -794,6 +1088,7 @@ def generate_post(topic: dict, dry_run: bool = False) -> dict | None:
         "meta":          data.get('meta', ''),
         "sections":      data.get('sections', []),
         "cta_airport":   data.get('cta_airport',   topic['cta_airport']),
+        "market":        topic.get('market', 'uk'),
         "related":       _build_related(topic['slug']),
         "published_at":  datetime.now().isoformat(),
     }
