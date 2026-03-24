@@ -594,7 +594,7 @@
 </div>
 
 <!-- HERO -->
-<header class="text-center py-4 px-3">
+<header class="text-center py-2 px-3">
   {% if seo_page %}
     <h1 class="fw-bold mb-2">Cheap Flights from {{ seo_page.city }} ✈️</h1>
     <p style="color:#9fb0ff; max-width:500px; margin:0 auto;">
@@ -617,19 +617,6 @@
     <span class="pulse-dot"></span> 10,000+ flights searched this week
   </div>
 </header>
-
-<!-- LIVE DEALS FEED -->
-{% if not seo_page %}
-<div class="live-feed-wrapper" id="liveFeedWrapper" style="display:none">
-  <div class="live-feed-header">
-    <span class="pulse-dot"></span> This week's deals
-  </div>
-  <div class="live-feed-scroll" id="liveFeedScroll"></div>
-  <div style="font-size:0.7rem; color:#5a6e9e; margin-top:6px; padding-left:2px;">
-    Departing in the next 7 days · prices from Aviasales · one-way per person
-  </div>
-</div>
-{% endif %}
 
 <div class="container mb-5" style="max-width:700px;">
 
@@ -713,6 +700,19 @@
       <i class="fa fa-magnifying-glass me-2"></i>Search Flights
     </button>
   </form>
+
+  <!-- LIVE DEALS FEED -->
+  {% if not seo_page %}
+  <div class="live-feed-wrapper" id="liveFeedWrapper" style="display:none; padding:0;">
+    <div class="live-feed-header" style="margin-top:20px;">
+      <span class="pulse-dot"></span> This week's deals
+    </div>
+    <div class="live-feed-scroll" id="liveFeedScroll"></div>
+    <div style="font-size:0.7rem; color:#5a6e9e; margin-top:6px; padding-left:2px;">
+      Departing in the next 7 days · prices from Aviasales · one-way per person
+    </div>
+  </div>
+  {% endif %}
 
   <!-- RESULTS -->
   {% if flights %}
