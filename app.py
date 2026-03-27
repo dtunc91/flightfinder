@@ -1093,15 +1093,7 @@ def subscribe():
     brevo_api_key = os.environ.get('BREVO_API_KEY')
     if brevo_api_key:
         try:
-            payload = {
-                'email': email,
-                'attributes': {
-                    'AIRPORT_CODE': airport_code,
-                    'AIRPORT_NAME': airport_name,
-                    'SIGNED_UP_AT': datetime.utcnow().isoformat(),
-                },
-                'updateEnabled': True,
-            }
+            payload = {'email': email, 'updateEnabled': True}
             resp = requests.post(
                 'https://api.brevo.com/v3/contacts',
                 json=payload,
@@ -1109,6 +1101,8 @@ def subscribe():
                 timeout=8,
             )
             brevo_ok = resp.status_code in (201, 204)
+            if not brevo_ok:
+                print(f"[subscribe] Brevo {resp.status_code}: {resp.text}", file=__import__('sys').stderr)
         except Exception as exc:
             print(f"[subscribe] Brevo error: {exc}", file=__import__('sys').stderr)
 
