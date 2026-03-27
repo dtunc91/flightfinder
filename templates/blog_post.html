@@ -162,18 +162,24 @@
 <!-- Email signup -->
 <div class="cta-box" style="margin-top:12px;">
   <h3><i class="fa fa-envelope me-2" style="color:#6ea8ff"></i>Get the week's best flight deals free</h3>
-  <p>No spam. Just cheap flights, once a week.</p>
-  <form id="blogSubscribeForm" onsubmit="handleBlogSubscribe(event)" style="max-width:420px; margin:0 auto;">
-    <input type="hidden" name="airport_code" value="">
-    <input type="hidden" name="airport_name" value="Blog">
-    <div style="display:flex; gap:8px; flex-wrap:wrap; justify-content:center;">
+  <p>No spam. Just cheap flights from your airport, once a week.</p>
+  <form id="blogSubscribeForm" onsubmit="handleBlogSubscribe(event)" style="max-width:480px; margin:0 auto;" autocomplete="off">
+    <input type="hidden" id="blog_airport_code" name="airport_code" value="">
+    <input type="hidden" id="blog_airport_name" name="airport_name" value="">
+    <div style="display:flex; gap:8px; flex-wrap:wrap; justify-content:center; margin-bottom:8px;">
+      <div style="position:relative; flex:1; min-width:180px;">
+        <input type="text" id="blog_airport_input"
+               placeholder="Your airport (e.g. London)" autocomplete="off"
+               style="width:100%; background:rgba(255,255,255,.08); border:1px solid rgba(110,168,255,.3); color:#eaf0ff; border-radius:10px; padding:10px 14px; font-size:0.9rem;">
+        <div id="blog_airport_list" style="position:absolute; top:100%; left:0; right:0; background:#1a2d6b; border:1px solid rgba(110,168,255,.3); border-radius:10px; z-index:100; margin-top:4px;"></div>
+      </div>
       <input type="email" name="email" class="form-control"
              placeholder="your@email.com" required
-             style="flex:1; min-width:200px; background:rgba(255,255,255,.08); border:1px solid rgba(110,168,255,.3); color:#eaf0ff; border-radius:10px; padding:10px 14px;">
-      <button type="submit" class="btn-cta" style="padding:10px 22px; font-size:0.88rem;">
-        <i class="fa fa-paper-plane me-1"></i> Subscribe free
-      </button>
+             style="flex:1; min-width:180px; background:rgba(255,255,255,.08); border:1px solid rgba(110,168,255,.3); color:#eaf0ff; border-radius:10px; padding:10px 14px;">
     </div>
+    <button type="submit" class="btn-cta" style="width:100%; padding:10px 22px; font-size:0.88rem;">
+      <i class="fa fa-paper-plane me-1"></i> Subscribe free
+    </button>
     <div id="blogSubscribeMsg" style="font-size:0.82rem; margin-top:8px; text-align:center;"></div>
   </form>
 </div>
@@ -195,6 +201,42 @@
 
 {% block scripts %}
 <script>
+// Blog airport picker
+(function() {
+  const inp  = document.getElementById('blog_airport_input');
+  const list = document.getElementById('blog_airport_list');
+  const code = document.getElementById('blog_airport_code');
+  const name = document.getElementById('blog_airport_name');
+  if (!inp) return;
+  let timer;
+  inp.addEventListener('input', () => {
+    clearTimeout(timer);
+    const q = inp.value.trim();
+    if (q.length < 2) { list.innerHTML = ''; return; }
+    timer = setTimeout(() => {
+      fetch('/api/airports?query=' + encodeURIComponent(q))
+        .then(r => r.json()).then(airports => {
+          list.innerHTML = '';
+          airports.slice(0, 8).forEach(a => {
+            const div = document.createElement('div');
+            div.style.cssText = 'padding:10px 14px; cursor:pointer; font-size:0.88rem; color:#eaf0ff; border-bottom:1px solid rgba(110,168,255,.1);';
+            div.innerHTML = `<strong>${a.code}</strong> — ${a.name}`;
+            div.addEventListener('mouseover', () => div.style.background = 'rgba(110,168,255,.15)');
+            div.addEventListener('mouseout',  () => div.style.background = '');
+            div.addEventListener('mousedown', () => {
+              inp.value  = a.name;
+              code.value = a.code;
+              name.value = a.name;
+              list.innerHTML = '';
+            });
+            list.appendChild(div);
+          });
+        });
+    }, 220);
+  });
+  document.addEventListener('click', e => { if (!inp.contains(e.target)) list.innerHTML = ''; });
+})();
+
 window.handleBlogSubscribe = function(e) {
   e.preventDefault();
   const form = e.target;

@@ -928,13 +928,21 @@
 <div class="newsletter-section">
   <div class="newsletter-box">
     <h3><i class="fa fa-envelope me-2" style="color:#6ea8ff"></i>Get the week's cheapest deals to your inbox</h3>
-    <p>Free. No spam. The best flight deals, every week.</p>
-    <form id="newsletterForm" onsubmit="handleNewsletter(event)">
-      <input type="hidden" name="airport_code" value="">
-      <input type="hidden" name="airport_name" value="Newsletter">
-      <div class="email-input-row justify-content-center">
+    <p>Free. No spam. The best flight deals from your airport, every week.</p>
+    <form id="newsletterForm" onsubmit="handleNewsletter(event)" autocomplete="off">
+      <input type="hidden" id="nl_airport_code" name="airport_code" value="">
+      <input type="hidden" id="nl_airport_name" name="airport_name" value="">
+      <div class="email-input-row justify-content-center" style="flex-wrap:wrap; gap:8px;">
+        <div style="position:relative;">
+          <input type="text" id="nl_airport_input"
+                 placeholder="Your airport (e.g. London)" autocomplete="off"
+                 class="form-control"
+                 style="max-width:220px; background:rgba(255,255,255,.08); border:1px solid rgba(110,168,255,.3); color:#eaf0ff; border-radius:10px; padding:10px 14px;">
+          <div id="nl_airport_list" class="autocomplete-items d-none" style="min-width:220px;"></div>
+        </div>
         <input type="email" name="email" class="form-control"
-               placeholder="your@email.com" required style="max-width:280px">
+               placeholder="your@email.com" required
+               style="max-width:220px; background:rgba(255,255,255,.08); border:1px solid rgba(110,168,255,.3); color:#eaf0ff; border-radius:10px; padding:10px 14px;">
         <button type="submit" class="btn-subscribe">
           <i class="fa fa-paper-plane me-1"></i> Subscribe free
         </button>
@@ -1237,6 +1245,42 @@ document.addEventListener('DOMContentLoaded', () => {
         btn.innerHTML = '<i class="fa fa-paper-plane me-1"></i> Subscribe free';
       });
   };
+
+  // ── Newsletter airport picker ───────────────────────
+  (function() {
+    const inp  = document.getElementById('nl_airport_input');
+    const list = document.getElementById('nl_airport_list');
+    const code = document.getElementById('nl_airport_code');
+    const name = document.getElementById('nl_airport_name');
+    if (!inp) return;
+    let timer;
+    inp.addEventListener('input', () => {
+      clearTimeout(timer);
+      const q = inp.value.trim();
+      if (q.length < 2) { list.classList.add('d-none'); return; }
+      timer = setTimeout(() => {
+        fetch('/api/airports?query=' + encodeURIComponent(q))
+          .then(r => r.json()).then(airports => {
+            list.innerHTML = '';
+            if (!airports.length) { list.classList.add('d-none'); return; }
+            airports.slice(0, 8).forEach(a => {
+              const div = document.createElement('div');
+              div.className = 'autocomplete-item';
+              div.innerHTML = `<strong>${a.code}</strong> ${a.name}${a.city ? `<div class="airport-sub">${a.city}</div>` : ''}`;
+              div.addEventListener('mousedown', () => {
+                inp.value  = a.name;
+                code.value = a.code;
+                name.value = a.name;
+                list.classList.add('d-none');
+              });
+              list.appendChild(div);
+            });
+            list.classList.remove('d-none');
+          });
+      }, 220);
+    });
+    document.addEventListener('click', e => { if (!inp.contains(e.target)) list.classList.add('d-none'); });
+  })();
 
   // ── Sort flights (client-side) ──────────────────────
   window.sortFlights = function(order) {
