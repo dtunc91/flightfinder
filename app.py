@@ -1093,7 +1093,14 @@ def subscribe():
     brevo_api_key = os.environ.get('BREVO_API_KEY')
     if brevo_api_key:
         try:
-            payload = {'email': email, 'updateEnabled': True}
+            payload = {
+                'email': email,
+                'attributes': {
+                    'AIRPORT_CODE': airport_code,
+                    'AIRPORT_NAME': airport_name,
+                },
+                'updateEnabled': True,
+            }
             resp = requests.post(
                 'https://api.brevo.com/v3/contacts',
                 json=payload,
