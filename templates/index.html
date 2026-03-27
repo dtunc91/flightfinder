@@ -779,6 +779,14 @@
              style="color:#82ffd2;">
             <i class="fa fa-car"></i> Rent a car
           </a>
+          {% if flight.destination_country and origin_country and flight.destination_country|lower != origin_country|lower %}
+          <a class="hotel-link"
+             href="https://yesim.tpm.li/ZpiVkrqG"
+             target="_blank" rel="noopener"
+             style="color:#b8a0ff;">
+            <i class="fa fa-signal"></i> eSIM (code: FALLY20)
+          </a>
+          {% endif %}
         </div>
 
         <div class="flight-right">
