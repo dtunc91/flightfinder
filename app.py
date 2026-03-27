@@ -1374,12 +1374,6 @@ def robots_txt():
     return send_from_directory(app.root_path, 'robots.txt')
 
 # Optional: quick debug route
-@app.route('/debug-templates')
-def debug_templates():
-    try:
-        return "<br>".join(sorted(os.listdir(app.template_folder)))
-    except Exception as e:
-        return f"Error reading templates: {e}", 500
 
 # ---- Weekly blog scheduler ----
 # Runs every Monday at 08:00 server time.
