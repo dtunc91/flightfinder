@@ -587,6 +587,20 @@
   .blog-card-meta { font-size: 0.73rem; color: #5a6e9e; }
 </style>
 
+<!-- Error toast -->
+<div id="errorToast" role="alert" style="
+  display:none; position:fixed; top:20px; left:50%; transform:translateX(-50%);
+  background:#1e2a45; border:1px solid rgba(255,100,100,.45); border-radius:12px;
+  padding:14px 20px; z-index:10000; max-width:380px; width:90%;
+  box-shadow:0 8px 32px rgba(0,0,0,.55); display:none; align-items:center; gap:12px;">
+  <i class="fa fa-circle-exclamation" style="color:#ff7070; font-size:1.1rem; flex-shrink:0;"></i>
+  <span id="errorToastMsg" style="color:#eaf0ff; font-size:0.9rem; flex:1;"></span>
+  <button onclick="document.getElementById('errorToast').style.display='none'"
+          style="background:none;border:none;color:#9fb0ff;font-size:1rem;cursor:pointer;padding:0;flex-shrink:0;">
+    <i class="fa fa-xmark"></i>
+  </button>
+</div>
+
 <!-- Loading overlay -->
 <div id="loadingOverlay">
   <div class="spinner-border text-info" style="width:3rem;height:3rem;" role="status"></div>
@@ -1117,10 +1131,29 @@ document.addEventListener('DOMContentLoaded', () => {
       .catch(() => {});
   });
 
+  // ── Error toast helper ──────────────────────────────
+  function showError(msg) {
+    const toast = document.getElementById('errorToast');
+    document.getElementById('errorToastMsg').textContent = msg;
+    toast.style.display = 'flex';
+    clearTimeout(toast._timer);
+    toast._timer = setTimeout(() => { toast.style.display = 'none'; }, 5000);
+  }
+
+  // Show error from URL param (server-side redirect)
+  const urlError = new URLSearchParams(window.location.search).get('error');
+  if (urlError) { showError(urlError); history.replaceState(null, '', window.location.pathname + '#searchForm'); }
+
   // ── Search button ───────────────────────────────────
   searchBtn.onclick = () => {
     if (!hidden.value) {
+      showError('Please select an airport from the dropdown first.');
       helper.innerHTML = '<span style="color:#ff8080"><i class="fa fa-circle-exclamation me-1"></i>Please select an airport from the dropdown</span>';
+      return;
+    }
+    const depDate = document.getElementById('departure_date').value;
+    if (!depDate) {
+      showError('Please select a departure date.');
       return;
     }
     overlay.classList.add('show');

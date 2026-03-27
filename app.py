@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, jsonify, send_from_directory, abort
+from flask import Flask, render_template, request, jsonify, send_from_directory, abort, redirect, url_for
 from datetime import datetime, timedelta
 from amadeus import Client
 import requests
@@ -675,7 +675,7 @@ def index():
                 domestic_flights, international_flights = [], []
 
                 if not departure_date:
-                    return jsonify({'error': 'Departure date is required.'}), 400
+                    return redirect(url_for('index') + '?error=Please+select+a+departure+date.')
 
                 depart_str = datetime.strptime(departure_date, '%Y-%m-%d').strftime('%d%m')
                 return_str = datetime.strptime(return_date, '%Y-%m-%d').strftime('%d%m') if trip_type == 'roundtrip' and return_date else None
