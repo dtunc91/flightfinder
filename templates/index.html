@@ -768,25 +768,27 @@
             <span class="flight-iata">{{ flight.destination_code }}</span>
           </div>
           <div class="flight-airport-name">{{ flight.destination_label }}</div>
-<a class="hotel-link klook-link"
-             href="https://klook.tpm.li/17VmdJ38"
-             target="_blank" rel="noopener">
-            <i class="fa fa-map-marker"></i> Things to do
-          </a>
-          <a class="hotel-link"
-             href="https://localrent.tpm.li/mXHNfspd"
-             target="_blank" rel="noopener"
-             style="color:#82ffd2;">
-            <i class="fa fa-car"></i> Rent a car
-          </a>
-          {% if flight.destination_country and origin_country and flight.destination_country|lower != origin_country|lower %}
-          <a class="hotel-link"
-             href="https://yesim.tpm.li/ZpiVkrqG"
-             target="_blank" rel="noopener"
-             style="color:#b8a0ff;">
-            <i class="fa fa-signal"></i> eSIM (code: FALLY20)
-          </a>
-          {% endif %}
+          <div style="display:flex; flex-direction:column; gap:3px; margin-top:5px;">
+            {% if flight.destination_country and origin_country and flight.destination_country|lower != origin_country|lower %}
+            <a class="hotel-link"
+               href="https://yesim.tpm.li/ZpiVkrqG"
+               target="_blank" rel="noopener"
+               style="color:#b8a0ff;">
+              <i class="fa fa-signal"></i> eSIM — use code FALLY20
+            </a>
+            {% endif %}
+            <a class="hotel-link"
+               href="https://localrent.tpm.li/mXHNfspd"
+               target="_blank" rel="noopener"
+               style="color:#82ffd2;">
+              <i class="fa fa-car"></i> Rent a car
+            </a>
+            <a class="hotel-link klook-link"
+               href="https://klook.tpm.li/17VmdJ38"
+               target="_blank" rel="noopener">
+              <i class="fa fa-map-marker"></i> Things to do
+            </a>
+          </div>
         </div>
 
         <div class="flight-right">
