@@ -150,10 +150,13 @@
 <!-- CTA -->
 <div class="cta-box">
   <h3><i class="fa fa-magnifying-glass me-2" style="color:#6ea8ff"></i>Search live prices now</h3>
-  <p>The prices above are typical ranges — actual fares change every day. Use our search tool for real-time prices from Aviasales.</p>
-  <a href="{{ url_for('index') }}" class="btn-cta">
+  <p>The prices above are typical ranges — actual fares change every day. Search below for real-time prices and book securely through Aviasales, one of Europe's largest flight search engines.</p>
+  <a href="{{ url_for('seo_airport', code=post.cta_airport) if post.cta_airport else url_for('index') }}" class="btn-cta">
     Search cheap flights{% if post.airport_names %} from {{ post.airport_names.split(',')[0] }}{% endif %} <i class="fa fa-arrow-right ms-2"></i>
   </a>
+  <p style="margin-top:10px; margin-bottom:0; font-size:0.78rem; color:rgba(234,240,255,0.45);">
+    <i class="fa fa-lock me-1"></i>Booking handled securely by Aviasales — trusted by 100M+ travellers
+  </p>
 </div>
 
 <!-- Email signup -->

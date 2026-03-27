@@ -790,8 +790,11 @@
           {% endif %}
 
           <a href="{{ flight.booking_url }}" target="_blank" rel="noopener" class="btn-book">
-            Book <i class="fa fa-arrow-right ms-1"></i>
+            Book for {{ form_data.currency_symbol or '£' }}{{ flight.price }} <i class="fa fa-arrow-right ms-1"></i>
           </a>
+          <div style="font-size:0.68rem; color:rgba(234,240,255,0.4); margin-top:4px; text-align:center;">
+            via Aviasales
+          </div>
         </div>
       </div>
       {% endfor %}
