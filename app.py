@@ -1088,20 +1088,33 @@ def subscribe():
     if not email or '@' not in email or '.' not in email.split('@')[-1]:
         return jsonify({'ok': False, 'error': 'Please enter a valid email address.'}), 400
 
-    row = [email, airport_code, airport_name, datetime.utcnow().isoformat()]
+    # Primary: Brevo
+    brevo_ok = False
+    brevo_api_key = os.environ.get('BREVO_API_KEY')
+    if brevo_api_key:
+        try:
+            payload = {
+                'email': email,
+                'attributes': {
+                    'AIRPORT_CODE': airport_code,
+                    'AIRPORT_NAME': airport_name,
+                    'SIGNED_UP_AT': datetime.utcnow().isoformat(),
+                },
+                'updateEnabled': True,
+            }
+            resp = requests.post(
+                'https://api.brevo.com/v3/contacts',
+                json=payload,
+                headers={'api-key': brevo_api_key, 'Content-Type': 'application/json'},
+                timeout=8,
+            )
+            brevo_ok = resp.status_code in (201, 204)
+        except Exception as exc:
+            print(f"[subscribe] Brevo error: {exc}", file=__import__('sys').stderr)
 
-    # Primary: Google Sheets
-    sheets_ok = False
-    try:
-        ws = _get_sheet()
-        if ws:
-            ws.append_row(row, value_input_option='RAW')
-            sheets_ok = True
-    except Exception as exc:
-        print(f"[subscribe] Sheets error: {exc}", file=__import__('sys').stderr)
-
-    # Fallback: local CSV (always written if Sheets failed)
-    if not sheets_ok:
+    # Fallback: local CSV
+    if not brevo_ok:
+        row = [email, airport_code, airport_name, datetime.utcnow().isoformat()]
         os.makedirs(DATA_DIR, exist_ok=True)
         new_file = not os.path.exists(SUBSCRIBERS_FILE)
         with open(SUBSCRIBERS_FILE, 'a', newline='', encoding='utf-8') as f:
