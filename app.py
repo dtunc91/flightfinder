@@ -1471,7 +1471,8 @@ if not (app.debug and os.environ.get('WERKZEUG_RUN_MAIN') != 'true'):
         _scheduler.start()
     except ImportError:
         pass  # APScheduler not installed — run blog_generator.py manually or via cron
-    _startup_blog_generate()
+    # Startup auto-generation disabled — posts are written manually as JSON files
+    # _startup_blog_generate()
 
 if __name__ == '__main__':
     app.run(debug=True)
