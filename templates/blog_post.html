@@ -118,9 +118,23 @@
   }
   .related-card i { color: #6ea8ff; margin-bottom: 6px; display: block; font-size: 0.9rem; }
 
+  .cta-box input::placeholder { color: rgba(234,240,255,0.65); }
+  .cta-box .form-control::placeholder { color: rgba(234,240,255,0.65); }
+
+  .mid-cta {
+    background: rgba(110,168,255,.07);
+    border: 1px solid rgba(110,168,255,.2);
+    border-radius: 16px; padding: 18px 20px; margin: 28px 0;
+    display: flex; align-items: center; justify-content: space-between; gap: 14px;
+    flex-wrap: wrap;
+  }
+  .mid-cta p { margin: 0; font-size: 0.88rem; color: #cfe0ff; }
+  .mid-cta p strong { color: #eaf0ff; }
+
   @media (max-width: 576px) {
     .blog-hero h1 { font-size: 1.45rem; }
     .related-grid { grid-template-columns: 1fr; }
+    .mid-cta { text-align: center; justify-content: center; }
   }
 </style>
 
@@ -145,6 +159,14 @@
   <h2>{{ section.heading }}</h2>
   <div class="body-text">{{ section.body | safe }}</div>
 </div>
+{% if loop.index == 2 %}
+<div class="mid-cta">
+  <p><strong><i class="fa fa-magnifying-glass me-2" style="color:#6ea8ff"></i>See live prices now —</strong> fares change daily. Search real-time results from Aviasales.</p>
+  <a href="{{ url_for('seo_airport', code=post.cta_airport) if post.cta_airport else url_for('index') }}" class="btn-cta" style="white-space:nowrap; font-size:0.88rem; padding:10px 20px;">
+    Search flights <i class="fa fa-arrow-right ms-1"></i>
+  </a>
+</div>
+{% endif %}
 {% endfor %}
 
 <!-- CTA -->
