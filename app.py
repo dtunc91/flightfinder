@@ -1396,6 +1396,17 @@ def _scheduled_blog_run():
     try:
         import blog_generator
         blog_generator.run_next()
+        # Auto-commit any new blog posts so they survive Render redeploys
+        import subprocess
+        result = subprocess.run(
+            ['git', 'add', 'data/blog/'],
+            cwd=os.path.dirname(__file__), capture_output=True
+        )
+        if result.returncode == 0:
+            subprocess.run(
+                ['git', 'commit', '-m', 'Auto-generated weekly blog post'],
+                cwd=os.path.dirname(__file__), capture_output=True
+            )
     except Exception as exc:
         app.logger.error(f"Blog scheduler error: {exc}")
 
