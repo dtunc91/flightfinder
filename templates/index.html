@@ -520,11 +520,6 @@
   }
 
   /* ── LIVE DEALS FEED ───────────────────────────── */
-  .live-feed-wrapper {
-    max-width: 700px;
-    margin: 0 auto 18px;
-    padding: 0 12px;
-  }
   .live-feed-header {
     display: flex;
     align-items: center;
@@ -757,19 +752,6 @@
     </button>
   </form>
 
-  <!-- LIVE DEALS FEED -->
-  {% if not seo_page %}
-  <div class="live-feed-wrapper" id="liveFeedWrapper" style="display:none; padding:0;">
-    <div class="live-feed-header" style="margin-top:20px;">
-      <span class="pulse-dot"></span> This week's deals
-    </div>
-    <div class="live-feed-scroll" id="liveFeedScroll"></div>
-    <div style="font-size:0.7rem; color:#6b7eb5; margin-top:6px; padding-left:2px;">
-      Departing in the next 7 days · prices from Aviasales · one-way per person
-    </div>
-  </div>
-  {% endif %}
-
   </div><!-- /hero-left -->
 
   <!-- HERO RIGHT: photo mosaic -->
@@ -790,6 +772,21 @@
   </div><!-- /hero-right -->
 
 </div><!-- /hero-outer -->
+
+<!-- LIVE DEALS FEED — full-width strip below hero -->
+{% if not seo_page %}
+<div id="liveFeedWrapper" style="display:none; background:#f8f9fc; border-top:1px solid #e2e8f4; border-bottom:1px solid #e2e8f4; padding:18px 0 14px;">
+  <div style="max-width:1200px; margin:0 auto; padding:0 24px;">
+    <div class="live-feed-header">
+      <span class="pulse-dot"></span> This week's deals
+    </div>
+    <div class="live-feed-scroll" id="liveFeedScroll"></div>
+    <div style="font-size:0.7rem; color:#9babc8; margin-top:6px;">
+      Departing in the next 7 days · prices from Aviasales · one-way per person
+    </div>
+  </div>
+</div>
+{% endif %}
 
 <div class="container mb-5 px-3 px-md-4" style="max-width:900px;">
 
