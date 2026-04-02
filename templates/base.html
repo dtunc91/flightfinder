@@ -3,11 +3,16 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <!-- Preconnect to external resources for faster load -->
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+  <link rel="preconnect" href="https://pagead2.googlesyndication.com" crossorigin>
+  <link rel="preconnect" href="https://plausible.io" crossorigin>
+  <link rel="dns-prefetch" href="https://flagcdn.com">
   <title>{% block title %}GetMeOutOfHere.Live{% endblock %}</title>
   <meta name="description" content="{% block meta_description %}Find the cheapest places to fly from your airport — no destination needed.{% endblock %}">
   <meta name="google-site-verification" content="D7SPk9eeETSx8-YyaDxrnSkVB7tn6kpBQffDLpUrR0s" />
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2050826457723021" crossorigin="anonymous"></script>
-  <link rel="canonical" href="{{ request.url }}" />
+  <link rel="canonical" href="{{ canonical_url }}" />
   <link rel="icon" type="image/png" href="{{ url_for('static', filename='favicon.png') }}">
 
   <!-- Open Graph -->
@@ -15,7 +20,7 @@
   <meta property="og:site_name" content="GetMeOutOfHere.Live" />
   <meta property="og:title" content="{% block og_title %}GetMeOutOfHere.Live{% endblock %}" />
   <meta property="og:description" content="{% block og_description %}Find the cheapest places to fly from your airport — no destination needed.{% endblock %}" />
-  <meta property="og:url" content="{{ request.url }}" />
+  <meta property="og:url" content="{{ canonical_url }}" />
   <meta property="og:image" content="{% block og_image %}https://getmeoutofhere.live/static/og-image.webp{% endblock %}" />
   <meta property="og:image:width" content="1200" />
   <meta property="og:image:height" content="630" />
@@ -47,7 +52,7 @@
   {% endblock %}
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
   <link href="{{ url_for('static', filename='index.css') }}" rel="stylesheet" />
-  <script defer src="{{ url_for('static', filename='fontawesome-free-6.7.2-web/js/all.js') }}"></script>
+  <link rel="stylesheet" href="{{ url_for('static', filename='fontawesome-free-6.7.2-web/css/all.min.css') }}">
   <script defer data-domain="getmeoutofhere.live" src="https://plausible.io/js/script.js"></script>
   <style>
     body {

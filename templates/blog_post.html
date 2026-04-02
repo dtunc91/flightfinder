@@ -32,7 +32,7 @@
   "url": "https://getmeoutofhere.live/blog/{{ post.slug }}",
   "mainEntityOfPage": "https://getmeoutofhere.live/blog/{{ post.slug }}"{% if post.published_at %},
   "datePublished": "{{ post.published_at[:10] }}",
-  "dateModified": "{{ post.published_at[:10] }}"{% endif %}
+  "dateModified": "{{ (post.updated_at or post.published_at)[:10] }}"{% endif %}
 }
 </script>
 <script type="application/ld+json">

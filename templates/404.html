@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+
+{% block title %}Page Not Found | GetMeOutOfHere.Live{% endblock %}
+{% block meta_description %}This page doesn't exist — but cheap flights do. Head back to GetMeOutOfHere.Live and search for the cheapest places to fly from your airport.{% endblock %}
+
+{% block content %}
+<style>
+  .not-found-wrap {
+    text-align: center;
+    padding: 60px 20px 40px;
+  }
+  .not-found-code {
+    font-size: 6rem;
+    font-weight: 900;
+    line-height: 1;
+    background: linear-gradient(135deg, #6ea8ff, #82ffd2);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 12px;
+  }
+  .not-found-wrap h1 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #eaf0ff;
+    margin-bottom: 10px;
+  }
+  .not-found-wrap p {
+    color: #9fb0ff;
+    font-size: 0.95rem;
+    max-width: 420px;
+    margin: 0 auto 32px;
+    line-height: 1.6;
+  }
+  .quick-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+    margin-top: 32px;
+  }
+  .quick-link {
+    background: rgba(110,168,255,.1);
+    border: 1px solid rgba(110,168,255,.25);
+    border-radius: 12px;
+    padding: 10px 18px;
+    color: #9fb0ff;
+    text-decoration: none;
+    font-size: 0.88rem;
+    font-weight: 600;
+    transition: background .15s, border-color .15s, color .15s;
+  }
+  .quick-link:hover {
+    background: rgba(110,168,255,.2);
+    border-color: rgba(110,168,255,.5);
+    color: #eaf0ff;
+  }
+  .btn-home {
+    display: inline-block;
+    background: linear-gradient(135deg, #3b7dd8 0%, #1a55b0 100%);
+    color: #fff;
+    border-radius: 12px;
+    font-weight: 700;
+    font-size: 1rem;
+    padding: 13px 32px;
+    text-decoration: none;
+    transition: opacity .2s, transform .1s;
+  }
+  .btn-home:hover { opacity: .88; transform: translateY(-1px); color: #fff; }
+</style>
+
+<div class="not-found-wrap">
+  <div class="not-found-code">404</div>
+  <h1>This page took a wrong turn.</h1>
+  <p>The page you're looking for doesn't exist or may have moved. But cheap flights definitely do — let's find you one.</p>
+
+  <a href="{{ url_for('index') }}" class="btn-home">
+    <i class="fa fa-plane me-2"></i>Search cheap flights
+  </a>
+
+  <div class="quick-links">
+    <a href="{{ url_for('blog_index') }}" class="quick-link"><i class="fa fa-compass me-1"></i>Flight deal guides</a>
+    <a href="{{ url_for('faq') }}" class="quick-link"><i class="fa fa-circle-info me-1"></i>FAQ</a>
+    <a href="{{ url_for('about') }}" class="quick-link"><i class="fa fa-house me-1"></i>About</a>
+  </div>
+
+  <div style="margin-top: 40px; display: flex; flex-wrap: wrap; gap: 8px; justify-content: center;">
+    {% set popular = [('LHR','London Heathrow'),('MAN','Manchester'),('EDI','Edinburgh'),('BHX','Birmingham'),('BRS','Bristol')] %}
+    {% for code, name in popular %}
+    <a href="{{ url_for('seo_airport', code=code) }}" class="quick-link" style="font-size:0.8rem; padding:8px 14px;">
+      <i class="fa fa-plane-departure me-1"></i>Flights from {{ name }}
+    </a>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}
