@@ -805,11 +805,13 @@
             <span class="stops-badge stops-2plus">{{ flight.num_stops }} stops</span>
           {% endif %}
 
-          <a href="{{ flight.booking_url }}" target="_blank" rel="noopener" class="btn-book">
-            Book for {{ form_data.currency_symbol or '£' }}{{ flight.price }} <i class="fa fa-arrow-right ms-1"></i>
-          </a>
-          <div style="font-size:0.68rem; color:rgba(234,240,255,0.4); margin-top:4px; text-align:center;">
-            Click Book Now to check Aviasales for more options &amp; prices
+          <div style="display:flex; flex-direction:column; align-items:center; gap:4px;">
+            <a href="{{ flight.booking_url }}" target="_blank" rel="noopener" class="btn-book">
+              Book for {{ form_data.currency_symbol or '£' }}{{ flight.price }} <i class="fa fa-arrow-right ms-1"></i>
+            </a>
+            <div style="font-size:0.68rem; color:rgba(234,240,255,0.4); text-align:center;">
+              Click Book Now to check Aviasales for more options &amp; prices
+            </div>
           </div>
         </div>
       </div>
