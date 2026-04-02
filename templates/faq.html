@@ -76,8 +76,8 @@
 
 {% block content %}
 <div class="container py-5" style="max-width:760px;">
-  <h1 style="font-size:1.6rem; font-weight:800; color:#eaf0ff; margin-bottom:6px;">Frequently Asked Questions</h1>
-  <p style="color:#9fb0ff; font-size:0.9rem; margin-bottom:36px;">Everything you need to know about using GetMeOutOfHere.Live.</p>
+  <h1 style="font-size:1.6rem; font-weight:800; color:#1a2744; margin-bottom:6px;">Frequently Asked Questions</h1>
+  <p style="color:#4a5880; font-size:0.9rem; margin-bottom:36px;">Everything you need to know about using GetMeOutOfHere.Live.</p>
 
   {% set faqs = [
     ("Do the prices shown include taxes and fees?",
@@ -107,15 +107,15 @@
   ] %}
 
   {% for question, answer in faqs %}
-  <div style="margin-bottom:24px; padding-bottom:24px; border-bottom:1px solid rgba(255,255,255,.07);">
-    <h2 style="font-size:1rem; font-weight:700; color:#eaf0ff; margin-bottom:8px;">{{ question }}</h2>
-    <p style="font-size:0.92rem; color:#c0ccee; line-height:1.75; margin:0;">{{ answer }}</p>
+  <div style="margin-bottom:24px; padding-bottom:24px; border-bottom:1px solid #e2e8f4;">
+    <h2 style="font-size:1rem; font-weight:700; color:#1a2744; margin-bottom:8px;">{{ question }}</h2>
+    <p style="font-size:0.92rem; color:#4a5880; line-height:1.75; margin:0;">{{ answer }}</p>
   </div>
   {% endfor %}
 
-  <div style="margin-top:32px; padding:20px 24px; background:rgba(110,168,255,.07); border:1px solid rgba(110,168,255,.2); border-radius:14px; text-align:center;">
-    <p style="font-size:0.9rem; color:#9fb0ff; margin-bottom:12px;">Still have a question?</p>
-    <a href="mailto:hello@getmeoutofhere.live" style="color:#6ea8ff; font-weight:600; font-size:0.9rem;">
+  <div style="margin-top:32px; padding:20px 24px; background:#f0f5ff; border:1px solid #c7d9f5; border-radius:14px; text-align:center;">
+    <p style="font-size:0.9rem; color:#4a5880; margin-bottom:12px;">Still have a question?</p>
+    <a href="mailto:hello@getmeoutofhere.live" style="color:#1a55b0; font-weight:600; font-size:0.9rem;">
       <i class="fa fa-envelope me-1"></i> hello@getmeoutofhere.live
     </a>
   </div>
