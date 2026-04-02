@@ -1537,6 +1537,7 @@ def generate_post(topic: dict, dry_run: bool = False) -> dict | None:
         "market":        topic.get('market', 'uk'),
         "related":       _build_related(topic['slug']),
         "published_at":  datetime.now().isoformat(),
+        "updated_at":    datetime.now().isoformat(),
     }
 
     if not post['sections']:

@@ -371,7 +371,9 @@ except Exception as _e:
 # ---- Template globals ----
 @app.context_processor
 def inject_now():
-    return {"current_year": datetime.utcnow().year}
+    # canonical_url strips query parameters to avoid duplicate-content issues
+    canonical_url = f"{request.scheme}://{request.host}{request.path}"
+    return {"current_year": datetime.utcnow().year, "canonical_url": canonical_url}
 
 # ---- Built-in minimal fallback (last line of defence) ----
 DEFAULT_AIRPORTS = [
@@ -1336,7 +1338,7 @@ def sitemap():
         ('https://getmeoutofhere.live/terms',     '0.3', today,  'yearly'),
     ]
 
-    # Blog posts — use published_at date if available
+    # Blog posts — prefer updated_at for lastmod, fallback to published_at
     blog_dir = os.path.join(app.root_path, 'data', 'blog')
     if os.path.isdir(blog_dir):
         for fn in sorted(os.listdir(blog_dir)):
@@ -1347,11 +1349,12 @@ def sitemap():
             try:
                 with open(os.path.join(blog_dir, fn)) as f:
                     post = json.load(f)
-                if post.get('published_at'):
-                    lastmod = post['published_at'][:10]
+                date_str = post.get('updated_at') or post.get('published_at')
+                if date_str:
+                    lastmod = date_str[:10]
             except Exception:
                 pass
-            pages.append((f'https://getmeoutofhere.live/blog/{slug}', '0.8', lastmod, 'monthly'))
+            pages.append((f'https://getmeoutofhere.live/blog/{slug}', '0.8', lastmod, 'weekly'))
 
     # SEO airport landing pages
     for code in SEO_AIRPORTS:
@@ -1386,6 +1389,10 @@ def serve_verification_file2():
 @app.route('/robots.txt')
 def robots_txt():
     return send_from_directory(app.root_path, 'robots.txt')
+
+@app.errorhandler(404)
+def page_not_found(e):
+    return render_template('404.html'), 404
 
 # Optional: quick debug route
 
