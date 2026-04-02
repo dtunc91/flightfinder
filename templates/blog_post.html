@@ -51,33 +51,33 @@
 {% block content %}
 <style>
   .blog-hero { margin-bottom: 32px; }
-  .blog-hero h1 { font-size: 1.8rem; font-weight: 800; line-height: 1.2; margin-bottom: 10px; color: #eaf0ff; }
-  .blog-hero .subtitle { font-size: 1rem; color: #9fb0ff; margin-bottom: 14px; }
+  .blog-hero h1 { font-size: 1.8rem; font-weight: 800; line-height: 1.2; margin-bottom: 10px; color: #1a2744; }
+  .blog-hero .subtitle { font-size: 1rem; color: #4a5880; margin-bottom: 14px; }
   .blog-hero .airport-tag {
     display: inline-flex; align-items: center; gap: 6px;
-    background: rgba(110,168,255,.2); border: 1px solid rgba(110,168,255,.3);
+    background: #dde9fb; border: 1px solid #c7d9f5;
     border-radius: 20px; padding: 5px 14px;
-    font-size: 0.78rem; color: #6ea8ff;
+    font-size: 0.78rem; color: #1a55b0;
   }
 
   .blog-section { margin-bottom: 32px; }
   .blog-section h2 {
-    font-size: 1.1rem; font-weight: 700; color: #eaf0ff;
+    font-size: 1.1rem; font-weight: 700; color: #1a2744;
     margin-bottom: 14px; padding-bottom: 10px;
-    border-bottom: 1px solid rgba(255,255,255,.1);
+    border-bottom: 1px solid #e2e8f4;
   }
   .blog-section p, .blog-section .body-text {
-    font-size: 0.92rem; color: #cfe0ff; line-height: 1.75;
+    font-size: 0.92rem; color: #4a5880; line-height: 1.75;
   }
 
   .cta-box {
-    background: rgba(110,168,255,.07);
-    border: 1px solid rgba(110,168,255,.2);
+    background: #f0f5ff;
+    border: 1px solid #c7d9f5;
     border-radius: 16px; padding: 24px; margin: 36px 0;
     text-align: center;
   }
-  .cta-box h3 { font-size: 1.05rem; font-weight: 700; margin-bottom: 6px; color: #eaf0ff; }
-  .cta-box p { font-size: 0.85rem; color: #9fb0ff; margin-bottom: 16px; }
+  .cta-box h3 { font-size: 1.05rem; font-weight: 700; margin-bottom: 6px; color: #1a2744; }
+  .cta-box p { font-size: 0.85rem; color: #4a5880; margin-bottom: 16px; }
   .btn-cta {
     display: inline-block;
     background: linear-gradient(135deg, #3b7dd8 0%, #1a55b0 100%);
@@ -88,48 +88,48 @@
   .btn-cta:hover { opacity: .88; transform: translateY(-1px); color: #fff; }
 
   .disclaimer {
-    background: rgba(255,255,255,.04);
-    border: 1px solid rgba(255,255,255,.08);
+    background: #f5f8ff;
+    border: 1px solid #d0daf0;
     border-radius: 12px; padding: 14px 16px;
-    font-size: 0.78rem; color: #9fb0ff; margin-bottom: 32px;
+    font-size: 0.78rem; color: #4a5880; margin-bottom: 32px;
     line-height: 1.55;
   }
-  .disclaimer i { color: #6ea8ff; margin-right: 5px; }
+  .disclaimer i { color: #3b7dd8; margin-right: 5px; }
 
   .related-section { margin-top: 36px; }
   .related-section h3 {
-    font-size: 0.75rem; font-weight: 700; color: #9fb0ff;
+    font-size: 0.75rem; font-weight: 700; color: #4a5880;
     text-transform: uppercase; letter-spacing: .07em; margin-bottom: 12px;
   }
   .related-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
   .related-card {
-    background: rgba(255,255,255,.04);
-    border: 1px solid rgba(255,255,255,.08);
+    background: #ffffff;
+    border: 1px solid #e2e8f4;
     border-radius: 12px; padding: 14px;
     text-decoration: none; display: block;
-    font-size: 0.82rem; font-weight: 600; color: #cfe0ff;
-    transition: border-color .2s, background .2s;
+    font-size: 0.82rem; font-weight: 600; color: #1a2744;
+    transition: border-color .2s, box-shadow .2s;
     line-height: 1.35;
   }
   .related-card:hover {
-    background: rgba(255,255,255,.08);
-    border-color: rgba(110,168,255,.3);
-    color: #eaf0ff;
+    border-color: #3b7dd8;
+    box-shadow: 0 4px 16px rgba(59,125,216,.1);
+    color: #1a55b0;
   }
-  .related-card i { color: #6ea8ff; margin-bottom: 6px; display: block; font-size: 0.9rem; }
+  .related-card i { color: #3b7dd8; margin-bottom: 6px; display: block; font-size: 0.9rem; }
 
-  .cta-box input::placeholder { color: rgba(234,240,255,0.65); }
-  .cta-box .form-control::placeholder { color: rgba(234,240,255,0.65); }
+  .cta-box input::placeholder { color: #9babc8; }
+  .cta-box .form-control::placeholder { color: #9babc8; }
 
   .mid-cta {
-    background: rgba(110,168,255,.07);
-    border: 1px solid rgba(110,168,255,.2);
+    background: #f0f5ff;
+    border: 1px solid #c7d9f5;
     border-radius: 16px; padding: 18px 20px; margin: 28px 0;
     display: flex; align-items: center; justify-content: space-between; gap: 14px;
     flex-wrap: wrap;
   }
-  .mid-cta p { margin: 0; font-size: 0.88rem; color: #cfe0ff; }
-  .mid-cta p strong { color: #eaf0ff; }
+  .mid-cta p { margin: 0; font-size: 0.88rem; color: #4a5880; }
+  .mid-cta p strong { color: #1a2744; }
 
   @media (max-width: 576px) {
     .blog-hero h1 { font-size: 1.45rem; }
@@ -161,7 +161,7 @@
 </div>
 {% if loop.index == 2 %}
 <div class="mid-cta">
-  <p><strong><i class="fa fa-magnifying-glass me-2" style="color:#6ea8ff"></i>See live prices now —</strong> fares change daily. Search real-time results from Aviasales.</p>
+  <p><strong><i class="fa fa-magnifying-glass me-2" style="color:#3b7dd8"></i>See live prices now —</strong> fares change daily. Search real-time results from Aviasales.</p>
   <a href="{{ url_for('seo_airport', code=post.cta_airport) if post.cta_airport else url_for('index') }}" class="btn-cta" style="white-space:nowrap; font-size:0.88rem; padding:10px 20px;">
     Search flights <i class="fa fa-arrow-right ms-1"></i>
   </a>
@@ -171,19 +171,19 @@
 
 <!-- CTA -->
 <div class="cta-box">
-  <h3><i class="fa fa-magnifying-glass me-2" style="color:#6ea8ff"></i>Search live prices now</h3>
+  <h3><i class="fa fa-magnifying-glass me-2" style="color:#3b7dd8"></i>Search live prices now</h3>
   <p>The prices above are typical ranges — actual fares change every day. Search below for real-time prices and book securely through Aviasales, one of Europe's largest flight search engines.</p>
   <a href="{{ url_for('seo_airport', code=post.cta_airport) if post.cta_airport else url_for('index') }}" class="btn-cta">
     Search cheap flights{% if post.airport_names %} from {{ post.airport_names.split(',')[0] }}{% endif %} <i class="fa fa-arrow-right ms-2"></i>
   </a>
-  <p style="margin-top:10px; margin-bottom:0; font-size:0.78rem; color:rgba(234,240,255,0.45);">
+  <p style="margin-top:10px; margin-bottom:0; font-size:0.78rem; color:#9babc8;">
     <i class="fa fa-lock me-1"></i>Booking handled securely by Aviasales — trusted by 100M+ travellers
   </p>
 </div>
 
 <!-- Email signup -->
 <div class="cta-box" style="margin-top:12px;">
-  <h3><i class="fa fa-envelope me-2" style="color:#6ea8ff"></i>Get the week's best flight deals free</h3>
+  <h3><i class="fa fa-envelope me-2" style="color:#3b7dd8"></i>Get the week's best flight deals free</h3>
   <p>No spam. Just cheap flights from your airport, once a week.</p>
   <form id="blogSubscribeForm" onsubmit="handleBlogSubscribe(event)" style="max-width:480px; margin:0 auto;" autocomplete="off">
     <input type="hidden" id="blog_airport_code" name="airport_code" value="">
@@ -192,12 +192,12 @@
       <div style="position:relative; flex:1; min-width:180px;">
         <input type="text" id="blog_airport_input"
                placeholder="Your airport (e.g. London)" autocomplete="off"
-               style="width:100%; background:rgba(255,255,255,.08); border:1px solid rgba(110,168,255,.3); color:#eaf0ff; border-radius:10px; padding:10px 14px; font-size:0.9rem;">
-        <div id="blog_airport_list" style="position:absolute; top:100%; left:0; right:0; background:#1a2d6b; border:1px solid rgba(110,168,255,.3); border-radius:10px; z-index:100; margin-top:4px;"></div>
+               style="width:100%; background:#f5f8ff; border:1px solid #d0daf0; color:#1a2744; border-radius:10px; padding:10px 14px; font-size:0.9rem;">
+        <div id="blog_airport_list" style="position:absolute; top:100%; left:0; right:0; background:#ffffff; border:1px solid #d0daf0; border-radius:10px; z-index:100; margin-top:4px;"></div>
       </div>
       <input type="email" name="email" class="form-control"
              placeholder="your@email.com" required
-             style="flex:1; min-width:180px; background:rgba(255,255,255,.08); border:1px solid rgba(110,168,255,.3); color:#eaf0ff; border-radius:10px; padding:10px 14px;">
+             style="flex:1; min-width:180px; border-radius:10px; padding:10px 14px;">
     </div>
     <button type="submit" class="btn-cta" style="width:100%; padding:10px 22px; font-size:0.88rem;">
       <i class="fa fa-paper-plane me-1"></i> Subscribe free
@@ -241,9 +241,9 @@
           list.innerHTML = '';
           airports.slice(0, 8).forEach(a => {
             const div = document.createElement('div');
-            div.style.cssText = 'padding:10px 14px; cursor:pointer; font-size:0.88rem; color:#eaf0ff; border-bottom:1px solid rgba(110,168,255,.1);';
+            div.style.cssText = 'padding:10px 14px; cursor:pointer; font-size:0.88rem; color:#1a2744; border-bottom:1px solid #f0f4fb;';
             div.innerHTML = `<strong>${a.code}</strong> — ${a.name}`;
-            div.addEventListener('mouseover', () => div.style.background = 'rgba(110,168,255,.15)');
+            div.addEventListener('mouseover', () => div.style.background = '#f0f5ff');
             div.addEventListener('mouseout',  () => div.style.background = '');
             div.addEventListener('mousedown', () => {
               inp.value  = a.name;
@@ -271,10 +271,10 @@ window.handleBlogSubscribe = function(e) {
     .then(r => r.json())
     .then(data => {
       if (data.ok) {
-        msg.innerHTML = '<span style="color:#82ffd2"><i class="fa fa-circle-check me-1"></i>You\'re in! Best deals every week.</span>';
+        msg.innerHTML = '<span style="color:#059669"><i class="fa fa-circle-check me-1"></i>You\'re in! Best deals every week.</span>';
         form.querySelector('input[type="email"]').value = '';
       } else {
-        msg.innerHTML = `<span style="color:#ff8080">${data.error}</span>`;
+        msg.innerHTML = `<span style="color:#dc2626">${data.error}</span>`;
         btn.disabled = false;
         btn.textContent = 'Subscribe free';
       }
