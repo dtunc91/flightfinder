@@ -41,7 +41,6 @@
     align-items: stretch;
     min-height: 520px;
     background: #f8f9fc;
-    overflow: hidden;
   }
   .hero-left {
     flex: 0 0 58%;
@@ -56,6 +55,7 @@
     max-width: 42%;
     position: relative;
     overflow: hidden;
+    /* overflow stays here to clip photos, not on hero-outer which clips autocomplete */
   }
   /* Photo mosaic */
   .photo-mosaic {
@@ -457,9 +457,11 @@
 
   /* ── RESPONSIVE ───────────────────────────────────── */
   @media (max-width: 576px) {
+    /* Flight cards */
     .flight-card {
       flex-direction: column;
       align-items: flex-start;
+      padding: 14px 16px;
     }
     .flight-flag { display: none; }
     .flight-right {
@@ -467,8 +469,19 @@
       justify-content: space-between;
       align-items: center;
     }
-    .btn-book { flex: 1; text-align: center; }
+    .btn-book {
+      flex: 1;
+      text-align: center;
+      padding: 10px 12px;
+      font-size: 0.88rem;
+    }
+
+    /* Results header */
     .results-header { flex-direction: column; align-items: flex-start; }
+    .sort-controls { width: 100%; }
+    .sort-btn { flex: 1; text-align: center; padding: 9px 6px; font-size: 0.8rem; }
+
+    /* Search button */
     .btn-search {
       padding: 16px;
       font-size: 1.15rem;
@@ -477,7 +490,52 @@
       letter-spacing: .03em;
       min-height: 56px;
     }
+
+    /* Blog grid */
     .blog-grid { grid-template-columns: 1fr; }
+
+    /* Form inputs — 44px min touch target, 16px font prevents iOS auto-zoom */
+    .form-control, .form-select {
+      min-height: 44px;
+      font-size: 1rem;
+      padding: 10px 12px;
+    }
+
+    /* Form container — reduce padding on small screens */
+    #searchForm.form-container { padding: 16px !important; }
+
+    /* Trip type toggles — full width so they're easier to tap */
+    .trip-toggle.btn-group { width: 100%; }
+    .trip-toggle .btn-check + .btn {
+      flex: 1;
+      text-align: center;
+      padding: 10px 6px;
+      font-size: 0.82rem;
+    }
+
+    /* Autocomplete dropdown — shorter on small screens */
+    .autocomplete-items { max-height: 220px; }
+    .autocomplete-item { padding: 12px 14px; }
+
+    /* Hotel/eSIM/car links — bigger tap area */
+    .hotel-link, .klook-link { padding: 4px 0; font-size: 0.8rem; }
+
+    /* Compensair banner */
+    .compensair-banner { flex-direction: column; align-items: flex-start; }
+    .compensair-cta { align-self: flex-end; }
+
+    /* Hero headline — slightly smaller for tight screens */
+    .hero-left h1 { font-size: 1.8rem !important; }
+  }
+
+  /* Very small phones — hide photo mosaic to keep focus on search */
+  @media (max-width: 480px) {
+    .hero-right { display: none; }
+    .hero-left { padding: 20px 16px 16px !important; }
+    /* Hide tiny disclaimer text on very small screens */
+    .book-disclaimer { display: none; }
+    /* Deal chips — slightly larger on small screens */
+    .deal-chip { padding: 12px 14px; }
   }
 
   /* ── TRUST SIGNALS ─────────────────────────────── */
@@ -539,6 +597,7 @@
     scrollbar-width: thin;
     scrollbar-color: #c7d9f5 #f0f4fb;
     cursor: grab;
+    -webkit-overflow-scrolling: touch;
   }
   .live-feed-scroll.is-dragging { cursor: grabbing; user-select: none; }
   .live-feed-scroll::-webkit-scrollbar { height: 4px; }
@@ -577,12 +636,29 @@
   }
   .newsletter-box h3 { font-size: 1.05rem; font-weight: 700; margin-bottom: 6px; color: #1a2744; }
   .newsletter-box p  { font-size: 0.85rem; color: #4a5880; margin-bottom: 16px; }
+  @media (max-width: 576px) {
+    .newsletter-box { padding: 20px 16px; }
+    .newsletter-section { padding: 0 8px; }
+    /* Make newsletter inputs full-width on mobile */
+    .newsletter-box .email-input-row { flex-direction: column; }
+    .newsletter-box .email-input-row > * { max-width: none !important; width: 100%; }
+    .newsletter-box .btn-subscribe { width: 100%; padding: 12px; }
+    /* Email capture section */
+    .email-capture { padding: 18px 16px; }
+    .email-input-row { flex-direction: column; }
+    .email-input-row .form-control { min-width: 0; }
+    .email-capture .btn-subscribe { width: 100%; padding: 12px; }
+  }
 
   /* ── BLOG SECTION ──────────────────────────────── */
   .blog-section {
     max-width: 700px;
     margin: 32px auto 40px;
     padding: 0 12px;
+  }
+  @media (max-width: 576px) {
+    .blog-section { padding: 0 8px; margin-top: 20px; }
+    .blog-card { padding: 14px; }
   }
   .blog-section-title {
     font-size: 0.75rem;
@@ -871,7 +947,7 @@
             <a href="{{ flight.booking_url }}" target="_blank" rel="noopener" class="btn-book">
               Book for {{ form_data.currency_symbol or '£' }}{{ flight.price }} <i class="fa fa-arrow-right ms-1"></i>
             </a>
-            <div style="font-size:0.68rem; color:#9babc8; text-align:center;">
+            <div class="book-disclaimer" style="font-size:0.68rem; color:#9babc8; text-align:center;">
               Click Book Now to check Aviasales for more options &amp; prices
             </div>
           </div>
@@ -1161,9 +1237,9 @@ document.addEventListener('DOMContentLoaded', () => {
     input.value  = a.name;
     hidden.value = a.code;
     if (autoDetected) {
-      helper.innerHTML = `<span style="color:#9fb0ff"><i class="fa fa-location-dot me-1"></i>${a.name} <span style="opacity:.65;font-size:0.75em">(detected from your location)</span></span>`;
+      helper.innerHTML = `<span style="color:#3b7dd8"><i class="fa fa-location-dot me-1"></i>${a.name} <span style="opacity:.7;font-size:0.75em">(detected from your location)</span></span>`;
     } else {
-      helper.innerHTML = `<span style="color:#82ffd2"><i class="fa fa-circle-check me-1"></i>${a.name}</span>`;
+      helper.innerHTML = `<span style="color:#059669"><i class="fa fa-circle-check me-1"></i>${a.name}</span>`;
     }
     setEnabled(true);
     closeList();
@@ -1203,7 +1279,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (currencyInput && window._geoCurrency) currencyInput.value = window._geoCurrency;
     if (symbolInput   && window._geoSymbol)   symbolInput.value   = window._geoSymbol;
     setEnabled(false);
-    helper.innerHTML = '<span style="color:#9fb0ff">Start typing to search airports</span>';
+    helper.innerHTML = '<span style="color:#6b7eb5">Start typing to search airports</span>';
     const q = input.value.trim();
     if (!q) { closeList(); return; }
     debounceTimer = setTimeout(() => {
@@ -1241,7 +1317,7 @@ document.addEventListener('DOMContentLoaded', () => {
   searchBtn.onclick = () => {
     if (!hidden.value) {
       showError('Please select an airport from the dropdown first.');
-      helper.innerHTML = '<span style="color:#ff8080"><i class="fa fa-circle-exclamation me-1"></i>Please select an airport from the dropdown</span>';
+      helper.innerHTML = '<span style="color:#dc2626"><i class="fa fa-circle-exclamation me-1"></i>Please select an airport from the dropdown</span>';
       return;
     }
     const depDate = document.getElementById('departure_date').value;
