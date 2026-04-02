@@ -66,32 +66,75 @@
       background: #0d1f4a;
       padding: 0;
     }
-    .top-nav {
-      padding-top: 14px;
-      padding-bottom: 14px;
+    .top-nav-link {
+      color: #9fb0ff;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 0.9rem;
+      padding: 4px 2px;
+      display: inline-block;
     }
-    .top-nav a { color: #9fb0ff; text-decoration: none; font-weight: 600; font-size: 0.9rem; }
-    .top-nav a:hover { color: #cfe0ff; }
-    @media (max-width: 576px) {
-      .top-nav .d-flex.gap-3 { gap: 10px !important; flex-wrap: wrap; }
-      .top-nav a { font-size: 0.8rem; }
+    .top-nav-link:hover { color: #cfe0ff; }
+    .top-nav-toggler {
+      background: none;
+      border: 1px solid rgba(159,176,255,.4);
+      border-radius: 6px;
+      color: #9fb0ff;
+      padding: 6px 10px;
+      cursor: pointer;
+      font-size: 1rem;
+      line-height: 1;
+    }
+    .top-nav-toggler:focus { outline: none; border-color: #9fb0ff; }
+    .top-nav-collapse {
+      display: flex;
+      gap: 16px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    @media (max-width: 768px) {
+      .top-nav-collapse {
+        display: none;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0;
+        width: 100%;
+        padding: 8px 0 12px;
+        border-top: 1px solid rgba(159,176,255,.2);
+        margin-top: 8px;
+      }
+      .top-nav-collapse.open { display: flex; }
+      .top-nav-link {
+        font-size: 0.95rem;
+        padding: 8px 4px;
+        width: 100%;
+      }
+      .top-nav-toggler { display: block; }
+    }
+    @media (min-width: 769px) {
+      .top-nav-toggler { display: none; }
     }
   </style>
 </head>
 <body>
   <div class="top-nav-bar">
-  <nav class="container d-flex justify-content-between align-items-center top-nav">
-    <div class="d-flex align-items-center gap-2">
-      <a href="{{ url_for('index') }}" class="fs-5 fw-bold text-decoration-none text-light">GetMeOutOfHere<span class="text-info">.Live</span></a>
-      <i class="fa fa-plane ms-1" style="font-size:18px; opacity:.8"></i>
-    </div>
-    <div class="d-flex gap-3">
-      <a href="{{ url_for('about') }}">About</a>
-      <a href="{{ url_for('blog_index') }}">Blog</a>
-      <a href="{{ url_for('faq') }}">FAQ</a>
-      <a href="{{ url_for('privacy') }}">Privacy</a>
-      <a href="{{ url_for('terms') }}">Terms</a>
-      <a href="mailto:hello@getmeoutofhere.live">Contact</a>
+  <nav class="container" style="padding-top:12px; padding-bottom:12px;">
+    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap;">
+      <div class="d-flex align-items-center gap-2">
+        <a href="{{ url_for('index') }}" class="fs-5 fw-bold text-decoration-none text-light">GetMeOutOfHere<span class="text-info">.Live</span></a>
+        <i class="fa fa-plane ms-1" style="font-size:18px; opacity:.8"></i>
+      </div>
+      <button class="top-nav-toggler" id="navToggler" aria-label="Toggle navigation" aria-expanded="false">
+        <i class="fa fa-bars" id="navTogglerIcon"></i>
+      </button>
+      <div class="top-nav-collapse" id="navCollapse">
+        <a href="{{ url_for('about') }}" class="top-nav-link">About</a>
+        <a href="{{ url_for('blog_index') }}" class="top-nav-link">Blog</a>
+        <a href="{{ url_for('faq') }}" class="top-nav-link">FAQ</a>
+        <a href="{{ url_for('privacy') }}" class="top-nav-link">Privacy</a>
+        <a href="{{ url_for('terms') }}" class="top-nav-link">Terms</a>
+        <a href="mailto:hello@getmeoutofhere.live" class="top-nav-link">Contact</a>
+      </div>
     </div>
   </nav>
   </div>
@@ -114,6 +157,21 @@
   </footer>
 
   <script defer src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    // Mobile nav hamburger toggle
+    (function() {
+      var btn = document.getElementById('navToggler');
+      var collapse = document.getElementById('navCollapse');
+      var icon = document.getElementById('navTogglerIcon');
+      if (btn && collapse) {
+        btn.addEventListener('click', function() {
+          var open = collapse.classList.toggle('open');
+          btn.setAttribute('aria-expanded', open);
+          icon.className = open ? 'fa fa-xmark' : 'fa fa-bars';
+        });
+      }
+    })();
+  </script>
   {% block scripts %}{% endblock %}
 </body>
 </html>
