@@ -920,7 +920,8 @@
 </section>
 {% endif %}
 
-<!-- GENERAL NEWSLETTER (always shown) -->
+<!-- GENERAL NEWSLETTER (shown only when no search has been made) -->
+{% if not form_data.origin_code %}
 <div class="newsletter-section">
   <div class="newsletter-box">
     <h3><i class="fa fa-envelope me-2" style="color:#6ea8ff"></i>Get the week's cheapest deals to your inbox</h3>
@@ -947,6 +948,7 @@
     </form>
   </div>
 </div>
+{% endif %}
 
 <!-- BLOG / GUIDES -->
 {% if not seo_page and blog_cards %}
