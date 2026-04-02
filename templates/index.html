@@ -35,32 +35,82 @@
 
 {% block content %}
 <style>
+  /* ── HERO LAYOUT ──────────────────────────────────── */
+  .hero-outer {
+    display: flex;
+    align-items: stretch;
+    min-height: 520px;
+    background: #f8f9fc;
+    overflow: hidden;
+  }
+  .hero-left {
+    flex: 0 0 58%;
+    max-width: 58%;
+    padding: 40px 40px 36px 5%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+  .hero-right {
+    flex: 0 0 42%;
+    max-width: 42%;
+    position: relative;
+    overflow: hidden;
+  }
+  /* Photo mosaic */
+  .photo-mosaic {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr 1fr;
+    gap: 8px;
+    height: 100%;
+    min-height: 520px;
+    padding: 16px 16px 16px 0;
+  }
+  .photo-mosaic img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 16px;
+    display: block;
+  }
+  .photo-mosaic .photo-tall {
+    grid-row: span 2;
+  }
+
+  @media (max-width: 768px) {
+    .hero-outer { flex-direction: column; min-height: auto; }
+    .hero-left  { flex: unset; max-width: 100%; padding: 28px 20px 20px; }
+    .hero-right { flex: unset; max-width: 100%; }
+    .photo-mosaic { min-height: 200px; padding: 0 16px 16px; grid-template-rows: 140px 140px; grid-template-columns: 1fr 1fr 1fr; }
+    .photo-mosaic .photo-tall { grid-row: span 1; }
+  }
+
   /* ── FORM ─────────────────────────────────────────── */
   .form-container {
-    background: rgba(255,255,255,.06);
-    border: 1px solid rgba(255,255,255,.15);
+    background: #ffffff;
+    border: 1px solid #dde6f5;
     border-radius: 20px;
-    backdrop-filter: blur(16px);
-    box-shadow: 0 20px 40px rgba(0,0,0,.2);
+    box-shadow: 0 4px 24px rgba(26,39,68,.10);
     position: relative;
     overflow: visible;
   }
 
   .form-control, .form-select {
-    background: rgba(255,255,255,.07);
-    border: 1px solid rgba(255,255,255,.2);
-    color: #eaf0ff;
+    background: #f5f8ff;
+    border: 1px solid #d0daf0;
+    color: #1a2744;
     border-radius: 10px;
   }
   .form-control:focus, .form-select:focus {
-    background: rgba(255,255,255,.1);
-    border-color: rgba(110,168,255,.6);
-    color: #eaf0ff;
-    box-shadow: 0 0 0 3px rgba(110,168,255,.15);
+    background: #ffffff;
+    border-color: #3b7dd8;
+    color: #1a2744;
+    box-shadow: 0 0 0 3px rgba(59,125,216,.12);
   }
-  .form-control::placeholder { color: rgba(234,240,255,.4); }
+  .form-control::placeholder { color: #9babc8; }
   .form-label {
-    color: #9fb0ff;
+    color: #4a5880;
     font-size: 0.75rem;
     font-weight: 700;
     letter-spacing: .06em;
@@ -70,18 +120,18 @@
 
   /* trip type toggle */
   .trip-toggle .btn-check + .btn {
-    background: rgba(255,255,255,.06);
-    border: 1px solid rgba(255,255,255,.18);
-    color: #9fb0ff;
+    background: #f0f4fb;
+    border: 1px solid #d0daf0;
+    color: #4a5880;
     border-radius: 10px;
     font-size: 0.85rem;
     padding: 7px 18px;
     transition: background .15s, color .15s;
   }
   .trip-toggle .btn-check:checked + .btn {
-    background: rgba(110,168,255,.25);
-    border-color: rgba(110,168,255,.55);
-    color: #cfe0ff;
+    background: #dde9fb;
+    border-color: #3b7dd8;
+    color: #1a2744;
     font-weight: 600;
   }
   .trip-toggle .btn-check + .btn:first-of-type { border-radius: 10px 0 0 10px; }
@@ -94,27 +144,27 @@
     width: 100%;
     max-height: 320px;
     overflow: auto;
-    background: rgba(12,18,44,.98);
-    border: 1px solid rgba(255,255,255,.14);
+    background: #ffffff;
+    border: 1px solid #d0daf0;
     border-radius: 14px;
-    box-shadow: 0 16px 40px rgba(0,0,0,.55);
+    box-shadow: 0 12px 40px rgba(26,39,68,.16);
     margin-top: 6px;
   }
   .autocomplete-item {
     padding: 11px 14px;
     cursor: pointer;
-    border-bottom: 1px solid rgba(255,255,255,.05);
+    border-bottom: 1px solid #f0f4fb;
     display: flex;
     align-items: center;
     gap: 12px;
   }
   .autocomplete-item:last-child { border-bottom: none; }
   .autocomplete-item:hover, .autocomplete-item.active {
-    background: rgba(110,168,255,.14);
+    background: #f0f5ff;
   }
   .airport-code-badge {
-    background: rgba(110,168,255,.2);
-    color: #6ea8ff;
+    background: #dde9fb;
+    color: #1a55b0;
     font-size: 11px;
     font-weight: 700;
     letter-spacing: .04em;
@@ -131,9 +181,9 @@
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    color: #eaf0ff;
+    color: #1a2744;
   }
-  .airport-sub { font-size: 11px; color: #9fb0ff; margin-top: 1px; }
+  .airport-sub { font-size: 11px; color: #6b7eb5; margin-top: 1px; }
 
   /* ── SEARCH BUTTON ────────────────────────────────── */
   .btn-search {
@@ -159,37 +209,37 @@
     gap: 10px;
     margin-bottom: 14px;
   }
-  .results-count { font-size: 0.88rem; color: #9fb0ff; }
+  .results-count { font-size: 0.88rem; color: #4a5880; }
   .sort-controls { display: flex; gap: 6px; }
   .sort-btn {
-    background: rgba(255,255,255,.06);
-    border: 1px solid rgba(255,255,255,.14);
-    color: #9fb0ff;
+    background: #f0f4fb;
+    border: 1px solid #d0daf0;
+    color: #4a5880;
     border-radius: 8px;
     font-size: 0.78rem;
     padding: 5px 12px;
     cursor: pointer;
     transition: background .15s, color .15s;
   }
-  .sort-btn:hover { background: rgba(110,168,255,.14); color: #cfe0ff; }
+  .sort-btn:hover { background: #dde9fb; color: #1a2744; }
   .sort-btn.active {
-    background: rgba(110,168,255,.2);
-    border-color: rgba(110,168,255,.4);
-    color: #cfe0ff;
+    background: #dde9fb;
+    border-color: #3b7dd8;
+    color: #1a2744;
     font-weight: 600;
   }
 
   /* flight card */
   .flight-card {
-    background: rgba(255,255,255,.055);
-    border: 1px solid rgba(255,255,255,.1);
+    background: #ffffff;
+    border: 1px solid #e2e8f4;
     border-radius: 16px;
     padding: 18px 20px;
     margin-bottom: 10px;
     display: flex;
     align-items: center;
     gap: 16px;
-    transition: border-color .2s, background .2s;
+    transition: border-color .2s, box-shadow .2s;
   }
   .flight-flag {
     width: 48px;
@@ -197,12 +247,12 @@
     object-fit: cover;
     border-radius: 6px;
     flex-shrink: 0;
-    opacity: 0.88;
-    box-shadow: 0 2px 6px rgba(0,0,0,.35);
+    opacity: 0.9;
+    box-shadow: 0 1px 4px rgba(0,0,0,.12);
   }
   .flight-card:hover {
-    background: rgba(255,255,255,.09);
-    border-color: rgba(110,168,255,.3);
+    border-color: #3b7dd8;
+    box-shadow: 0 4px 16px rgba(59,125,216,.12);
   }
   .flight-dest { flex: 1; min-width: 0; }
   .flight-dest-top {
@@ -214,11 +264,11 @@
   .flight-city {
     font-size: 1.05rem;
     font-weight: 700;
-    color: #eaf0ff;
+    color: #1a2744;
   }
   .flight-iata {
-    background: rgba(110,168,255,.18);
-    color: #6ea8ff;
+    background: #dde9fb;
+    color: #1a55b0;
     font-size: 10px;
     font-weight: 700;
     letter-spacing: .05em;
@@ -229,7 +279,7 @@
   }
   .flight-airport-name {
     font-size: 0.75rem;
-    color: #5a6e9e;
+    color: #6b7eb5;
   }
   .flight-right {
     display: flex;
@@ -241,10 +291,10 @@
   .flight-price {
     font-size: 1.55rem;
     font-weight: 800;
-    color: #82ffd2;
+    color: #1a55b0;
     line-height: 1;
   }
-  .flight-price-label { font-size: 0.68rem; color: #9fb0ff; margin-top: 2px; }
+  .flight-price-label { font-size: 0.68rem; color: #6b7eb5; margin-top: 2px; }
   .stops-badge {
     font-size: 0.7rem;
     font-weight: 600;
@@ -253,19 +303,19 @@
     white-space: nowrap;
   }
   .stops-direct {
-    background: rgba(130,255,210,.12);
-    color: #82ffd2;
-    border: 1px solid rgba(130,255,210,.28);
+    background: #d1fae5;
+    color: #065f46;
+    border: 1px solid #6ee7b7;
   }
   .stops-1 {
-    background: rgba(255,193,7,.1);
-    color: #ffc107;
-    border: 1px solid rgba(255,193,7,.25);
+    background: #fef3c7;
+    color: #92400e;
+    border: 1px solid #fcd34d;
   }
   .stops-2plus {
-    background: rgba(255,100,100,.1);
-    color: #ff8080;
-    border: 1px solid rgba(255,100,100,.2);
+    background: #fee2e2;
+    color: #991b1b;
+    border: 1px solid #fca5a5;
   }
   .btn-book {
     background: linear-gradient(135deg, #3b7dd8 0%, #1a55b0 100%);
@@ -285,18 +335,18 @@
   /* hotel link on card */
   .hotel-link {
     font-size: 0.75rem;
-    color: #9fb0ff;
+    color: #6b7eb5;
     text-decoration: none;
     margin-top: 6px;
     display: inline-flex;
     align-items: center;
     gap: 4px;
-    opacity: .75;
+    opacity: .85;
     transition: opacity .15s;
   }
-  .hotel-link:hover { opacity: 1; color: #cfe0ff; }
-  .klook-link { color: #ff6b35; margin-top: 4px; }
-  .klook-link:hover { color: #ff9a6c; }
+  .hotel-link:hover { opacity: 1; color: #1a55b0; }
+  .klook-link { color: #e05c2a; margin-top: 4px; }
+  .klook-link:hover { color: #c04010; }
 
   /* compensair banner */
   .compensair-banner {
@@ -304,8 +354,8 @@
     align-items: center;
     justify-content: space-between;
     gap: 16px;
-    background: rgba(110, 168, 255, 0.07);
-    border: 1px solid rgba(110, 168, 255, 0.2);
+    background: #f0f5ff;
+    border: 1px solid #c7d9f5;
     border-radius: 14px;
     padding: 16px 20px;
     margin: 16px auto 0;
@@ -314,8 +364,8 @@
     transition: background .2s, border-color .2s;
   }
   .compensair-banner:hover {
-    background: rgba(110, 168, 255, 0.13);
-    border-color: rgba(110, 168, 255, 0.4);
+    background: #e0ecff;
+    border-color: #3b7dd8;
   }
   .compensair-banner-left {
     display: flex;
@@ -324,23 +374,23 @@
   }
   .compensair-icon {
     font-size: 1.4rem;
-    color: #6ea8ff;
+    color: #3b7dd8;
     flex-shrink: 0;
   }
   .compensair-title {
     font-size: 0.9rem;
     font-weight: 600;
-    color: #eaf0ff;
+    color: #1a2744;
   }
   .compensair-sub {
     font-size: 0.78rem;
-    color: #8a9cc8;
+    color: #4a5880;
     margin-top: 3px;
   }
   .compensair-cta {
     font-size: 0.82rem;
     font-weight: 600;
-    color: #6ea8ff;
+    color: #1a55b0;
     white-space: nowrap;
     flex-shrink: 0;
   }
@@ -351,14 +401,14 @@
 
   /* ── EMAIL CAPTURE ────────────────────────────────── */
   .email-capture {
-    background: rgba(110,168,255,.07);
-    border: 1px solid rgba(110,168,255,.2);
+    background: #f0f5ff;
+    border: 1px solid #c7d9f5;
     border-radius: 16px;
     padding: 24px;
     margin-top: 28px;
   }
-  .email-capture h3 { font-size: 1rem; font-weight: 700; margin-bottom: 4px; }
-  .email-capture p  { font-size: 0.85rem; color: #9fb0ff; margin-bottom: 14px; }
+  .email-capture h3 { font-size: 1rem; font-weight: 700; margin-bottom: 4px; color: #1a2744; }
+  .email-capture p  { font-size: 0.85rem; color: #4a5880; margin-bottom: 14px; }
   .email-input-row { display: flex; gap: 8px; flex-wrap: wrap; }
   .email-input-row .form-control { flex: 1; min-width: 200px; }
   .btn-subscribe {
@@ -372,21 +422,21 @@
 
   /* ── SEO PAGE HEADER ──────────────────────────────── */
   .seo-header {
-    background: rgba(255,255,255,.04);
-    border: 1px solid rgba(255,255,255,.08);
+    background: #f5f8ff;
+    border: 1px solid #d0daf0;
     border-radius: 14px;
     padding: 18px 20px;
     margin-bottom: 20px;
   }
-  .seo-header h2 { font-size: 1.15rem; font-weight: 700; margin-bottom: 4px; }
-  .seo-header p  { font-size: 0.82rem; color: #9fb0ff; margin: 0; }
+  .seo-header h2 { font-size: 1.15rem; font-weight: 700; margin-bottom: 4px; color: #1a2744; }
+  .seo-header p  { font-size: 0.82rem; color: #4a5880; margin: 0; }
 
   /* ── LOADING OVERLAY ──────────────────────────────── */
   #loadingOverlay {
     display: none;
     position: fixed;
     inset: 0;
-    background: rgba(11,16,32,.82);
+    background: rgba(248,249,252,.9);
     z-index: 9999;
     backdrop-filter: blur(4px);
     align-items: center;
@@ -395,13 +445,13 @@
     gap: 14px;
   }
   #loadingOverlay.show { display: flex; }
-  .loading-text { color: #eaf0ff; font-weight: 600; font-size: 1rem; }
+  .loading-text { color: #1a2744; font-weight: 600; font-size: 1rem; }
 
   /* ── NO RESULTS ───────────────────────────────────── */
   .no-results {
     text-align: center;
     padding: 48px 24px;
-    color: #9fb0ff;
+    color: #6b7eb5;
   }
   .no-results i { opacity: .35; margin-bottom: 16px; }
 
@@ -433,34 +483,32 @@
   /* ── TRUST SIGNALS ─────────────────────────────── */
   .trust-bar {
     display: flex;
-    justify-content: center;
+    justify-content: flex-start;
     flex-wrap: wrap;
-    gap: 12px 28px;
-    margin: 18px auto 0;
-    max-width: 560px;
+    gap: 10px 24px;
+    margin: 14px 0 0;
   }
   .trust-item {
     display: flex;
     align-items: center;
     gap: 7px;
-    font-size: 0.85rem;
-    color: #9fb0ff;
+    font-size: 0.82rem;
+    color: #4a5880;
   }
-  .trust-item i { color: #82ffd2; font-size: 0.78rem; }
+  .trust-item i { color: #059669; font-size: 0.78rem; }
   .social-proof {
     display: flex;
     align-items: center;
-    justify-content: center;
     gap: 8px;
-    margin-top: 12px;
+    margin-top: 10px;
     font-size: 0.78rem;
-    color: #6ea8ff;
+    color: #3b7dd8;
     letter-spacing: .02em;
   }
   .pulse-dot {
     width: 7px;
     height: 7px;
-    background: #82ffd2;
+    background: #059669;
     border-radius: 50%;
     display: inline-block;
     flex-shrink: 0;
@@ -484,7 +532,7 @@
     margin-bottom: 10px;
     font-size: 0.75rem;
     font-weight: 700;
-    color: #9fb0ff;
+    color: #4a5880;
     text-transform: uppercase;
     letter-spacing: .07em;
   }
@@ -494,30 +542,30 @@
     overflow-x: auto;
     padding-bottom: 10px;
     scrollbar-width: thin;
-    scrollbar-color: rgba(110,168,255,.35) rgba(255,255,255,.06);
+    scrollbar-color: #c7d9f5 #f0f4fb;
     cursor: grab;
   }
   .live-feed-scroll.is-dragging { cursor: grabbing; user-select: none; }
   .live-feed-scroll::-webkit-scrollbar { height: 4px; }
-  .live-feed-scroll::-webkit-scrollbar-track { background: rgba(255,255,255,.06); border-radius: 2px; }
-  .live-feed-scroll::-webkit-scrollbar-thumb { background: rgba(110,168,255,.35); border-radius: 2px; }
-  .live-feed-scroll::-webkit-scrollbar-thumb:hover { background: rgba(110,168,255,.6); }
+  .live-feed-scroll::-webkit-scrollbar-track { background: #f0f4fb; border-radius: 2px; }
+  .live-feed-scroll::-webkit-scrollbar-thumb { background: #c7d9f5; border-radius: 2px; }
+  .live-feed-scroll::-webkit-scrollbar-thumb:hover { background: #3b7dd8; }
   .deal-chip {
-    background: rgba(255,255,255,.055);
-    border: 1px solid rgba(255,255,255,.1);
+    background: #ffffff;
+    border: 1px solid #e2e8f4;
     border-radius: 12px;
     padding: 10px 14px;
     white-space: nowrap;
     flex-shrink: 0;
-    transition: border-color .2s, background .2s;
+    transition: border-color .2s, box-shadow .2s;
   }
   .deal-chip:hover {
-    background: rgba(255,255,255,.09);
-    border-color: rgba(110,168,255,.3);
+    border-color: #3b7dd8;
+    box-shadow: 0 2px 10px rgba(59,125,216,.1);
   }
-  .deal-chip-route { color: #cfe0ff; font-size: 0.8rem; font-weight: 600; margin-bottom: 2px; }
-  .deal-chip-date  { color: #5a6e9e; font-size: 0.7rem; margin-bottom: 3px; }
-  .deal-chip-price { color: #82ffd2; font-size: 1rem; font-weight: 800; }
+  .deal-chip-route { color: #1a2744; font-size: 0.8rem; font-weight: 600; margin-bottom: 2px; }
+  .deal-chip-date  { color: #6b7eb5; font-size: 0.7rem; margin-bottom: 3px; }
+  .deal-chip-price { color: #1a55b0; font-size: 1rem; font-weight: 800; }
 
   /* ── GENERAL NEWSLETTER ────────────────────────── */
   .newsletter-section {
@@ -526,14 +574,14 @@
     padding: 0 12px;
   }
   .newsletter-box {
-    background: rgba(110,168,255,.07);
-    border: 1px solid rgba(110,168,255,.2);
+    background: #f0f5ff;
+    border: 1px solid #c7d9f5;
     border-radius: 16px;
     padding: 26px 24px;
     text-align: center;
   }
-  .newsletter-box h3 { font-size: 1.05rem; font-weight: 700; margin-bottom: 6px; }
-  .newsletter-box p  { font-size: 0.85rem; color: #9fb0ff; margin-bottom: 16px; }
+  .newsletter-box h3 { font-size: 1.05rem; font-weight: 700; margin-bottom: 6px; color: #1a2744; }
+  .newsletter-box p  { font-size: 0.85rem; color: #4a5880; margin-bottom: 16px; }
 
   /* ── BLOG SECTION ──────────────────────────────── */
   .blog-section {
@@ -544,7 +592,7 @@
   .blog-section-title {
     font-size: 0.75rem;
     font-weight: 700;
-    color: #9fb0ff;
+    color: #4a5880;
     text-transform: uppercase;
     letter-spacing: .07em;
     margin-bottom: 14px;
@@ -558,78 +606,78 @@
     gap: 10px;
   }
   .blog-card {
-    background: rgba(255,255,255,.04);
-    border: 1px solid rgba(255,255,255,.08);
+    background: #ffffff;
+    border: 1px solid #e2e8f4;
     border-radius: 14px;
     padding: 16px;
     text-decoration: none;
     display: block;
-    transition: border-color .2s, background .2s;
+    transition: border-color .2s, box-shadow .2s;
   }
   .blog-card:hover {
-    background: rgba(255,255,255,.08);
-    border-color: rgba(110,168,255,.3);
+    border-color: #3b7dd8;
+    box-shadow: 0 4px 16px rgba(59,125,216,.1);
   }
   .blog-card-emoji { font-size: 1.3rem; margin-bottom: 8px; display: block; }
   .blog-card-title {
     font-size: 0.85rem;
     font-weight: 600;
-    color: #eaf0ff;
+    color: #1a2744;
     margin-bottom: 5px;
     line-height: 1.35;
   }
-  .blog-card-meta { font-size: 0.73rem; color: #5a6e9e; }
+  .blog-card-meta { font-size: 0.73rem; color: #6b7eb5; }
 </style>
 
 <!-- Error toast -->
 <div id="errorToast" role="alert" style="
   display:none; position:fixed; top:20px; left:50%; transform:translateX(-50%);
-  background:#1e2a45; border:1px solid rgba(255,100,100,.45); border-radius:12px;
+  background:#fff; border:1px solid rgba(220,50,50,.35); border-radius:12px;
   padding:14px 20px; z-index:10000; max-width:380px; width:90%;
-  box-shadow:0 8px 32px rgba(0,0,0,.55); display:none; align-items:center; gap:12px;">
-  <i class="fa fa-circle-exclamation" style="color:#ff7070; font-size:1.1rem; flex-shrink:0;"></i>
-  <span id="errorToastMsg" style="color:#eaf0ff; font-size:0.9rem; flex:1;"></span>
+  box-shadow:0 8px 32px rgba(0,0,0,.15); display:none; align-items:center; gap:12px;">
+  <i class="fa fa-circle-exclamation" style="color:#dc2626; font-size:1.1rem; flex-shrink:0;"></i>
+  <span id="errorToastMsg" style="color:#1a2744; font-size:0.9rem; flex:1;"></span>
   <button onclick="document.getElementById('errorToast').style.display='none'"
-          style="background:none;border:none;color:#9fb0ff;font-size:1rem;cursor:pointer;padding:0;flex-shrink:0;">
+          style="background:none;border:none;color:#6b7eb5;font-size:1rem;cursor:pointer;padding:0;flex-shrink:0;">
     <i class="fa fa-xmark"></i>
   </button>
 </div>
 
 <!-- Loading overlay -->
 <div id="loadingOverlay">
-  <div class="spinner-border text-info" style="width:3rem;height:3rem;" role="status"></div>
+  <div class="spinner-border text-primary" style="width:3rem;height:3rem;" role="status"></div>
   <div class="loading-text">Searching for the cheapest flights...</div>
 </div>
 
-<!-- HERO -->
-<header class="text-center py-2 px-3">
-  {% if seo_page %}
-    <h1 class="fw-bold mb-2">Cheap Flights from {{ seo_page.city }} ✈️</h1>
-    <p style="color:#9fb0ff; max-width:500px; margin:0 auto;">
-      No destination needed. Pick a date and we'll show you the cheapest places to fly from <strong style="color:#eaf0ff">{{ seo_page.city }}</strong>.
-    </p>
-  {% else %}
-    <h1 class="fw-bold mb-2">Get Me Out of Here ✈️</h1>
-    <p style="color:#9fb0ff; max-width:500px; margin:0 auto;">
-      No destination in mind? Find the cheapest places you can fly to — just pick your airport.
-    </p>
-  {% endif %}
+<!-- HERO 2-column layout -->
+<div class="hero-outer">
+  <div class="hero-left">
+    <header class="py-2">
+      {% if seo_page %}
+        <h1 class="fw-bold mb-2" style="font-size:2rem; color:#1a2744; line-height:1.2;">Cheap Flights from {{ seo_page.city }} ✈️</h1>
+        <p style="color:#4a5880; max-width:480px;">
+          No destination needed. Pick a date and we'll show you the cheapest places to fly from <strong style="color:#1a2744">{{ seo_page.city }}</strong>.
+        </p>
+      {% else %}
+        <h1 class="fw-bold mb-2" style="font-size:2.2rem; color:#1a2744; line-height:1.2;">Find cheap flights<br>from your airport</h1>
+        <p style="color:#4a5880; max-width:480px;">
+          No destination in mind? Just pick your airport and we'll show you the cheapest places you can fly to.
+        </p>
+      {% endif %}
 
-  <!-- Trust signals -->
-  <div class="trust-bar">
-    <div class="trust-item"><i class="fa fa-circle-check"></i> No fees. No faff. Just cheap flights.</div>
-    <div class="trust-item"><i class="fa fa-bolt"></i> Real prices, updated on every search</div>
-    <div class="trust-item"><i class="fa fa-lock"></i> 100% free to use</div>
-  </div>
-  <div class="social-proof">
-    <span class="pulse-dot"></span> 10,000+ flights searched this week
-  </div>
-</header>
+      <!-- Trust signals -->
+      <div class="trust-bar">
+        <div class="trust-item"><i class="fa fa-circle-check"></i> No fees. No faff. Just cheap flights.</div>
+        <div class="trust-item"><i class="fa fa-bolt"></i> Real prices, updated every search</div>
+        <div class="trust-item"><i class="fa fa-lock"></i> 100% free to use</div>
+      </div>
+      <div class="social-proof">
+        <span class="pulse-dot"></span> 10,000+ flights searched this week
+      </div>
+    </header>
 
-<div class="container mb-5" style="max-width:700px;">
-
-  <!-- SEARCH FORM -->
-  <form method="POST" id="searchForm" class="p-4 form-container" autocomplete="off">
+    <!-- SEARCH FORM -->
+    <form method="POST" id="searchForm" class="p-4 form-container mt-3" autocomplete="off">
 
     <!-- Trip type toggle -->
     <div class="d-flex flex-wrap gap-3 mb-3">
@@ -670,9 +718,9 @@
       <div id="origin-autocomplete-list" class="autocomplete-items d-none"></div>
       <div id="origin-helper" class="small mt-1">
         {% if form_data.origin_code %}
-          <span style="color:#82ffd2"><i class="fa fa-circle-check me-1"></i>{{ form_data.origin }}</span>
+          <span style="color:#059669"><i class="fa fa-circle-check me-1"></i>{{ form_data.origin }}</span>
         {% else %}
-          <span style="color:#9fb0ff">Start typing to search airports</span>
+          <span style="color:#6b7eb5">Start typing to search airports</span>
         {% endif %}
       </div>
     </div>
@@ -716,11 +764,34 @@
       <span class="pulse-dot"></span> This week's deals
     </div>
     <div class="live-feed-scroll" id="liveFeedScroll"></div>
-    <div style="font-size:0.7rem; color:#5a6e9e; margin-top:6px; padding-left:2px;">
+    <div style="font-size:0.7rem; color:#6b7eb5; margin-top:6px; padding-left:2px;">
       Departing in the next 7 days · prices from Aviasales · one-way per person
     </div>
   </div>
   {% endif %}
+
+  </div><!-- /hero-left -->
+
+  <!-- HERO RIGHT: photo mosaic -->
+  <div class="hero-right">
+    <div class="photo-mosaic">
+      <img class="photo-tall"
+           src="{{ url_for('static', filename='alejandro-pinero-amerio-Lx3l-Hf_P5I-unsplash.webp') }}"
+           alt="Travel destination" loading="lazy">
+      <img src="{{ url_for('static', filename='md-arafat-ul-alam-bnrouu6uqaM-unsplash.webp') }}"
+           alt="Flight view" loading="lazy">
+      <img src="https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=600&q=80&auto=format&fit=crop"
+           alt="Airplane in flight" loading="lazy">
+      <img src="https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?w=600&q=80&auto=format&fit=crop"
+           alt="Travel adventure" loading="lazy">
+      <img src="https://images.unsplash.com/photo-1488085061387-422e29b40080?w=600&q=80&auto=format&fit=crop"
+           alt="City destination" loading="lazy">
+    </div>
+  </div><!-- /hero-right -->
+
+</div><!-- /hero-outer -->
+
+<div class="container mb-5 px-3 px-md-4" style="max-width:900px;">
 
   <!-- RESULTS -->
   {% if flights %}
@@ -767,7 +838,7 @@
             <a class="hotel-link"
                href="https://yesim.tpm.li/ZpiVkrqG"
                target="_blank" rel="noopener"
-               style="color:#b8a0ff;">
+               style="color:#7c3aed;">
               <i class="fa fa-signal"></i> eSIM — use code FALLY20
             </a>
             {% endif %}
@@ -803,7 +874,7 @@
             <a href="{{ flight.booking_url }}" target="_blank" rel="noopener" class="btn-book">
               Book for {{ form_data.currency_symbol or '£' }}{{ flight.price }} <i class="fa fa-arrow-right ms-1"></i>
             </a>
-            <div style="font-size:0.68rem; color:rgba(234,240,255,0.4); text-align:center;">
+            <div style="font-size:0.68rem; color:#9babc8; text-align:center;">
               Click Book Now to check Aviasales for more options &amp; prices
             </div>
           </div>
@@ -837,10 +908,10 @@
   <!-- EMAIL CAPTURE -->
   {% if form_data.origin_code %}
   <div class="email-capture">
-    <h3><i class="fa fa-bell me-2" style="color:#6ea8ff"></i>Get price alerts</h3>
+    <h3><i class="fa fa-bell me-2" style="color:#3b7dd8"></i>Get price alerts</h3>
     <p>
       We'll email you when cheap flights from
-      <strong style="color:#eaf0ff">{{ origin_label or form_data.origin }}</strong> drop even lower.
+      <strong style="color:#1a2744">{{ origin_label or form_data.origin }}</strong> drop even lower.
     </p>
     <form id="subscribeForm" onsubmit="handleSubscribe(event)">
       <input type="hidden" name="airport_code" value="{{ form_data.origin_code }}">
@@ -862,55 +933,55 @@
 <section style="max-width:700px; margin:0 auto 48px; padding:0 16px;">
 
   <div style="margin-bottom:28px;">
-    <h2 style="font-size:1.15rem; font-weight:700; color:#eaf0ff; margin-bottom:10px;">
+    <h2 style="font-size:1.15rem; font-weight:700; color:#1a2744; margin-bottom:10px;">
       About {{ seo_page.city }} Airport
     </h2>
-    <p style="font-size:0.92rem; color:#c0ccee; line-height:1.75;">{{ seo_content.about }}</p>
+    <p style="font-size:0.92rem; color:#4a5880; line-height:1.75;">{{ seo_content.about }}</p>
   </div>
 
   <div style="margin-bottom:28px;">
-    <h2 style="font-size:1.15rem; font-weight:700; color:#eaf0ff; margin-bottom:14px;">
+    <h2 style="font-size:1.15rem; font-weight:700; color:#1a2744; margin-bottom:14px;">
       Popular Routes from {{ seo_page.city }}
     </h2>
     <div style="display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:10px;">
       {% for dest, iata, price, airline in seo_content.routes %}
-      <div style="background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.08);
+      <div style="background:#ffffff; border:1px solid #e2e8f4;
                   border-radius:12px; padding:14px 16px; display:flex; justify-content:space-between; align-items:center;">
         <div>
-          <div style="font-weight:600; font-size:0.92rem; color:#eaf0ff;">{{ dest }}</div>
-          <div style="font-size:0.78rem; color:#6ea8ff; margin-top:2px;">{{ airline }}</div>
+          <div style="font-weight:600; font-size:0.92rem; color:#1a2744;">{{ dest }}</div>
+          <div style="font-size:0.78rem; color:#3b7dd8; margin-top:2px;">{{ airline }}</div>
         </div>
-        <div style="font-size:1rem; font-weight:700; color:#82ffd2;">from {{ price }}</div>
+        <div style="font-size:1rem; font-weight:700; color:#1a55b0;">from {{ price }}</div>
       </div>
       {% endfor %}
     </div>
-    <p style="font-size:0.75rem; color:#5a6e9e; margin-top:10px;">
+    <p style="font-size:0.75rem; color:#6b7eb5; margin-top:10px;">
       <i class="fa fa-circle-info" style="margin-right:4px;"></i>
       Prices shown are typical one-way fares seen on this route. Actual prices vary by date — use the search above for live prices.
     </p>
   </div>
 
   <div>
-    <h2 style="font-size:1.15rem; font-weight:700; color:#eaf0ff; margin-bottom:10px;">
+    <h2 style="font-size:1.15rem; font-weight:700; color:#1a2744; margin-bottom:10px;">
       Tips for Flying from {{ seo_page.city }}
     </h2>
-    <p style="font-size:0.92rem; color:#c0ccee; line-height:1.75;">{{ seo_content.tips }}</p>
+    <p style="font-size:0.92rem; color:#4a5880; line-height:1.75;">{{ seo_content.tips }}</p>
   </div>
 
   {% if blog_cards %}
   <div style="margin-top:28px;">
-    <h2 style="font-size:0.75rem; font-weight:700; color:#9fb0ff; text-transform:uppercase; letter-spacing:.07em; margin-bottom:12px;">
+    <h2 style="font-size:0.75rem; font-weight:700; color:#4a5880; text-transform:uppercase; letter-spacing:.07em; margin-bottom:12px;">
       <i class="fa fa-compass me-1"></i> Flight Deal Guides
     </h2>
     <div style="display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:8px;">
       {% for post in blog_cards[:4] %}
       <a href="{{ url_for('blog_post', slug=post.slug) }}"
-         style="background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.08); border-radius:12px;
-                padding:14px; text-decoration:none; display:block; transition:border-color .2s, background .2s;"
-         onmouseover="this.style.background='rgba(255,255,255,.08)';this.style.borderColor='rgba(110,168,255,.3)'"
-         onmouseout="this.style.background='rgba(255,255,255,.04)';this.style.borderColor='rgba(255,255,255,.08)'">
+         style="background:#ffffff; border:1px solid #e2e8f4; border-radius:12px;
+                padding:14px; text-decoration:none; display:block; transition:border-color .2s, box-shadow .2s;"
+         onmouseover="this.style.borderColor='#3b7dd8';this.style.boxShadow='0 4px 16px rgba(59,125,216,.1)'"
+         onmouseout="this.style.borderColor='#e2e8f4';this.style.boxShadow='none'">
         <span style="font-size:1.2rem; display:block; margin-bottom:6px;">{{ post.emoji if post.emoji else '✈️' }}</span>
-        <div style="font-size:0.82rem; font-weight:600; color:#eaf0ff; line-height:1.35;">{{ post.title }}</div>
+        <div style="font-size:0.82rem; font-weight:600; color:#1a2744; line-height:1.35;">{{ post.title }}</div>
       </a>
       {% endfor %}
     </div>
@@ -924,7 +995,7 @@
 {% if not form_data.origin_code %}
 <div class="newsletter-section">
   <div class="newsletter-box">
-    <h3><i class="fa fa-envelope me-2" style="color:#6ea8ff"></i>Get the week's cheapest deals to your inbox</h3>
+    <h3><i class="fa fa-envelope me-2" style="color:#3b7dd8"></i>Get the week's cheapest deals to your inbox</h3>
     <p>Free. No spam. The best flight deals from your airport, every week.</p>
     <form id="newsletterForm" onsubmit="handleNewsletter(event)" autocomplete="off">
       <input type="hidden" id="nl_airport_code" name="airport_code" value="">
@@ -934,12 +1005,12 @@
           <input type="text" id="nl_airport_input"
                  placeholder="Your airport (e.g. London)" autocomplete="off"
                  class="form-control"
-                 style="max-width:220px; background:rgba(255,255,255,.08); border:1px solid rgba(110,168,255,.3); color:#eaf0ff; border-radius:10px; padding:10px 14px;">
+                 style="max-width:220px; border-radius:10px; padding:10px 14px;">
           <div id="nl_airport_list" class="autocomplete-items d-none" style="min-width:220px;"></div>
         </div>
         <input type="email" name="email" class="form-control"
                placeholder="your@email.com" required
-               style="max-width:220px; background:rgba(255,255,255,.08); border:1px solid rgba(110,168,255,.3); color:#eaf0ff; border-radius:10px; padding:10px 14px;">
+               style="max-width:220px; border-radius:10px; padding:10px 14px;">
         <button type="submit" class="btn-subscribe">
           <i class="fa fa-paper-plane me-1"></i> Subscribe free
         </button>
