@@ -33,31 +33,13 @@
   ],
   "cta_airport": "MAN",
   "market": "uk",
-  "published_at": "2026-04-03T09:00:00Z",
+  "published_at": "2026-04-30T08:48:22.334100",
   "related": [
-    [
-      "may-half-term-flights-uk",
-      "Cheap May Half-Term Flights 2026"
-    ],
-    [
-      "may-day-bank-holiday-flights-2026",
-      "Cheap May Day Bank Holiday Flights 2026"
-    ],
-    [
-      "uk-bank-holiday-flight-deals",
-      "UK Bank Holiday Flight Deals 2026: All Five Windows"
-    ],
-    [
-      "summer-holidays-cheap-flights-uk",
-      "Summer Holiday Flights 2026: Book Now Guide"
-    ],
-    [
-      "cheap-flights-to-greece-from-uk-2026",
-      "Cheap Flights to Greece from UK 2026"
-    ],
-    [
-      "cheapest-canary-islands-flights-uk-2026",
-      "Cheapest Canary Islands Flights from UK 2026"
-    ]
+    ["may-half-term-flights-uk", "Cheap May Half-Term Flights 2026"],
+    ["may-day-bank-holiday-flights-2026", "Cheap May Day Bank Holiday Flights 2026"],
+    ["uk-bank-holiday-flight-deals", "UK Bank Holiday Flight Deals 2026: All Five Windows"],
+    ["summer-holidays-cheap-flights-uk", "Summer Holiday Flights 2026: Book Now Guide"],
+    ["cheap-flights-to-greece-from-uk-2026", "Cheap Flights to Greece from UK 2026"],
+    ["cheapest-canary-islands-flights-uk-2026", "Cheapest Canary Islands Flights from UK 2026"]
   ]
 }

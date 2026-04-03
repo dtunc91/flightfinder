@@ -25,19 +25,10 @@
   ],
   "cta_airport": "STN",
   "market": "uk",
-  "published_at": "2026-04-03T09:00:00Z",
+  "published_at": "2026-04-30T15:30:00.000000",
   "related": [
-    [
-      "spontaneous-flight-deals-uk",
-      "Spontaneous Flight Deals UK"
-    ],
-    [
-      "cheap-flights-no-destination-uk",
-      "Cheap Flights No Destination UK"
-    ],
-    [
-      "cheapest-flights-from-gatwick-this-weekend",
-      "Cheapest Flights from Gatwick This Weekend"
-    ]
+    ["spontaneous-flight-deals-uk", "Spontaneous Flight Deals UK"],
+    ["cheap-flights-no-destination-uk", "Cheap Flights No Destination UK"],
+    ["cheapest-flights-from-gatwick-this-weekend", "Cheapest Flights from Gatwick This Weekend"]
   ]
 }
