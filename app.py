@@ -370,6 +370,14 @@ except Exception as _e:
     amadeus = None
     app.logger.warning("Amadeus client not initialised: %s", _e)
 
+# ---- Cache headers for static assets ----
+@app.after_request
+def add_cache_headers(response):
+    if request.path.startswith('/static/'):
+        response.cache_control.max_age = 604800  # 1 week
+        response.cache_control.public = True
+    return response
+
 # ---- Force HTTPS in production ----
 @app.before_request
 def redirect_to_https():
