@@ -370,6 +370,13 @@ except Exception as _e:
     amadeus = None
     app.logger.warning("Amadeus client not initialised: %s", _e)
 
+# ---- Force HTTPS in production ----
+@app.before_request
+def redirect_to_https():
+    if not request.is_secure and os.environ.get('FLASK_ENV') != 'development':
+        url = request.url.replace('http://', 'https://', 1)
+        return redirect(url, code=301)
+
 # ---- Template globals ----
 @app.context_processor
 def inject_now():
@@ -1386,7 +1393,7 @@ def serve_verification_file():
 
 @app.route('/google4a38a2e0e650c32c.html')
 def serve_verification_file2():
-    return 'google-site-verification: google4a38a2e0e650c32c.html', 200, {'Content-Type': 'text/html'}
+    return send_from_directory(app.root_path, 'google4a38a2e0e650c32c.html')
 
 @app.route('/robots.txt')
 def robots_txt():
