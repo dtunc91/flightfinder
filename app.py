@@ -1,4 +1,5 @@
 from flask import Flask, render_template, request, jsonify, send_from_directory, abort, redirect, url_for
+from werkzeug.middleware.proxy_fix import ProxyFix
 from datetime import datetime, timedelta
 from amadeus import Client
 import requests
@@ -15,6 +16,7 @@ from google.oauth2.service_account import Credentials as SACredentials
 load_dotenv()
 
 app = Flask(__name__, template_folder='templates', static_folder='static')
+app.wsgi_app = ProxyFix(app.wsgi_app, x_proto=1, x_host=1)
 
 DATA_DIR = os.path.join(os.path.dirname(__file__), 'data')
 SUBSCRIBERS_FILE = os.path.join(DATA_DIR, 'subscribers.csv')

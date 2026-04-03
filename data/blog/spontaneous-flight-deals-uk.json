@@ -25,10 +25,19 @@
   ],
   "cta_airport": "LGW",
   "market": "uk",
-  "published_at": "2026-04-30T15:00:00.000000",
+  "published_at": "2026-04-03T09:00:00Z",
   "related": [
-    ["cheap-flights-no-destination-uk", "Cheap Flights No Destination UK"],
-    ["cheap-last-minute-flights-anywhere-uk", "Cheap Last Minute Flights Anywhere UK"],
-    ["where-can-i-fly-cheaply-from-london", "Where Can I Fly Cheaply from London"]
+    [
+      "cheap-flights-no-destination-uk",
+      "Cheap Flights No Destination UK"
+    ],
+    [
+      "cheap-last-minute-flights-anywhere-uk",
+      "Cheap Last Minute Flights Anywhere UK"
+    ],
+    [
+      "where-can-i-fly-cheaply-from-london",
+      "Where Can I Fly Cheaply from London"
+    ]
   ]
 }
