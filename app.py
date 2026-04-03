@@ -1,4 +1,5 @@
 from flask import Flask, render_template, request, jsonify, send_from_directory, abort, redirect, url_for
+from werkzeug.middleware.proxy_fix import ProxyFix
 from datetime import datetime, timedelta
 from amadeus import Client
 import requests
@@ -15,6 +16,7 @@ from google.oauth2.service_account import Credentials as SACredentials
 load_dotenv()
 
 app = Flask(__name__, template_folder='templates', static_folder='static')
+app.wsgi_app = ProxyFix(app.wsgi_app, x_proto=1, x_host=1)
 
 DATA_DIR = os.path.join(os.path.dirname(__file__), 'data')
 SUBSCRIBERS_FILE = os.path.join(DATA_DIR, 'subscribers.csv')
@@ -367,6 +369,13 @@ try:
 except Exception as _e:
     amadeus = None
     app.logger.warning("Amadeus client not initialised: %s", _e)
+
+# ---- Force HTTPS in production ----
+@app.before_request
+def redirect_to_https():
+    if not request.is_secure and os.environ.get('FLASK_ENV') != 'development':
+        url = request.url.replace('http://', 'https://', 1)
+        return redirect(url, code=301)
 
 # ---- Template globals ----
 @app.context_processor
@@ -1384,7 +1393,7 @@ def serve_verification_file():
 
 @app.route('/google4a38a2e0e650c32c.html')
 def serve_verification_file2():
-    return 'google-site-verification: google4a38a2e0e650c32c.html', 200, {'Content-Type': 'text/html'}
+    return send_from_directory(app.root_path, 'google4a38a2e0e650c32c.html')
 
 @app.route('/robots.txt')
 def robots_txt():
