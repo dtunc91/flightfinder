@@ -981,7 +981,7 @@
   <!-- EMAIL CAPTURE -->
   {% if form_data.origin_code %}
   <div class="email-capture">
-    <h3><i class="fa fa-bell me-2" style="color:#3b7dd8"></i>Get price alerts</h3>
+    <h2 style="font-size:1.1rem; font-weight:700;"><i class="fa fa-bell me-2" style="color:#3b7dd8"></i>Get price alerts</h2>
     <p>
       We'll email you when cheap flights from
       <strong style="color:#1a2744">{{ origin_label or form_data.origin }}</strong> drop even lower.
@@ -1068,7 +1068,7 @@
 {% if not form_data.origin_code %}
 <div class="newsletter-section">
   <div class="newsletter-box">
-    <h3><i class="fa fa-envelope me-2" style="color:#3b7dd8"></i>Get the week's cheapest deals to your inbox</h3>
+    <h2 style="font-size:1.1rem; font-weight:700;"><i class="fa fa-envelope me-2" style="color:#3b7dd8"></i>Get the week's cheapest deals to your inbox</h2>
     <p>Free. No spam. The best flight deals from your airport, every week.</p>
     <form id="newsletterForm" onsubmit="handleNewsletter(event)" autocomplete="off">
       <input type="hidden" id="nl_airport_code" name="airport_code" value="">
