@@ -780,6 +780,10 @@ def privacy():
 def terms():
     return render_template('terms.html')
 
+@app.route('/contact')
+def contact():
+    return render_template('contact.html')
+
 # ---- Autocomplete API: Amadeus -> local file -> built-in defaults ----
 @app.route('/api/airports', methods=['GET'])
 def get_airports():
