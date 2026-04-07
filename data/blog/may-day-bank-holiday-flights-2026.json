@@ -33,13 +33,31 @@
   ],
   "cta_airport": "STN",
   "market": "uk",
-  "published_at": "2026-04-30T08:15:44.112300",
+  "published_at": "2026-03-23T00:36:00.000000",
   "related": [
-    ["spring-bank-holiday-flights-may-2026", "Cheap Spring Bank Holiday Flights May 2026"],
-    ["uk-bank-holiday-flight-deals", "UK Bank Holiday Flight Deals 2026: All Five Windows"],
-    ["easter-weekend-breaks-from-uk", "Cheap Easter Weekend Breaks UK 2026"],
-    ["may-half-term-flights-uk", "Cheap May Half-Term Flights 2026"],
-    ["cheap-flights-to-spain-from-uk-2026", "Cheap Flights to Spain from UK 2026"],
-    ["cheap-last-minute-flights-anywhere-uk", "Cheap Last-Minute Flights from UK Airports"]
+    [
+      "spring-bank-holiday-flights-may-2026",
+      "Cheap Spring Bank Holiday Flights May 2026"
+    ],
+    [
+      "uk-bank-holiday-flight-deals",
+      "UK Bank Holiday Flight Deals 2026: All Five Windows"
+    ],
+    [
+      "easter-weekend-breaks-from-uk",
+      "Cheap Easter Weekend Breaks UK 2026"
+    ],
+    [
+      "may-half-term-flights-uk",
+      "Cheap May Half-Term Flights 2026"
+    ],
+    [
+      "cheap-flights-to-spain-from-uk-2026",
+      "Cheap Flights to Spain from UK 2026"
+    ],
+    [
+      "cheap-last-minute-flights-anywhere-uk",
+      "Cheap Last-Minute Flights from UK Airports"
+    ]
   ]
 }
