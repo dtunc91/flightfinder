@@ -1329,8 +1329,11 @@ def _get_all_blog_posts() -> dict:
 
 @app.route('/blog')
 def blog_index():
-    posts = sorted(_get_all_blog_posts().values(),
-                   key=lambda p: p.get('published_at', ''), reverse=True)
+    now = datetime.now().strftime('%Y-%m-%dT%H:%M:%S')
+    posts = sorted(
+        [p for p in _get_all_blog_posts().values() if p.get('published_at', '') <= now],
+        key=lambda p: p.get('published_at', ''), reverse=True
+    )
     return render_template('blog_index.html', posts=posts)
 
 
@@ -1355,6 +1358,7 @@ def sitemap():
         ('https://getmeoutofhere.live/blog',      '0.8', today,  'weekly'),
         ('https://getmeoutofhere.live/about',     '0.5', today,  'monthly'),
         ('https://getmeoutofhere.live/faq',       '0.5', today,  'monthly'),
+        ('https://getmeoutofhere.live/contact',   '0.4', today,  'yearly'),
         ('https://getmeoutofhere.live/privacy',   '0.3', today,  'yearly'),
         ('https://getmeoutofhere.live/terms',     '0.3', today,  'yearly'),
     ]
@@ -1370,6 +1374,9 @@ def sitemap():
             try:
                 with open(os.path.join(blog_dir, fn)) as f:
                     post = json.load(f)
+                pub = post.get('published_at', '')
+                if pub and pub[:19] > today:
+                    continue  # skip future-dated posts
                 date_str = post.get('updated_at') or post.get('published_at')
                 if date_str:
                     lastmod = date_str[:10]
