@@ -136,7 +136,7 @@
         <a href="{{ url_for('faq') }}" class="top-nav-link">FAQ</a>
         <a href="{{ url_for('privacy') }}" class="top-nav-link">Privacy</a>
         <a href="{{ url_for('terms') }}" class="top-nav-link">Terms</a>
-        <a href="mailto:hello@getmeoutofhere.live" class="top-nav-link">Contact</a>
+        <a href="{{ url_for('contact') }}" class="top-nav-link">Contact</a>
       </div>
     </div>
   </nav>
@@ -153,7 +153,7 @@
       <a href="{{ url_for('faq') }}" style="color:#3b7dd8;">FAQ</a>
       <a href="{{ url_for('privacy') }}" style="color:#3b7dd8;">Privacy</a>
       <a href="{{ url_for('terms') }}" style="color:#3b7dd8;">Terms</a>
-      <a href="mailto:hello@getmeoutofhere.live" style="color:#3b7dd8;">Contact</a>
+      <a href="{{ url_for('contact') }}" style="color:#3b7dd8;">Contact</a>
     </div>
     © {{ current_year if current_year else 2026 }} GetMeOutOfHere.Live &nbsp;·&nbsp;
     Prices sourced from <a href="https://www.aviasales.com" target="_blank" rel="noopener" style="color:#3b7dd8;">Aviasales</a>

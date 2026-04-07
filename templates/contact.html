@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block title %}Contact | GetMeOutOfHere.Live{% endblock %}
+{% block meta_description %}Get in touch with GetMeOutOfHere.Live. Have a question, found a bug, or want to suggest a feature? We'd love to hear from you.{% endblock %}
+{% block og_title %}Contact | GetMeOutOfHere.Live{% endblock %}
+{% block og_description %}Contact GetMeOutOfHere.Live — free flight finder. Have a question or feedback? Get in touch.{% endblock %}
+{% block content %}
+<div class="container py-5" style="max-width: 700px;">
+
+  <h1 class="mb-2">Contact Us</h1>
+  <p class="lead text-muted mb-5">Got a question, found a bug, or have a suggestion? We'd love to hear from you.</p>
+
+  <div class="row g-4 mb-5">
+    <div class="col-12 col-md-6">
+      <div class="p-4 rounded h-100" style="background:#f0f4ff; border: 1px solid #d0dcf7;">
+        <div class="mb-3"><i class="fa fa-envelope fa-lg" style="color:#3b7dd8;"></i></div>
+        <h2 class="h5 mb-2">Email</h2>
+        <p class="text-muted mb-2">The best way to reach us. We aim to reply within 1–2 business days.</p>
+        <a href="mailto:hello@getmeoutofhere.live" class="fw-bold" style="color:#3b7dd8;">hello@getmeoutofhere.live</a>
+      </div>
+    </div>
+    <div class="col-12 col-md-6">
+      <div class="p-4 rounded h-100" style="background:#f0f4ff; border: 1px solid #d0dcf7;">
+        <div class="mb-3"><i class="fa fa-circle-question fa-lg" style="color:#3b7dd8;"></i></div>
+        <h2 class="h5 mb-2">FAQ</h2>
+        <p class="text-muted mb-2">Looking for quick answers? Check our frequently asked questions first.</p>
+        <a href="/faq" class="fw-bold" style="color:#3b7dd8;">Visit the FAQ &rarr;</a>
+      </div>
+    </div>
+  </div>
+
+  <h2 class="h4 mb-3">What can we help with?</h2>
+  <ul class="mb-5" style="line-height: 2;">
+    <li><strong>Flight search questions</strong> — how the tool works, supported airports, search tips</li>
+    <li><strong>Booking issues</strong> — problems clicking through to a partner site</li>
+    <li><strong>Bug reports</strong> — something not working as expected on the site</li>
+    <li><strong>Feature requests</strong> — something you'd love to see added</li>
+    <li><strong>Privacy or data requests</strong> — accessing or deleting your data (see our <a href="/privacy">Privacy Policy</a>)</li>
+    <li><strong>Press or partnership enquiries</strong> — affiliate or media related questions</li>
+  </ul>
+
+  <div class="p-4 rounded" style="background:#fff8e6; border: 1px solid #f0d080;">
+    <p class="mb-0"><i class="fa fa-circle-info me-2" style="color:#c89000;"></i><strong>Booking issues?</strong> If you have a problem with a flight you booked, please contact the airline or travel provider directly — we don't process bookings and can't modify or cancel reservations on your behalf.</p>
+  </div>
+
+</div>
+{% endblock %}

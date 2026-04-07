@@ -1,13 +1,47 @@
 {% extends "base.html" %}
 {% block title %}About | GetMeOutOfHere.Live{% endblock %}
-{% block meta_description %}GetMeOutOfHere.Live is a free flight finder that shows you the cheapest places to fly from your airport — no destination needed.{% endblock %}
+{% block meta_description %}GetMeOutOfHere.Live is a free flight finder that shows you the cheapest places to fly from your airport — no destination needed. Learn how it works, who built it, and why.{% endblock %}
 {% block og_title %}About | GetMeOutOfHere.Live{% endblock %}
 {% block og_description %}GetMeOutOfHere.Live is a free flight finder that shows you the cheapest places to fly from your airport — no destination needed.{% endblock %}
 {% block content %}
-<div class="container py-5">
-  <h1>About</h1>
-  <p><strong>GetMeOutOfHere.Live</strong> is a simple flight finder built to show you the cheapest places you can fly to — no destination needed. Just choose your airport and dates, and we’ll bring you the lowest fares available.</p>
-  <p>We partner with <strong>Travelpayouts</strong> to pull real-time flight prices from airlines and booking sites. When you book, we may earn a small commission — at no extra cost to you.</p>
-  <p>Fast. Simple. No endless tabs. Just cheap flights, straight up.</p>
+<div class="container py-5" style="max-width: 800px;">
+
+  <h1 class="mb-3">About GetMeOutOfHere.Live</h1>
+  <p class="lead text-muted mb-5">A free flight search tool built around one idea: sometimes you just want to go somewhere cheap — and you don't care where.</p>
+
+  <h2 class="h4 mb-3">What we do</h2>
+  <p>GetMeOutOfHere.Live is a flight discovery tool that works differently from most flight search engines. Instead of asking "where do you want to go?", it asks "where are you flying from?" — then shows you every affordable destination you can reach from your airport on your chosen dates.</p>
+  <p>You pick your home airport, your departure window, and the number of passengers. We do the rest — pulling real-time fares from hundreds of airlines and booking sites to show you the cheapest options available right now. No destination required. No endless tab-switching. Just cheap flights, ranked by price.</p>
+
+  <h2 class="h4 mt-5 mb-3">How it works</h2>
+  <ol class="mb-4">
+    <li class="mb-2"><strong>Enter your airport and dates</strong> — use the search form on the homepage. We support hundreds of airports across the UK, Europe, North America, Asia, and beyond.</li>
+    <li class="mb-2"><strong>We fetch live prices</strong> — our system queries real-time flight data via Travelpayouts, which aggregates fares from major airlines and online travel agencies including Ryanair, easyJet, British Airways, Wizz Air, Lufthansa, and more.</li>
+    <li class="mb-2"><strong>Results are ranked by price</strong> — you see the cheapest destinations first. Filter by price, airline, or destination type to narrow down your options.</li>
+    <li class="mb-2"><strong>Click to book</strong> — when you find a fare you like, we send you directly to the airline or booking site to complete your reservation securely. We never handle payment details ourselves.</li>
+  </ol>
+
+  <h2 class="h4 mt-5 mb-3">Why we built this</h2>
+  <p>We built GetMeOutOfHere.Live for the times when you need a break but haven't decided where to go. Maybe you have a long weekend free and want to escape somewhere warm. Maybe you're a flexible traveller hunting for the best value. Maybe you're just curious what's cheap from your airport right now.</p>
+  <p>Traditional flight search engines require a destination before they show you anything. That means you're constantly opening new tabs, entering the same dates over and over, and manually comparing prices across dozens of routes. We cut through all of that by aggregating everything in one place and letting the price lead the decision.</p>
+
+  <h2 class="h4 mt-5 mb-3">Where our prices come from</h2>
+  <p>All flight prices on GetMeOutOfHere.Live are sourced in real time from <a href="https://www.aviasales.com" target="_blank" rel="noopener">Aviasales</a> via the <strong>Travelpayouts</strong> affiliate network. Travelpayouts is one of the largest travel affiliate platforms in the world, aggregating fares from hundreds of airlines and booking sites.</p>
+  <p>Prices are pulled fresh each time you search and are subject to availability and change without notice — just like prices on the airline's own website. We always recommend clicking through to confirm the current fare before making any travel plans.</p>
+
+  <h2 class="h4 mt-5 mb-3">Affiliate disclosure</h2>
+  <p>GetMeOutOfHere.Live is free to use. We earn a small commission from Travelpayouts when you click through and complete a booking with one of their partner airlines or travel sites. This commission is paid by the travel provider — it does not add any cost to your ticket price.</p>
+  <p>This affiliate relationship does not influence which flights we show or how we rank them. Results are always sorted by price, not by commission rate.</p>
+
+  <h2 class="h4 mt-5 mb-3">Our travel blog</h2>
+  <p>Alongside the flight search tool, we publish a <a href="/blog">travel deals blog</a> covering topics like the cheapest routes from major airports, how to find last-minute deals, the best times to book for peak season travel, and destination guides for budget-conscious travellers. New posts go up regularly — bookmark the blog or <a href="/#subscribe">subscribe for alerts</a> to stay up to date.</p>
+
+  <h2 class="h4 mt-5 mb-3">Contact us</h2>
+  <p>Have a question, found a bug, or want to suggest a feature? We'd love to hear from you. Reach us at <a href="mailto:hello@getmeoutofhere.live">hello@getmeoutofhere.live</a> or visit our <a href="/contact">contact page</a>.</p>
+
+  <div class="mt-5 p-4 rounded" style="background:#f0f4ff; border-left: 4px solid #3b7dd8;">
+    <p class="mb-0" style="color:#1a2744;"><strong>GetMeOutOfHere.Live</strong> &nbsp;·&nbsp; Free flight search &nbsp;·&nbsp; Real-time prices via Travelpayouts &nbsp;·&nbsp; No booking fees &nbsp;·&nbsp; <a href="mailto:hello@getmeoutofhere.live">hello@getmeoutofhere.live</a></p>
+  </div>
+
 </div>
 {% endblock %}
