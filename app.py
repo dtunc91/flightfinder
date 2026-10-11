@@ -52,6 +52,8 @@ SEO_AIRPORTS = [
     'CDG','AMS','FRA','MAD','BCN','FCO','DXB','JFK','LAX','BKK',
     'SIN','DUB','LIS','ATH','PRG','VIE','CPH','OSL','ARN','HEL',
     'WAW','BUD','ZRH','GVA','MXP','IST','NRT','SYD','YYZ',
+    # US (have written airport guides)
+    'ORD','ATL','DFW','DEN','SFO','MIA',
 ]
 
 # ---- Live deals feed ----

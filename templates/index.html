@@ -3,7 +3,7 @@
 {% block title %}
   {%- if seo_page -%}Cheap Flights from {{ seo_page.city }} ({{ seo_page.code }}) | GetMeOutOfHere.Live
   {%- elif origin_label -%}Cheap flights from {{ origin_label }} | GetMeOutOfHere.Live
-  {%- else -%}Find the cheapest places to fly from your airport | GetMeOutOfHere.Live
+  {%- else -%}Cheap Flights from Your Airport | GetMeOutOfHere.Live
   {%- endif -%}
 {% endblock %}
 
@@ -642,6 +642,7 @@
     /* Make newsletter inputs full-width on mobile */
     .newsletter-box .email-input-row { flex-direction: column; }
     .newsletter-box .email-input-row > * { max-width: none !important; width: 100%; }
+    .newsletter-box .email-input-row input { max-width: none !important; }
     .newsletter-box .btn-subscribe { width: 100%; padding: 12px; }
     /* Email capture section */
     .email-capture { padding: 18px 16px; }
@@ -697,7 +698,9 @@
     margin-bottom: 5px;
     line-height: 1.35;
   }
-  .blog-card-meta { font-size: 0.73rem; color: #6b7eb5; }
+  .blog-card { position: relative; }
+  .blog-card-title a { color: inherit; text-decoration: none; }
+  .blog-card-meta { font-size: 0.8rem; color: #5b6b99; }
 </style>
 
 <!-- Error toast -->
@@ -1102,14 +1105,67 @@
   </div>
   <div class="blog-grid">
     {% for post in blog_cards %}
-    <a href="{{ url_for('blog_post', slug=post.slug) }}" class="blog-card">
-      <span class="blog-card-emoji">{{ post.emoji if post.emoji else '✈️' }}</span>
-      <div class="blog-card-title">{{ post.title }}</div>
+    <div class="blog-card">
+      <span class="blog-card-emoji" aria-hidden="true">{{ post.emoji if post.emoji else '✈️' }}</span>
+      <div class="blog-card-title"><a href="{{ url_for('blog_post', slug=post.slug) }}" class="stretched-link">{{ post.title }}</a></div>
       <div class="blog-card-meta">{{ post.airport_names }}</div>
-    </a>
+    </div>
     {% endfor %}
   </div>
+  <p style="margin-top:14px; font-size:0.9rem;"><a href="{{ url_for('blog_index') }}" style="color:#3b7dd8; font-weight:600;">All flight deal guides →</a></p>
 </section>
+{% endif %}
+
+<!-- HOMEPAGE INTRO CONTENT (SEO) -->
+{% if not seo_page and not form_data.origin_code %}
+<section class="home-intro">
+  <h2>How to find cheap flights from your airport</h2>
+  <p>Most flight search sites want a destination before they'll show you a price. That's backwards if all you want is a cheap break. Here you start with your airport and a date, and we show you the cheapest places you can fly to, sorted by price. Sometimes it's Kraków for £29. Sometimes it's Lisbon, or somewhere you'd never have thought to search.</p>
+  <p>The prices come from live airline fare data, so you see real one-way and return fares rather than "from" prices that disappear when you click. Every result links straight through to book, and searching costs nothing. No sign-up, no fees, no catch.</p>
+  <p>A few habits make the biggest difference. Fly midweek, since Tuesday and Wednesday departures are often half the price of a Friday. Try the other airports near you, because a cheap fare from Stansted can beat a dear one from Heathrow even after the train. Travel light, as a cabin bag on budget airlines can cost more than the flight. And book school holidays and bank holiday weekends early, as those fares only go one way.</p>
+  <p>Not sure when to go? Our <a href="{{ url_for('blog_index') }}">flight deal guides</a> cover the cheapest months, seasonal deals and the best routes from UK and US airports, updated every week.</p>
+
+  <h2>Cheap flights from popular airports</h2>
+  <div class="home-airports">
+    <div>
+      <h3>UK airports</h3>
+      <ul>
+        <li><a href="/cheap-flights-from/LHR">London Heathrow</a></li>
+        <li><a href="/cheap-flights-from/LGW">London Gatwick</a></li>
+        <li><a href="/cheap-flights-from/STN">London Stansted</a></li>
+        <li><a href="/cheap-flights-from/LTN">London Luton</a></li>
+        <li><a href="/cheap-flights-from/MAN">Manchester</a></li>
+        <li><a href="/cheap-flights-from/BHX">Birmingham</a></li>
+        <li><a href="/cheap-flights-from/EDI">Edinburgh</a></li>
+        <li><a href="/cheap-flights-from/BRS">Bristol</a></li>
+      </ul>
+    </div>
+    <div>
+      <h3>US airports</h3>
+      <ul>
+        <li><a href="/cheap-flights-from/JFK">New York JFK</a></li>
+        <li><a href="/cheap-flights-from/LAX">Los Angeles</a></li>
+        <li><a href="/cheap-flights-from/ORD">Chicago O'Hare</a></li>
+        <li><a href="/cheap-flights-from/ATL">Atlanta</a></li>
+        <li><a href="/cheap-flights-from/DFW">Dallas-Fort Worth</a></li>
+        <li><a href="/cheap-flights-from/DEN">Denver</a></li>
+        <li><a href="/cheap-flights-from/SFO">San Francisco</a></li>
+        <li><a href="/cheap-flights-from/MIA">Miami</a></li>
+      </ul>
+    </div>
+  </div>
+</section>
+<style>
+  .home-intro { max-width: 700px; margin: 8px auto 40px; padding: 0 12px; color: #4a5880; }
+  .home-intro h2 { font-size: 1.15rem; font-weight: 700; color: #1a2744; margin: 28px 0 10px; }
+  .home-intro h3 { font-size: 0.8rem; font-weight: 700; color: #4a5880; text-transform: uppercase; letter-spacing: .06em; margin: 0 0 6px; }
+  .home-intro p { font-size: 0.95rem; line-height: 1.75; margin-bottom: 12px; }
+  .home-intro a { color: #3b7dd8; }
+  .home-airports { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .home-airports ul { list-style: none; padding: 0; margin: 0; }
+  .home-airports li a { display: block; padding: 8px 0; min-height: 40px; font-size: 0.95rem; }
+  @media (max-width: 576px) { .home-intro { padding: 0 8px; } }
+</style>
 {% endif %}
 
 {% endblock %}
