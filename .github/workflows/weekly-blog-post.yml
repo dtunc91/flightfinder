@@ -1,0 +1,49 @@
+name: Weekly blog post
+
+# Writes one new blog post with Claude every Monday and commits it to main,
+# so it goes live on the next deploy and is never lost on a redeploy.
+# Needs the ANTHROPIC_API_KEY repository secret. Cost: one API call per week.
+on:
+  schedule:
+    - cron: '0 8 * * 1'   # Mondays 08:00 UTC
+  workflow_dispatch:      # "Run workflow" button for a manual post
+
+permissions:
+  contents: write
+
+concurrency:
+  group: weekly-blog-post
+  cancel-in-progress: false
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install generator dependencies
+        run: pip install anthropic python-dotenv
+
+      - name: Generate next post
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: python blog_generator.py
+
+      - name: Commit and push new post
+        run: |
+          git add data/blog/
+          if git diff --cached --quiet; then
+            echo "No new post generated."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898283+github-actions[bot]@users.noreply.github.com"
+          git commit -m "Auto-generated weekly blog post"
+          git push origin HEAD:main

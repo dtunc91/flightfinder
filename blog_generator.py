@@ -12,7 +12,7 @@ CLI usage:
     python blog_generator.py --list     # show topic queue + status
     python blog_generator.py --topic march-flight-deals-uk  # specific topic
 
-Called automatically by APScheduler inside app.py every Monday at 08:00.
+Run automatically every Monday at 08:00 UTC by .github/workflows/weekly-blog-post.yml.
 """
 
 import argparse
@@ -1364,6 +1364,23 @@ def _published_slugs() -> dict:
     return result
 
 
+# Pipeline topics already covered by a hand-written post under a different slug.
+# Skipping them saves API spend and avoids two pages competing for the same search.
+SKIP_DUPLICATE_TOPICS = {
+    "cheap-flights-turkey-from-uk",      # cheap-flights-to-turkey-from-uk-2026
+    "spain-flights-from-uk",             # cheap-flights-to-spain-from-uk-2026
+    "cheap-flights-birmingham-airport",  # cheap-flights-from-birmingham-airport-2026
+    "cheap-flights-from-los-angeles",    # cheap-flights-from-los-angeles-usa
+    "cheap-flights-from-chicago",        # cheap-flights-from-chicago-ohare-2026
+    "cheap-flights-from-atlanta",        # cheap-flights-from-atlanta-2026
+    "cheap-flights-from-nyc-us",         # cheap-flights-from-new-york-usa
+    "cheap-flights-spring-break-us",     # spring-break-flights-usa-2026
+    "memorial-day-weekend-flights-us",   # memorial-day-weekend-flights-2026
+    "fourth-of-july-flights-us",         # fourth-of-july-flights-2026
+    "canary-islands-winter-flights-uk",  # cheapest-canary-islands-flights-uk-2026, winter-sun-from-uk
+}
+
+
 def _seasonal_match(months, current_month: int) -> bool:
     """True if current_month is within 2 months of any month in the list."""
     if not months:
@@ -1400,6 +1417,8 @@ def pick_next_topic(force: bool = False, specific_slug: str = None) -> dict | No
         months  = topic.get('best_months')
         is_seas = _seasonal_match(months, now_month)
 
+        if slug in SKIP_DUPLICATE_TOPICS:
+            continue
         if slug not in published:
             (unpub_seasonal if is_seas else unpub_evergreen).append(topic)
         elif not force:
@@ -1482,18 +1501,30 @@ def generate_post(topic: dict, dry_run: bool = False) -> dict | None:
 
     print(f"[blog_generator] Generating: {topic['slug']} (market={topic.get('market', 'uk')}) …")
 
+    # Cheapest sensible setup: Sonnet 5.5 with extended thinking off and medium effort.
+    # Override with BLOG_MODEL (e.g. claude-haiku-5-5 for even lower cost).
+    model = os.environ.get('BLOG_MODEL', 'claude-sonnet-5-5')
+    extra = {"output_config": {"effort": "medium"}}
+    if model == 'claude-sonnet-5-5':
+        extra["thinking"] = {"type": "between_tools"}
+
     try:
         msg = client.messages.create(
-            model="claude-sonnet-4-6",
-            max_tokens=4000,
+            model=model,
+            max_tokens=8000,
             system=sys_prompt,
             messages=[{"role": "user", "content": prompt}],
+            **extra,
         )
     except Exception as exc:
         print(f"[blog_generator] API error: {exc}", file=sys.stderr)
         return None
 
-    raw = msg.content[0].text.strip()
+    if msg.stop_reason in ('refusal', 'max_tokens'):
+        print(f"[blog_generator] Generation stopped early ({msg.stop_reason}) — aborting save.", file=sys.stderr)
+        return None
+
+    raw = next((b.text for b in msg.content if b.type == 'text'), '').strip()
 
     # Strip accidental markdown code fences
     if raw.startswith('```'):
@@ -1593,6 +1624,8 @@ def run_bulk(n: int = 5, force: bool = False) -> int:
     for topic in TOPIC_PIPELINE:
         if generated >= n:
             break
+        if topic['slug'] in SKIP_DUPLICATE_TOPICS:
+            continue
         if topic['slug'] in published and not force:
             continue
         post = generate_post(topic)
@@ -1649,7 +1682,8 @@ def _cli():
         print("No topics due for generation.")
         return
 
-    generate_post(topic, dry_run=args.dry_run)
+    if not generate_post(topic, dry_run=args.dry_run):
+        sys.exit(1)  # non-zero so a scheduled GitHub Actions run shows as failed
 
 
 if __name__ == '__main__':
