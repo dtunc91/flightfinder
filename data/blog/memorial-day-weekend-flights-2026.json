@@ -27,8 +27,17 @@
   "market": "us",
   "published_at": "2026-03-27T20:15:44.228700",
   "related": [
-    ["spring-break-flights-usa-2026", "Spring Break Flights 2026: Last-Minute Deals"],
-    ["summer-flights-usa-2026", "Summer 2026 Flights from US Airports: Book Now"],
-    ["cheap-flights-from-new-york-usa", "Cheapest Flights from New York City Airports"]
+    [
+      "spring-break-flights-usa-2027",
+      "Cheap Spring Break Flights 2027"
+    ],
+    [
+      "summer-flights-usa-2026",
+      "Summer 2026 Flights from US Airports: Book Now"
+    ],
+    [
+      "cheap-flights-from-new-york-usa",
+      "Cheapest Flights from New York City Airports"
+    ]
   ]
 }

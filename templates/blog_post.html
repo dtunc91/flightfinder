@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}{{ post.title }} | GetMeOutOfHere.Live{% endblock %}
+{% block title %}{{ post.title }}{% if post.title|length <= 38 %} | GetMeOutOfHere.Live{% endif %}{% endblock %}
 {% block meta_description %}{{ post.meta }}{% endblock %}
 {% block og_title %}{{ post.title }} | GetMeOutOfHere.Live{% endblock %}
 {% block og_description %}{{ post.meta }}{% endblock %}
