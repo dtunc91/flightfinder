@@ -1339,8 +1339,18 @@ def blog_index():
     return render_template('blog_index.html', posts=posts)
 
 
+# Retired or merged posts -> their replacement (301 keeps search rankings and links)
+BLOG_REDIRECTS = {
+    'easter-flight-deals-uk-2026':                  'easter-flight-deals-uk-2027',
+    'easter-weekend-breaks-from-uk':                'easter-flight-deals-uk-2027',
+    'cheap-flights-after-easter-bank-holiday-2026': 'easter-flight-deals-uk-2027',
+    'spring-break-flights-usa-2026':                'spring-break-flights-usa-2027',
+}
+
 @app.route('/blog/<string:slug>')
 def blog_post(slug):
+    if slug in BLOG_REDIRECTS:
+        return redirect(url_for('blog_post', slug=BLOG_REDIRECTS[slug], _external=True, _scheme='https'), code=301)
     post = _get_all_blog_posts().get(slug)
     if not post:
         abort(404)

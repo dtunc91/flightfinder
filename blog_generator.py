@@ -1378,6 +1378,8 @@ SKIP_DUPLICATE_TOPICS = {
     "memorial-day-weekend-flights-us",   # memorial-day-weekend-flights-2026
     "fourth-of-july-flights-us",         # fourth-of-july-flights-2026
     "canary-islands-winter-flights-uk",  # cheapest-canary-islands-flights-uk-2026, winter-sun-from-uk
+    "easter-flight-deals-uk-2026",       # merged into easter-flight-deals-uk-2027
+    "easter-weekend-breaks-from-uk",     # merged into easter-flight-deals-uk-2027
 }
 
 
