@@ -1375,7 +1375,7 @@ def sitemap():
                 with open(os.path.join(blog_dir, fn)) as f:
                     post = json.load(f)
                 pub = post.get('published_at', '')
-                if pub and pub[:19] > today:
+                if pub and pub[:10] > today:
                     continue  # skip future-dated posts
                 date_str = post.get('updated_at') or post.get('published_at')
                 if date_str:
@@ -1383,6 +1383,12 @@ def sitemap():
             except Exception:
                 pass
             pages.append((f'https://getmeoutofhere.live/blog/{slug}', '0.8', lastmod, 'weekly'))
+
+    # Static blog posts defined in BLOG_POSTS (skip any overridden by a disk post)
+    disk_slugs = {fn[:-5] for fn in os.listdir(blog_dir) if fn.endswith('.json')} if os.path.isdir(blog_dir) else set()
+    for slug in BLOG_POSTS:
+        if slug not in disk_slugs:
+            pages.append((f'https://getmeoutofhere.live/blog/{slug}', '0.8', today, 'weekly'))
 
     # SEO airport landing pages
     for code in SEO_AIRPORTS:
@@ -1508,8 +1514,11 @@ def admin_generate_posts():
 
     return jsonify({"status": "started", "n": n, "force": force})
 
-# Only start scheduler in the real process (not in Werkzeug's reloader watcher)
-if not (app.debug and os.environ.get('WERKZEUG_RUN_MAIN') != 'true'):
+# Weekly blog generation now runs in GitHub Actions (.github/workflows/weekly-blog-post.yml),
+# which commits the new post to the repo so it survives redeploys. The in-process
+# scheduler is only started if ENABLE_INPROCESS_BLOG_SCHEDULER=1 (not recommended on Render:
+# its filesystem is wiped on redeploy, so posts generated there are lost).
+if os.environ.get('ENABLE_INPROCESS_BLOG_SCHEDULER') == '1' and not (app.debug and os.environ.get('WERKZEUG_RUN_MAIN') != 'true'):
     try:
         from apscheduler.schedulers.background import BackgroundScheduler
         _scheduler = BackgroundScheduler(daemon=True)
