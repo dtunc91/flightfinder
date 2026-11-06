@@ -608,6 +608,40 @@ CITY_CODES = {
 }
 
 
+# Airports whose official town name isn't the city travellers know
+PLACE_NAME_OVERRIDES = {
+    'LJU': 'Ljubljana', 'BVA': 'Paris Beauvais', 'CRL': 'Brussels Charleroi',
+    'NYO': 'Stockholm Skavsta', 'TRF': 'Oslo Torp', 'HHN': 'Frankfurt Hahn',
+    'BGY': 'Milan Bergamo', 'CIA': 'Rome Ciampino', 'GRO': 'Girona',
+    'REU': 'Reus', 'WMI': 'Warsaw Modlin', 'EIN': 'Eindhoven',
+    'KEF': 'Reykjavik', 'SXF': 'Berlin', 'BER': 'Berlin', 'MUC': 'Munich',
+    'DUS': 'Düsseldorf', 'CGN': 'Cologne', 'TFS': 'Tenerife South',
+    'TFN': 'Tenerife North', 'ACE': 'Lanzarote', 'FUE': 'Fuerteventura',
+    'LPA': 'Gran Canaria', 'PMI': 'Palma de Mallorca', 'IBZ': 'Ibiza',
+}
+
+
+def _place_name(code: str, info: dict = None) -> str:
+    """Friendly place name for an airport or city code, never a bare code if avoidable."""
+    code = (code or '').upper()
+    if code in CITY_CODES:
+        return CITY_CODES[code][0]
+    if code in PLACE_NAME_OVERRIDES:
+        return PLACE_NAME_OVERRIDES[code]
+    info = info if info is not None else _get_airport_index().get(code, {})
+    city = (info or {}).get('city') or ''
+    if city:
+        return city
+    label = (info or {}).get('label') or ''
+    if label:
+        # "Aberdeen Dyce Airport (ABZ), GB" -> "Aberdeen Dyce"
+        name = re.sub(r'\s*\([A-Z]{3}\).*$', '', label)
+        name = re.sub(r'\s+(International\s+)?Airport$', '', name, flags=re.I).strip()
+        if name:
+            return name
+    return code
+
+
 def _city_code_matches(q: str) -> list:
     """Return 'all airports' entries for cities whose name starts with the query."""
     qn = _normalize(q)
@@ -675,95 +709,119 @@ def _num(v):
         return None
 
 
-def _fetch_prices_for_dates(origin_code, depart_date, return_date, currency):
+def _fetch_prices(origin_code, depart_date, return_date, currency):
     """
-    Cheapest known fare to each destination for the visitor's exact dates.
+    One fare per destination, as close as possible to the visitor's dates.
 
-    Returns a list of {'destination', 'price', 'stops'} sorted by price, one per
-    destination. Anything not departing on depart_date (and, for return trips,
-    not coming back on return_date) is dropped, so the page never shows a price
-    for a different day than the one the visitor picked.
+    For each destination we keep the cheapest fare on the exact departure date
+    (and return date, for return trips). If there is none, we keep the fare on
+    the nearest date instead and say which date it is, so the page is never
+    empty and the price always matches the date in the booking link.
+
+    Returns dicts: destination, price, stops, depart, ret, on_date, days_off.
     """
-    def same_day(value, wanted):
-        return bool(wanted) and (value or '')[:10] == wanted
+    today = datetime.utcnow().date()
+    latest_raw = []
+    try:
+        wanted = datetime.strptime(depart_date, '%Y-%m-%d').date()
+    except (TypeError, ValueError):
+        wanted = today
+    rows = []
 
-    def keep(raw_rows, dest_key, price_key, stops_key, dep_key, ret_key):
-        best = {}
-        for row in raw_rows:
-            dest = (row.get(dest_key) or '').upper()
-            price = _num(row.get(price_key))
-            if not dest or price is None or price <= 0:
-                continue
-            if not same_day(row.get(dep_key), depart_date):
-                continue
-            if return_date and not same_day(row.get(ret_key), return_date):
-                continue
-            if dest not in best or price < best[dest]['price']:
-                stops = row.get(stops_key)
-                best[dest] = {
-                    'destination': dest,
-                    'price': int(price) if price.is_integer() else price,
-                    'stops': int(stops) if isinstance(stops, (int, float)) else 0,
-                }
-        return sorted(best.values(), key=lambda x: x['price'])
+    def add(dest, price, stops, dep, ret):
+        dest = (dest or '').upper()
+        price = _num(price)
+        if not dest or price is None or price <= 0:
+            return
+        dep = (dep or '')[:10]
+        ret = (ret or '')[:10]
+        try:
+            dep_d = datetime.strptime(dep, '%Y-%m-%d').date()
+        except ValueError:
+            return
+        if dep_d < today:
+            return
+        rows.append({
+            'destination': dest,
+            'price': int(price) if price.is_integer() else price,
+            'stops': int(stops) if isinstance(stops, (int, float)) else 0,
+            'depart': dep,
+            'ret': ret,
+        })
 
-    # 1) Date-specific search: cheapest tickets for this exact day
+    # 1) Prices for the exact day (best effort)
     try:
         params = {
-            'origin': origin_code,
-            'departure_at': depart_date,
+            'origin': origin_code, 'departure_at': depart_date,
             'one_way': 'false' if return_date else 'true',
-            'unique': 'true',
-            'sorting': 'price',
-            'currency': currency,
-            'limit': 200,
-            'token': API_TOKEN,
+            'unique': 'true', 'sorting': 'price', 'currency': currency,
+            'limit': 200, 'token': API_TOKEN,
         }
         if return_date:
             params['return_at'] = return_date
-        r = requests.get("https://api.travelpayouts.com/aviasales/v3/prices_for_dates",
-                         params=params, timeout=15)
+        r = requests.get("https://api.travelpayouts.com/aviasales/v3/prices_for_dates", params=params, timeout=12)
         if r.status_code == 200:
             body = r.json()
-            got_currency = (body.get('currency') or currency).lower()
-            if got_currency != currency.lower():
-                app.logger.warning("prices_for_dates answered in %s, wanted %s", got_currency, currency)
-            else:
-                rows = keep(body.get('data') or [], 'destination', 'price', 'transfers',
-                            'departure_at', 'return_at')
-                if rows:
-                    return rows
+            if (body.get('currency') or currency).lower() == currency.lower():
+                for f in body.get('data') or []:
+                    add(f.get('destination'), f.get('price'), f.get('transfers'), f.get('departure_at'), f.get('return_at'))
         else:
             app.logger.warning("prices_for_dates returned %s: %s", r.status_code, r.text[:200])
     except Exception as e:
         app.logger.warning("prices_for_dates failed: %s", e)
 
-    # 2) Fallback: recent prices for that month, filtered down to the exact day
+    # 2) Recent prices for every destination (the request the site always used)
     try:
-        month_start = depart_date[:8] + '01'
-        params = {
-            'origin': origin_code,
-            'currency': currency,
-            'period_type': 'month',
-            'beginning_of_period': month_start,
-            'one_way': 'false' if return_date else 'true',
-            'sorting': 'price',
-            'limit': 1000,
-            'token': API_TOKEN,
-        }
+        # Same request as the original site, just asking for more rows
+        params = {'origin': origin_code, 'currency': currency, 'token': API_TOKEN, 'limit': 1000}
         r = requests.get("https://api.travelpayouts.com/v2/prices/latest", params=params, timeout=15)
-        if r.status_code == 200:
-            return keep(r.json().get('data') or [], 'destination', 'value', 'number_of_changes',
-                        'depart_date', 'return_date')
-        app.logger.warning("prices/latest returned %s: %s", r.status_code, r.text[:200])
+        data = (r.json().get('data') or []) if r.status_code == 200 else []
+        if not data:
+            params['limit'] = 100
+            r = requests.get("https://api.travelpayouts.com/v2/prices/latest", params=params, timeout=15)
+            data = (r.json().get('data') or []) if r.status_code == 200 else []
+        latest_raw = data
+        for f in data:
+            add(f.get('destination'), f.get('value'), f.get('number_of_changes'), f.get('depart_date'), f.get('return_date'))
     except Exception as e:
         app.logger.warning("prices/latest failed: %s", e)
-    return []
+
+    best = {}
+    for row in rows:
+        dep_d = datetime.strptime(row['depart'], '%Y-%m-%d').date()
+        row['days_off'] = (dep_d - wanted).days
+        row['on_date'] = row['days_off'] == 0 and (not return_date or row['ret'] == return_date)
+        # Rank: exact dates first, then nearest date, then cheapest
+        rank = (0 if row['on_date'] else 1, abs(row['days_off']), row['price'])
+        cur = best.get(row['destination'])
+        if cur is None or rank < cur[0]:
+            best[row['destination']] = (rank, row)
+    if best:
+        return sorted((r for _, r in best.values()), key=lambda x: x['price'])
+
+    # Last resort: show the prices exactly as the site always did (no date filter),
+    # so a search never comes back empty when the price service has any data.
+    fallback = {}
+    for f in latest_raw:
+        dest = (f.get('destination') or '').upper()
+        price = _num(f.get('value'))
+        if not dest or price is None or price <= 0:
+            continue
+        if dest not in fallback or price < fallback[dest]['price']:
+            stops = f.get('number_of_changes')
+            fallback[dest] = {
+                'destination': dest,
+                'price': int(price) if price.is_integer() else price,
+                'stops': int(stops) if isinstance(stops, (int, float)) else 0,
+                'depart': '', 'ret': '', 'on_date': True, 'days_off': 0,
+            }
+    return sorted(fallback.values(), key=lambda x: x['price'])
 
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
     flights = []
+    prices_dated = True
     origin_label = ""
     date = ""
 
@@ -776,7 +834,6 @@ def index():
         'origin_code': request.form.get('origin_code', ''),
         'currency': request.form.get('currency', 'gbp'),
         'currency_symbol': request.form.get('currency_symbol', '£'),
-        'max_price': request.form.get('max_price', ''),
     }
 
     if request.method == 'POST':
@@ -830,40 +887,41 @@ def index():
 
         # Prices for the visitor's exact dates, then split into domestic/international
         try:
-            data = _fetch_prices_for_dates(origin_code, departure_date, return_date or '', form_data['currency'])
+            data = _fetch_prices(origin_code, departure_date, return_date or '', form_data['currency'])
+            prices_dated = any(f['depart'] for f in data)
             if data:
                 airport_index = _get_airport_index()
                 origin_country = _origin_country_for(origin_code)
-                try:
-                    max_price = float(form_data.get('max_price') or 0)
-                except ValueError:
-                    max_price = 0
 
                 domestic_flights, international_flights = [], []
 
-                depart_str = datetime.strptime(departure_date, '%Y-%m-%d').strftime('%d%m')
-                return_str = datetime.strptime(return_date, '%Y-%m-%d').strftime('%d%m') if return_date else None
+                def ddmm(d):
+                    return datetime.strptime(d, '%Y-%m-%d').strftime('%d%m')
+
+                def nice(d):
+                    dt = datetime.strptime(d, '%Y-%m-%d')
+                    return dt.strftime('%a ') + str(dt.day) + dt.strftime(' %b')
 
                 for flight in data:
                     dest_code = flight['destination']
                     price = flight['price']
                     num_stops = flight['stops']
-                    if max_price and isinstance(price, (int, float)) and price > max_price:
-                        continue
+                    dep = flight['depart'] or departure_date
+                    ret = (flight['ret'] or return_date) if return_date else ''
 
                     dest_info = airport_index.get(dest_code, {})
                     dest_label = _display_name(dest_info.get('label') or dest_code, dest_code) if dest_info else dest_code
-                    dest_city = dest_info.get('city', '')
+                    dest_city = _place_name(dest_code, dest_info)
                     dest_country = dest_info.get('country', '')
-                    if not dest_info and dest_code in CITY_CODES:
+                    if dest_code in CITY_CODES:
                         # Results can come back as a city code (e.g. PAR = Paris, any airport)
-                        dest_city, dest_country = CITY_CODES[dest_code]
+                        dest_country = dest_country or CITY_CODES[dest_code][1]
                         dest_label = f"{dest_city} – all airports"
 
-                    if return_str:
-                        search_code = f"{origin_code}{depart_str}{dest_code}{return_str}"
+                    if ret:
+                        search_code = f"{origin_code}{ddmm(dep)}{dest_code}{ddmm(ret)}"
                     else:
-                        search_code = f"{origin_code}{depart_str}{dest_code}1"
+                        search_code = f"{origin_code}{ddmm(dep)}{dest_code}1"
 
                     booking_url = f"https://www.aviasales.com/search/{search_code}?adults={passengers}&marker=617752&currency={form_data['currency']}"
 
@@ -876,6 +934,9 @@ def index():
                         'num_stops': num_stops,
                         'booking_url': booking_url,
                         'tile': sum(map(ord, dest_code)) % 8,
+                        'on_date': flight['on_date'],
+                        'days_off': flight['days_off'],
+                        'date_label': (nice(dep) + (f" – {nice(ret)}" if ret else '')) if flight['depart'] else '',
                     }
 
                     if origin_country and dest_country == origin_country:
@@ -883,8 +944,8 @@ def index():
                     else:
                         international_flights.append(entry)
 
-                # Up to 10 of each, domestic first
-                flights = domestic_flights[:10] + international_flights[:10]
+                # Show everything we found (capped to keep the page quick)
+                flights = domestic_flights[:25] + international_flights[:40]
                 # Cheapest first, whatever the page script does
                 flights.sort(key=lambda f: f['price'] if isinstance(f['price'], (int, float)) else float('inf'))
         except Exception as e:
@@ -914,6 +975,7 @@ def index():
         date=date,
         form_data=form_data,
         blog_cards=blog_cards,
+        prices_dated=prices_dated,
     )
 
 # ---- Content pages ----
@@ -1431,7 +1493,7 @@ def api_live_deals():
                 price = best.get('value', 0)
                 if price and 5 < price < 2000:
                     dest_info = airport_index.get(dest_code, {})
-                    dest_city = dest_info.get('city', '') or dest_code
+                    dest_city = _place_name(dest_code, dest_info)
                     # Format departure date e.g. "Fri 14 Mar"
                     raw_date = (best.get('depart_date') or '')[:10]
                     try:
@@ -1440,7 +1502,7 @@ def api_live_deals():
                     except ValueError:
                         date_label = ''
                     results.append({
-                        'route': f"{origin_city} \u2192 {dest_city}",
+                        'route': f"{_place_name(origin_code) if origin_code in PLACE_NAME_OVERRIDES else origin_city} \u2192 {dest_city}",
                         'price': price,
                         'symbol': currency_symbol,
                         'date': date_label,

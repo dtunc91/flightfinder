@@ -666,97 +666,101 @@
   .blog-card-title a { color: inherit; text-decoration: none; }
   .blog-card-meta { font-size: 0.8rem; color: var(--c-muted-2); }
 
-  /* ── HERO: sentence search ─────────────────────────── */
-  .hero-band {
-    background: var(--c-ink);
-    color: #fff;
+  /* ── HERO LAYOUT ──────────────────────────────────── */
+  .hero-outer {
+    display: flex;
+    align-items: stretch;
+    min-height: 520px;
+    background: var(--c-mist);
+  }
+  .hero-left {
+    flex: 0 0 58%;
+    max-width: 58%;
+    padding: 40px 40px 36px 5%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+  .hero-right {
+    flex: 0 0 42%;
+    max-width: 42%;
     position: relative;
-    overflow: visible;
-    isolation: isolate;
+    overflow: hidden;
+    /* overflow stays here to clip photos, not on hero-outer which clips autocomplete */
   }
-  .hero-band::before {
-    content: ""; position: absolute; inset: 0; z-index: -1; overflow: hidden; pointer-events: none;
-    background:
-      radial-gradient(ellipse at 100% 0%, rgba(255,178,36,.16), transparent 45%),
-      radial-gradient(ellipse at 0% 100%, rgba(84,120,220,.22), transparent 50%);
+  /* Photo mosaic */
+  .photo-mosaic {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr 1fr;
+    gap: 8px;
+    height: 100%;
+    min-height: 520px;
+    padding: 16px 16px 16px 0;
   }
-  .hero-inner { max-width: 1100px; margin: 0 auto; padding: 40px 24px 34px; display: grid; grid-template-columns: minmax(0, 1fr); gap: 18px; }
-  .hero-kicker {
-    font-family: var(--f-body); font-size: 0.82rem; font-weight: 700; letter-spacing: .12em;
-    text-transform: uppercase; color: var(--c-amber); margin: 0;
+  .photo-mosaic img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 16px;
+    display: block;
   }
-  .madlib-form { display: grid; gap: 16px; }
-  .madlib {
-    font-family: var(--f-display); font-weight: 700; letter-spacing: -0.02em;
-    font-size: clamp(1.6rem, 3.6vw, 2.75rem); line-height: 1.45;
-    display: flex; flex-wrap: wrap; align-items: baseline; column-gap: .35em; row-gap: .1em;
+  .photo-mosaic .photo-tall { grid-row: 1 / span 3; grid-column: 1; }
+  .photo-mosaic .photo-side { grid-row: 1 / span 2; grid-column: 2; }
+  .photo-mosaic img { background: var(--c-sky); }
+  .mosaic-card {
+    grid-row: 3; grid-column: 2; border-radius: 16px; background: var(--c-ink); color: #C7D0EE;
+    padding: 16px; display: flex; flex-direction: column; justify-content: flex-end; gap: 4px;
+    font-size: .85rem; line-height: 1.4; min-height: 0; overflow: hidden;
   }
-  .ml-group { display: inline-flex; align-items: baseline; gap: .3em; flex-wrap: nowrap; max-width: 100%; }
-  .ml-word { white-space: nowrap; }
-  .ml-slot { position: relative; display: inline-block; min-width: 0; max-width: 100%; }
-  .ml-input {
-    font: inherit; letter-spacing: inherit; color: var(--c-amber);
-    background: transparent; border: 0; border-bottom: 3px solid var(--c-amber);
-    border-radius: 0; padding: 0 .1em; margin: 0; outline: none;
-    max-width: 100%; color-scheme: dark;
+  .mosaic-card b { color: #fff; font-family: var(--f-display); font-size: 1.05rem; }
+  .mosaic-card-icon {
+    width: 32px; height: 32px; border-radius: 9px; background: var(--c-amber); color: var(--c-ink);
+    display: grid; place-items: center; margin-bottom: auto;
   }
-  .ml-input::placeholder { color: rgba(255,178,36,.55); }
-  .ml-input:hover { border-bottom-color: #fff; }
-  .ml-input:focus { background: rgba(255,178,36,.10); border-bottom-color: #fff; }
-  .ml-origin .ml-input { width: 11.5em; field-sizing: content; min-width: 6.5em; }
-  .ml-date { width: 7.8em; }
-  .ml-date::-webkit-calendar-picker-indicator { filter: invert(78%) sepia(60%) saturate(900%) hue-rotate(350deg); cursor: pointer; }
-  .ml-select { appearance: none; -webkit-appearance: none; cursor: pointer; padding-right: .2em; }
-  .ml-select option { color: var(--c-ink); background: #fff; font-family: var(--f-body); font-size: 1rem; }
-  .ml-origin .autocomplete-items { width: min(440px, 88vw); left: 0; top: 100%; font-family: var(--f-body); letter-spacing: 0; line-height: 1.4; }
 
-  .ml-helper { font-size: 0.85rem; min-height: 1.3em; margin-top: -6px; }
-  .ml-helper .helper-ok { color: #6EE7B7; }
-  .ml-helper .helper-info { color: #C7D0EE; }
-  .ml-helper .helper-muted { color: #9AA6CC; }
-  .ml-helper .helper-err { color: #FF9B91; }
-
-  .ml-controls { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
-  .chip-group { display: inline-flex; gap: 6px; flex-wrap: wrap; }
-  .hero-band .chip {
-    display: inline-flex; align-items: center; gap: 6px; cursor: pointer; user-select: none;
-    border: 1px solid rgba(255,255,255,.25); color: #DCE3F8; background: transparent;
-    border-radius: 999px; padding: 8px 14px; font-size: 0.88rem; font-weight: 500; line-height: 1.2;
-    min-height: 40px; transition: background .15s, color .15s, border-color .15s;
+  @media (max-width: 768px) {
+    .hero-outer { flex-direction: column; min-height: auto; }
+    .hero-left  { flex: unset; max-width: 100%; padding: 28px 20px 20px; }
+    .hero-right { flex: unset; max-width: 100%; }
+    .photo-mosaic { min-height: 0; padding: 0 16px 16px; grid-template-rows: 150px; grid-template-columns: 1fr 1fr; }
+    .photo-mosaic .photo-tall, .photo-mosaic .photo-side { grid-row: 1; }
+    .photo-mosaic .photo-side { grid-column: 2; }
+    .mosaic-card { display: none; }
   }
-  .hero-band .chip:hover { border-color: rgba(255,255,255,.6); color: #fff; }
-  .hero-band .btn-check:checked + .chip { background: #fff; color: var(--c-ink); border-color: #fff; font-weight: 700; }
-  .hero-band .btn-check:focus-visible + .chip { outline: 3px solid var(--c-amber); outline-offset: 2px; }
-  .pax-chip input {
-    width: 2.2em; background: transparent; border: 0; color: #fff; font: inherit; font-weight: 700;
-    padding: 0; color-scheme: dark; outline: none;
-  }
-  .hero-band .btn-search { padding: 12px 24px; margin-left: auto; min-height: 48px; }
-  .trust-line { font-size: 0.85rem; color: #9AA6CC; display: flex; flex-wrap: wrap; gap: 4px 16px; }
-  .trust-line i { color: #6EE7B7; margin-right: 6px; }
 
-  /* Search summary pill (phones, after a search) */
+  /* ── SEARCH SUMMARY (mobile, after a search) ── */
   .search-summary { display: none; }
   @media (max-width: 768px) {
-    .hero-inner { padding: 22px 16px 22px; gap: 14px; }
-    .madlib { font-size: 1.55rem; line-height: 1.35; row-gap: 10px; }
-    .ml-group { display: flex; width: 100%; }
-    .ml-group-origin { flex-wrap: wrap; }
-    .ml-slot { flex: 1; }
-    .ml-input, .ml-origin .ml-input, .ml-date { width: 100%; }
-    .ml-controls { gap: 8px; }
-    .hero-band .btn-search { width: 100%; margin-left: 0; font-size: 1.1rem; min-height: 54px; }
-    .hero-band.has-results .hero-intro,
-    .hero-band.has-results .trust-line { display: none; }
-    .hero-band.has-results:not(.editing) #searchForm { display: none; }
-    .hero-band.has-results .hero-inner { padding: 14px 16px; }
-    .hero-band.has-results .search-summary {
+    .hero-outer.has-results .hero-intro,
+    .hero-outer.has-results .hero-right { display: none; }
+    .hero-outer.has-results:not(.editing) #searchForm { display: none; }
+    .hero-outer.has-results .hero-left { padding: 14px 16px 4px !important; }
+    .hero-outer.has-results .search-summary {
       display: flex; width: 100%; align-items: center; justify-content: space-between; gap: 10px;
-      background: #fff; border: 0; border-radius: 999px;
-      padding: 11px 16px; color: var(--c-ink); font-size: 0.92rem; text-align: left;
+      background: var(--c-paper); border: 1px solid var(--c-line); border-radius: 999px;
+      padding: 10px 16px; color: var(--c-ink); font-size: 0.92rem; text-align: left;
+      box-shadow: 0 6px 16px -10px rgba(14,26,60,.4);
     }
+    .hero-outer.has-results.editing .search-summary { margin-bottom: 10px; }
     .search-summary-text { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
     .search-summary-edit { color: var(--c-link); font-weight: 700; flex-shrink: 0; }
+  }
+
+  /* ── HERO TYPE ── */
+  .hero-title { font-size: 2.6rem; font-weight: 800; line-height: 1.08; color: var(--c-ink); margin-bottom: 12px; }
+  .hero-title .hl { background: linear-gradient(transparent 62%, rgba(255,178,36,.55) 62%); padding: 0 2px; }
+  .hero-sub { color: var(--c-muted); max-width: 480px; font-size: 1.05rem; }
+  .trust-line { margin-top: 12px; font-size: 0.85rem; color: var(--c-muted-2); display: flex; flex-wrap: wrap; gap: 4px 14px; }
+  .trust-line i { color: #0F7B4F; margin-right: 5px; }
+  .helper-ok { color: #0F7B4F; }
+  .helper-info { color: var(--c-link); }
+  .helper-muted { color: var(--c-muted-2); }
+  .helper-err { color: #B42318; }
+  @media (max-width: 576px) { .hero-left h1 { font-size: 2rem !important; } }
+  @media (max-width: 480px) {
+    .hero-right { display: none; }
+    .hero-left { padding: 20px 16px 16px !important; }
   }
 
   /* ── DESTINATION TILES (colour stand-ins until real photos) ── */
@@ -776,6 +780,19 @@
   .dest-tile-code { font-family: var(--f-mono); font-weight: 700; font-size: 0.95rem; letter-spacing: .02em; text-shadow: 0 1px 6px rgba(0,0,0,.35); }
   .dest-tile-flag { position: absolute; right: 5px; bottom: 5px; width: 20px; height: 14px; object-fit: cover; border-radius: 3px; box-shadow: 0 0 0 1.5px rgba(255,255,255,.85); }
 
+  /* ── DATE LINE + PRICE FILTER ── */
+  .flight-date { font-size: 0.78rem; color: var(--c-muted); margin-top: 3px; }
+  .flight-date i { margin-right: 3px; opacity: .7; }
+  .flight-date-other { color: #9A5B00; font-weight: 600; }
+  .price-filter { display: flex; gap: 6px; overflow-x: auto; padding: 2px 0 4px; scrollbar-width: none; }
+  .price-filter::-webkit-scrollbar { display: none; }
+  .pf-chip {
+    flex-shrink: 0; border: 1px solid var(--c-line); background: var(--c-paper); color: var(--c-muted);
+    border-radius: 999px; padding: 6px 12px; font-size: .8rem; font-weight: 500; white-space: nowrap;
+  }
+  .pf-chip.active { background: var(--c-ink); color: #fff; border-color: var(--c-ink); font-weight: 700; }
+  .results-note { font-size: .78rem; color: var(--c-muted-2); margin: 6px 0 0; }
+
   /* ── PRICE BANDS ── */
   .price-band {
     font-family: var(--f-mono); font-size: 0.72rem; font-weight: 700; letter-spacing: .1em;
@@ -786,12 +803,14 @@
   .price-band:first-child { margin-top: 4px; }
 
   /* ── RESULTS LAYOUT: controls beside the count; on phones, a bar stuck to the bottom ── */
-  #resultsContainer { display: grid; grid-template-columns: 1fr auto; grid-template-areas: "head controls" "list list"; column-gap: 12px; align-items: center; }
+  #resultsContainer { display: grid; grid-template-columns: 1fr auto; grid-template-areas: "head controls" "filter filter" "note note" "list list"; column-gap: 12px; align-items: center; }
   #resultsContainer > .results-header { grid-area: head; margin-bottom: 0; }
   #resultsContainer > .sort-controls { grid-area: controls; }
-  #resultsContainer > #flightsList { grid-area: list; margin-top: 8px; }
+  #resultsContainer > #flightsList { grid-area: list; margin-top: 8px; min-width: 0; }
+  #resultsContainer > .price-filter { grid-area: filter; margin-top: 10px; min-width: 0; }
+  #resultsContainer > .results-note { grid-area: note; }
   @media (max-width: 576px) {
-    #resultsContainer { grid-template-columns: 1fr; grid-template-areas: "head" "list" "controls"; }
+    #resultsContainer { grid-template-columns: 1fr; grid-template-areas: "head" "filter" "note" "list" "controls"; }
     #resultsContainer > .sort-controls {
       position: sticky; bottom: 0; z-index: 20;
       background: var(--c-paper); border-top: 1px solid var(--c-line);
@@ -829,15 +848,26 @@
 
 </div>
 
-<!-- HERO: search written as a sentence -->
-<section class="hero-band{% if flights %} has-results{% endif %}" id="heroOuter">
-  <div class="hero-inner">
-    <header class="hero-intro">
+<!-- HERO 2-column layout -->
+<div class="hero-outer{% if flights %} has-results{% endif %}" id="heroOuter">
+  <div class="hero-left">
+    <header class="py-2 hero-intro">
       {% if seo_page %}
-        <h1 class="hero-kicker">Cheap flights from {{ seo_page.city }}</h1>
+        <h1 class="hero-title">Cheap flights from <span class="hl">{{ seo_page.city }}</span></h1>
+        <p class="hero-sub">
+          No destination needed. Pick a date and we'll show you the cheapest places to fly from <strong style="color:var(--c-ink)">{{ seo_page.city }}</strong>.
+        </p>
       {% else %}
-        <h1 class="hero-kicker">Cheap flights from your airport to anywhere</h1>
+        <h1 class="hero-title">Cheap flights from your airport to <span class="hl">anywhere</span></h1>
+        <p class="hero-sub">
+          No destination in mind? Just pick your airport and we'll show you the cheapest places you can fly to.
+        </p>
       {% endif %}
+
+      <div class="trust-line">
+        <span><i class="fa fa-circle-check"></i>Free, no sign-up</span>
+        <span><i class="fa fa-circle-check"></i>Live prices from Aviasales</span>
+      </div>
     </header>
 
     {% if flights %}
@@ -851,98 +881,109 @@
     </button>
     {% endif %}
 
-    <form method="POST" id="searchForm" class="madlib-form" autocomplete="off">
-      <div class="madlib">
-        <span class="ml-group ml-group-origin">
-          <span class="ml-word">Get me out of</span>
-          <span class="ml-slot ml-origin">
-            <label class="visually-hidden" for="origin">Your airport</label>
-            <input type="text" id="origin" name="origin" class="ml-input"
-                   placeholder="your airport" value="{{ form_data.origin }}" autocomplete="off">
-            <input type="hidden" id="origin_code" name="origin_code" value="{{ form_data.origin_code }}">
-            <input type="hidden" id="currency" name="currency" value="{{ form_data.currency or 'gbp' }}">
-            <input type="hidden" id="currency_symbol" name="currency_symbol" value="{{ form_data.currency_symbol or '£' }}">
-            <div id="origin-autocomplete-list" class="autocomplete-items d-none"></div>
-          </span>
-        </span>
-        <span class="ml-group">
-          <span class="ml-word">on</span>
-          <span class="ml-slot">
-            <label class="visually-hidden" for="departure_date">Departure date</label>
-            <input type="date" id="departure_date" name="departure_date" class="ml-input ml-date"
-                   required value="{{ form_data.departure_date }}">
-          </span>
-        </span>
-        <span class="ml-group" id="returnDateCol"
-              {% if form_data.trip_type != 'roundtrip' %}style="display:none"{% endif %}>
-          <span class="ml-word">back on</span>
-          <span class="ml-slot">
-            <label class="visually-hidden" for="return_date">Return date</label>
-            <input type="date" id="return_date" name="return_date" class="ml-input ml-date"
-                   value="{{ form_data.return_date }}">
-          </span>
-        </span>
-        <span class="ml-group">
-          <span class="ml-word">for under</span>
-          <span class="ml-slot">
-            <label class="visually-hidden" for="max_price">Maximum price per person</label>
-            <select id="max_price" name="max_price" class="ml-input ml-select">
-              <option value="" {% if not form_data.max_price %}selected{% endif %}>any price</option>
-              {% for amt in [30, 50, 80, 120, 200, 400] %}
-              <option value="{{ amt }}" data-amount="{{ amt }}" {% if form_data.max_price|string == amt|string %}selected{% endif %}>{{ form_data.currency_symbol or '£' }}{{ amt }}</option>
-              {% endfor %}
-            </select>
-          </span>
-        </span>
+    <!-- SEARCH FORM -->
+    <form method="POST" id="searchForm" class="p-4 form-container mt-3" autocomplete="off">
+
+    <!-- Trip type toggle -->
+    <div class="d-flex flex-wrap gap-3 mb-3">
+      <div class="trip-toggle btn-group" role="group">
+        <input type="radio" class="btn-check" name="trip_type" id="trip_oneway" value="oneway"
+               {% if form_data.trip_type != 'roundtrip' %}checked{% endif %}>
+        <label class="btn" for="trip_oneway">
+          <i class="fa fa-arrow-right me-1"></i> One-way
+        </label>
+        <input type="radio" class="btn-check" name="trip_type" id="trip_roundtrip" value="roundtrip"
+               {% if form_data.trip_type == 'roundtrip' %}checked{% endif %}>
+        <label class="btn" for="trip_roundtrip">
+          <i class="fa fa-right-left me-1"></i> Round-trip
+        </label>
       </div>
 
-      <div id="origin-helper" class="ml-helper">
+      <div class="trip-toggle btn-group" role="group" id="flightTypeToggle">
+        <input type="radio" class="btn-check" name="flight_type" id="ft_all" value="all" checked>
+        <label class="btn" for="ft_all">All</label>
+        <input type="radio" class="btn-check" name="flight_type" id="ft_domestic" value="domestic">
+        <label class="btn" for="ft_domestic"><i class="fa fa-house me-1"></i> Domestic</label>
+        <input type="radio" class="btn-check" name="flight_type" id="ft_international" value="international">
+        <label class="btn" for="ft_international"><i class="fa fa-earth-europe me-1"></i> International</label>
+      </div>
+    </div>
+
+    <!-- Airport autocomplete -->
+    <div class="mb-3 position-relative">
+      <label class="form-label" for="origin">
+        <i class="fa fa-plane-departure me-1"></i>Fly from
+      </label>
+      <input type="text" id="origin" name="origin" class="form-control"
+             placeholder="City or airport name..."
+             value="{{ form_data.origin }}" autocomplete="off">
+      <input type="hidden" id="origin_code" name="origin_code" value="{{ form_data.origin_code }}">
+      <input type="hidden" id="currency" name="currency" value="{{ form_data.currency or 'gbp' }}">
+      <input type="hidden" id="currency_symbol" name="currency_symbol" value="{{ form_data.currency_symbol or '£' }}">
+      <div id="origin-autocomplete-list" class="autocomplete-items d-none"></div>
+      <div id="origin-helper" class="small mt-1">
         {% if form_data.origin_code %}
           <span class="helper-ok"><i class="fa fa-circle-check me-1"></i>{{ form_data.origin }}</span>
         {% else %}
           <span class="helper-muted">Start typing a city or airport, e.g. "London"</span>
         {% endif %}
       </div>
-
-      <div class="ml-controls">
-        <div class="chip-group trip-toggle" role="group" aria-label="Trip type">
-          <input type="radio" class="btn-check" name="trip_type" id="trip_oneway" value="oneway"
-                 {% if form_data.trip_type != 'roundtrip' %}checked{% endif %}>
-          <label class="chip" for="trip_oneway">One-way</label>
-          <input type="radio" class="btn-check" name="trip_type" id="trip_roundtrip" value="roundtrip"
-                 {% if form_data.trip_type == 'roundtrip' %}checked{% endif %}>
-          <label class="chip" for="trip_roundtrip">Return</label>
-        </div>
-
-        <div class="chip-group" role="group" aria-label="Destination type" id="flightTypeToggle">
-          <input type="radio" class="btn-check" name="flight_type" id="ft_all" value="all" checked>
-          <label class="chip" for="ft_all">Anywhere</label>
-          <input type="radio" class="btn-check" name="flight_type" id="ft_domestic" value="domestic">
-          <label class="chip" for="ft_domestic">Same country</label>
-          <input type="radio" class="btn-check" name="flight_type" id="ft_international" value="international">
-          <label class="chip" for="ft_international">Abroad</label>
-        </div>
-
-        <label class="chip pax-chip" for="passengers">
-          <i class="fa fa-user" aria-hidden="true"></i>
-          <span class="visually-hidden">Passengers</span>
-          <input type="number" id="passengers" name="passengers" min="1" max="9"
-                 value="{{ form_data.passengers or 1 }}">
-        </label>
-
-        <button type="button" id="searchButton" class="btn btn-search"
-                {% if not form_data.origin_code %}disabled{% endif %}>
-          Show me where <i class="fa fa-arrow-right ms-1"></i>
-        </button>
-      </div>
-    </form>
-
-    <div class="trust-line">
-      <span><i class="fa fa-circle-check"></i>Free, no sign-up</span>
-      <span><i class="fa fa-circle-check"></i>Live prices from Aviasales</span>
     </div>
-  </div>
-</section><!-- /hero -->
+
+    <!-- Dates + Passengers -->
+    <div class="row g-2 mb-3">
+      <div class="col-sm col-12">
+        <label class="form-label" for="departure_date">
+          <i class="fa fa-calendar me-1"></i>Departure
+        </label>
+        <input type="date" id="departure_date" name="departure_date" class="form-control"
+               required value="{{ form_data.departure_date }}">
+      </div>
+      <div id="returnDateCol" class="col-sm col-12"
+           {% if form_data.trip_type != 'roundtrip' %}style="display:none"{% endif %}>
+        <label class="form-label" for="return_date">
+          <i class="fa fa-calendar-check me-1"></i>Return
+        </label>
+        <input type="date" id="return_date" name="return_date" class="form-control"
+               value="{{ form_data.return_date }}">
+      </div>
+      <div class="col-sm-3 col-12">
+        <label class="form-label" for="passengers">
+          <i class="fa fa-user me-1"></i>Passengers
+        </label>
+        <input type="number" id="passengers" name="passengers" class="form-control"
+               min="1" max="9" value="{{ form_data.passengers or 1 }}">
+      </div>
+    </div>
+
+    <button type="button" id="searchButton" class="btn btn-search w-100"
+            {% if not form_data.origin_code %}disabled{% endif %}>
+      <i class="fa fa-magnifying-glass me-2"></i>Search Flights
+    </button>
+  </form>
+
+  </div><!-- /hero-left -->
+
+  <!-- HERO RIGHT: photo mosaic -->
+  <div class="hero-right">
+    <div class="photo-mosaic">
+      <img class="photo-tall"
+           src="{{ url_for('static', filename='hero-beach.webp') }}"
+           width="1350" height="900" alt="Turquoise sea and a sandy beach"
+           loading="lazy" decoding="async" onerror="this.style.visibility='hidden'">
+      <img class="photo-side"
+           src="{{ url_for('static', filename='hero-coast.webp') }}"
+           width="900" height="600" alt="White sand beach and clear water"
+           loading="lazy" decoding="async" onerror="this.style.visibility='hidden'">
+      <div class="mosaic-card">
+        <span class="mosaic-card-icon" aria-hidden="true"><i class="fa fa-plane-departure"></i></span>
+        <b>No destination needed</b>
+        <span>Pick your airport and a date. We'll show where you can go for the least.</span>
+      </div>
+    </div>
+  </div><!-- /hero-right -->
+
+</div><!-- /hero-outer -->
 
 <!-- Shown while a search is running -->
 <div class="container px-3 px-md-4" style="max-width:900px;">
@@ -1004,6 +1045,19 @@
         </button>
     </div>
 
+    <div class="price-filter" role="group" aria-label="Maximum price">
+      {% set sym = form_data.currency_symbol or '£' %}
+      <button type="button" class="pf-chip active" data-max="">Any price</button>
+      {% for amt in [50, 100, 200, 400] %}
+      <button type="button" class="pf-chip" data-max="{{ amt }}">Under {{ sym }}{{ amt }}</button>
+      {% endfor %}
+    </div>
+    {% if prices_dated is not defined or prices_dated %}
+    <p class="results-note">Cheapest fares for your date. Where a place has no fare that day, we show its nearest date instead.</p>
+    {% else %}
+    <p class="results-note">Latest prices we've seen from this airport. Tap "See flight" for the exact price on your date.</p>
+    {% endif %}
+
     <div id="flightsList">
       {% for flight in flights %}
       <div class="flight-card" data-price="{{ flight.price }}" data-country="{{ flight.destination_country }}" data-stops="{{ flight.num_stops }}">
@@ -1022,6 +1076,15 @@
             </span>
           </div>
           <div class="flight-airport-name">{{ flight.destination_label }}</div>
+          {% if flight.date_label %}
+          <div class="flight-date{% if not flight.on_date %} flight-date-other{% endif %}">
+            <i class="fa fa-calendar" aria-hidden="true"></i> {{ flight.date_label }}
+            {%- if not flight.on_date %}
+              {%- if flight.days_off == 0 %} · different return day
+              {%- else %} · {{ flight.days_off|abs }} day{{ 's' if flight.days_off|abs != 1 }} {{ 'later' if flight.days_off > 0 else 'earlier' }}{% endif %}
+            {%- endif %}
+          </div>
+          {% endif %}
           <details class="plan-trip">
             <summary>Plan the trip <i class="fa fa-chevron-down"></i></summary>
             <div class="plan-trip-links">
@@ -1065,11 +1128,11 @@
     </div>
   </div>
 
-  {% elif form_data.origin_code %}
+  {% elif form_data.origin_code and request.method == 'POST' %}
   <div class="no-results">
     <i class="fa fa-plane fa-2x d-block"></i>
-    <p>No prices found from <strong>{{ origin_label }}</strong>{% if form_data.max_price %} under {{ form_data.currency_symbol or '£' }}{{ form_data.max_price }}{% endif %} on that date.<br>
-    Try a day either side, a higher budget{% if form_data.origin_code not in ['LON','NYC','PAR','MIL','ROM','TYO','CHI','WAS'] %}, or a nearby airport{% endif %}.</p>
+    <p>We couldn't get prices from <strong>{{ origin_label }}</strong> right now.<br>
+    Please try again in a minute, or try a nearby airport.</p>
   </div>
   {% endif %}
 
@@ -1370,9 +1433,6 @@
       if (currencyInput && (!currencyInput.value || currencyInput.value === 'gbp')) {
         if (currencyInput) currencyInput.value = geo.currency || 'gbp';
         if (symbolInput)   symbolInput.value   = geo.symbol   || '£';
-        document.querySelectorAll('#max_price option[data-amount]').forEach(o => {
-          o.textContent = (geo.symbol || '£') + o.dataset.amount;
-        });
       }
 
       fetchLiveDeals(window._geoCountry, window._geoSymbol);
@@ -1719,6 +1779,12 @@ document.addEventListener('DOMContentLoaded', () => {
   // ── Flight type + direct-only filters ───────────────
   const ORIGIN_COUNTRY = {{ origin_country | tojson }};
   let _directOnly = false;
+  let _maxPrice = 0;
+  document.querySelectorAll('.pf-chip').forEach(btn => btn.addEventListener('click', () => {
+    _maxPrice = parseFloat(btn.dataset.max) || 0;
+    document.querySelectorAll('.pf-chip').forEach(b => b.classList.toggle('active', b === btn));
+    applyFlightTypeFilter();
+  }));
 
   function applyFlightTypeFilter() {
     const selected = document.querySelector('input[name="flight_type"]:checked')?.value || 'all';
@@ -1732,6 +1798,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if (selected === 'domestic')      show = ORIGIN_COUNTRY && destCountry === ORIGIN_COUNTRY;
       if (selected === 'international') show = !ORIGIN_COUNTRY || destCountry !== ORIGIN_COUNTRY;
       if (_directOnly && stops !== 0)   show = false;
+      if (_maxPrice && (parseFloat(card.dataset.price) || 0) > _maxPrice) show = false;
       card.style.display = show ? '' : 'none';
       if (show) visibleCount++;
     });
