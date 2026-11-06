@@ -1038,7 +1038,11 @@
       <button type="button" class="pf-chip" data-max="{{ amt }}">Under {{ sym }}{{ amt }}</button>
       {% endfor %}
     </div>
+    {% if prices_dated is not defined or prices_dated %}
     <p class="results-note">Cheapest fares for your date. Where a place has no fare that day, we show its nearest date instead.</p>
+    {% else %}
+    <p class="results-note">Latest prices we've seen from this airport. Tap "See flight" for the exact price on your date.</p>
+    {% endif %}
 
     <div id="flightsList">
       {% for flight in flights %}
