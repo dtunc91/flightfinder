@@ -705,16 +705,28 @@
     border-radius: 16px;
     display: block;
   }
-  .photo-mosaic .photo-tall {
-    grid-row: span 2;
+  .photo-mosaic .photo-tall { grid-row: 1 / span 3; grid-column: 1; }
+  .photo-mosaic .photo-side { grid-row: 1 / span 2; grid-column: 2; }
+  .photo-mosaic img { background: var(--c-sky); }
+  .mosaic-card {
+    grid-row: 3; grid-column: 2; border-radius: 16px; background: var(--c-ink); color: #C7D0EE;
+    padding: 16px; display: flex; flex-direction: column; justify-content: flex-end; gap: 4px;
+    font-size: .85rem; line-height: 1.4; min-height: 0; overflow: hidden;
+  }
+  .mosaic-card b { color: #fff; font-family: var(--f-display); font-size: 1.05rem; }
+  .mosaic-card-icon {
+    width: 32px; height: 32px; border-radius: 9px; background: var(--c-amber); color: var(--c-ink);
+    display: grid; place-items: center; margin-bottom: auto;
   }
 
   @media (max-width: 768px) {
     .hero-outer { flex-direction: column; min-height: auto; }
     .hero-left  { flex: unset; max-width: 100%; padding: 28px 20px 20px; }
     .hero-right { flex: unset; max-width: 100%; }
-    .photo-mosaic { min-height: 200px; padding: 0 16px 16px; grid-template-rows: 140px 140px; grid-template-columns: 1fr 1fr 1fr; }
-    .photo-mosaic .photo-tall { grid-row: span 1; }
+    .photo-mosaic { min-height: 0; padding: 0 16px 16px; grid-template-rows: 150px; grid-template-columns: 1fr 1fr; }
+    .photo-mosaic .photo-tall, .photo-mosaic .photo-side { grid-row: 1; }
+    .photo-mosaic .photo-side { grid-column: 2; }
+    .mosaic-card { display: none; }
   }
 
   /* ── SEARCH SUMMARY (mobile, after a search) ── */
@@ -956,16 +968,18 @@
   <div class="hero-right">
     <div class="photo-mosaic">
       <img class="photo-tall"
-           src="{{ url_for('static', filename='alejandro-pinero-amerio-Lx3l-Hf_P5I-unsplash.webp') }}"
-           alt="Travel destination" fetchpriority="high">
-      <img src="{{ url_for('static', filename='md-arafat-ul-alam-bnrouu6uqaM-unsplash.webp') }}"
-           alt="Flight view" loading="lazy">
-      <img src="https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=600&q=80&auto=format&fit=crop"
-           alt="Airplane in flight" loading="lazy">
-      <img src="https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?w=600&q=80&auto=format&fit=crop"
-           alt="Travel adventure" loading="lazy">
-      <img src="https://images.unsplash.com/photo-1488085061387-422e29b40080?w=600&q=80&auto=format&fit=crop"
-           alt="City destination" loading="lazy">
+           src="{{ url_for('static', filename='hero-beach.webp') }}"
+           width="1350" height="900" alt="Turquoise sea and a sandy beach"
+           loading="lazy" decoding="async" onerror="this.style.visibility='hidden'">
+      <img class="photo-side"
+           src="{{ url_for('static', filename='hero-coast.webp') }}"
+           width="900" height="600" alt="White sand beach and clear water"
+           loading="lazy" decoding="async" onerror="this.style.visibility='hidden'">
+      <div class="mosaic-card">
+        <span class="mosaic-card-icon" aria-hidden="true"><i class="fa fa-plane-departure"></i></span>
+        <b>No destination needed</b>
+        <span>Pick your airport and a date. We'll show where you can go for the least.</span>
+      </div>
     </div>
   </div><!-- /hero-right -->
 
