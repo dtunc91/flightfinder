@@ -1068,8 +1068,8 @@
   {% elif form_data.origin_code %}
   <div class="no-results">
     <i class="fa fa-plane fa-2x d-block"></i>
-    <p>No cheap flights found from <strong>{{ origin_label }}</strong>.<br>
-    Try a different date or airport.</p>
+    <p>No prices found from <strong>{{ origin_label }}</strong>{% if form_data.max_price %} under {{ form_data.currency_symbol or '£' }}{{ form_data.max_price }}{% endif %} on that date.<br>
+    Try a day either side, a higher budget{% if form_data.origin_code not in ['LON','NYC','PAR','MIL','ROM','TYO','CHI','WAS'] %}, or a nearby airport{% endif %}.</p>
   </div>
   {% endif %}
 
@@ -1237,7 +1237,7 @@
 
   <details class="home-more">
     <summary>Where do the prices come from? <i class="fa fa-chevron-down" aria-hidden="true"></i></summary>
-    <p>The prices come from live airline fare data, so you see real one-way and return fares rather than "from" prices that disappear when you click. Every result links straight through to book, and searching costs nothing. No sign-up, no fees, no catch.</p>
+    <p>Prices come from Aviasales: the cheapest fares travellers found recently for the exact date you pick. Fares move during the day, so the final price on Aviasales can differ a little. Every result links straight through to book, and searching costs nothing. No sign-up, no fees, no catch.</p>
   </details>
 
   <a class="home-guides-link" href="{{ url_for('blog_index') }}">Not sure when to go? Read our flight deal guides <i class="fa fa-arrow-right" aria-hidden="true"></i></a>

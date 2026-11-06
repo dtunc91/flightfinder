@@ -668,6 +668,99 @@ def load_airport_names(query: str) -> dict:
         return {}
 
 # ---- Main search page ----
+def _num(v):
+    try:
+        return float(v)
+    except (TypeError, ValueError):
+        return None
+
+
+def _fetch_prices_for_dates(origin_code, depart_date, return_date, currency):
+    """
+    Cheapest known fare to each destination for the visitor's exact dates.
+
+    Returns a list of {'destination', 'price', 'stops'} sorted by price, one per
+    destination. Anything not departing on depart_date (and, for return trips,
+    not coming back on return_date) is dropped, so the page never shows a price
+    for a different day than the one the visitor picked.
+    """
+    def same_day(value, wanted):
+        return bool(wanted) and (value or '')[:10] == wanted
+
+    def keep(raw_rows, dest_key, price_key, stops_key, dep_key, ret_key):
+        best = {}
+        for row in raw_rows:
+            dest = (row.get(dest_key) or '').upper()
+            price = _num(row.get(price_key))
+            if not dest or price is None or price <= 0:
+                continue
+            if not same_day(row.get(dep_key), depart_date):
+                continue
+            if return_date and not same_day(row.get(ret_key), return_date):
+                continue
+            if dest not in best or price < best[dest]['price']:
+                stops = row.get(stops_key)
+                best[dest] = {
+                    'destination': dest,
+                    'price': int(price) if price.is_integer() else price,
+                    'stops': int(stops) if isinstance(stops, (int, float)) else 0,
+                }
+        return sorted(best.values(), key=lambda x: x['price'])
+
+    # 1) Date-specific search: cheapest tickets for this exact day
+    try:
+        params = {
+            'origin': origin_code,
+            'departure_at': depart_date,
+            'one_way': 'false' if return_date else 'true',
+            'unique': 'true',
+            'sorting': 'price',
+            'currency': currency,
+            'limit': 200,
+            'token': API_TOKEN,
+        }
+        if return_date:
+            params['return_at'] = return_date
+        r = requests.get("https://api.travelpayouts.com/aviasales/v3/prices_for_dates",
+                         params=params, timeout=15)
+        if r.status_code == 200:
+            body = r.json()
+            got_currency = (body.get('currency') or currency).lower()
+            if got_currency != currency.lower():
+                app.logger.warning("prices_for_dates answered in %s, wanted %s", got_currency, currency)
+            else:
+                rows = keep(body.get('data') or [], 'destination', 'price', 'transfers',
+                            'departure_at', 'return_at')
+                if rows:
+                    return rows
+        else:
+            app.logger.warning("prices_for_dates returned %s: %s", r.status_code, r.text[:200])
+    except Exception as e:
+        app.logger.warning("prices_for_dates failed: %s", e)
+
+    # 2) Fallback: recent prices for that month, filtered down to the exact day
+    try:
+        month_start = depart_date[:8] + '01'
+        params = {
+            'origin': origin_code,
+            'currency': currency,
+            'period_type': 'month',
+            'beginning_of_period': month_start,
+            'one_way': 'false' if return_date else 'true',
+            'sorting': 'price',
+            'limit': 1000,
+            'token': API_TOKEN,
+        }
+        r = requests.get("https://api.travelpayouts.com/v2/prices/latest", params=params, timeout=15)
+        if r.status_code == 200:
+            return keep(r.json().get('data') or [], 'destination', 'value', 'number_of_changes',
+                        'depart_date', 'return_date')
+        app.logger.warning("prices/latest returned %s: %s", r.status_code, r.text[:200])
+    except Exception as e:
+        app.logger.warning("prices/latest failed: %s", e)
+    return []
+
+
 @app.route('/', methods=['GET', 'POST'])
 def index():
     flights = []
@@ -730,12 +823,15 @@ def index():
 
         date = departure_date
 
-        # Travelpayouts fetch — get a large batch then split into domestic/international
-        params = {'origin': origin_code, 'currency': form_data['currency'], 'token': API_TOKEN, 'limit': 100}
+        if not departure_date:
+            return redirect(url_for('index') + '?error=Please+select+a+departure+date.')
+        if trip_type != 'roundtrip':
+            return_date = ''
+
+        # Prices for the visitor's exact dates, then split into domestic/international
         try:
-            r = requests.get("https://api.travelpayouts.com/v2/prices/latest", params=params, timeout=15)
-            if r.status_code == 200:
-                data = r.json().get('data', [])
+            data = _fetch_prices_for_dates(origin_code, departure_date, return_date or '', form_data['currency'])
+            if data:
                 airport_index = _get_airport_index()
                 origin_country = _origin_country_for(origin_code)
                 try:
@@ -745,16 +841,13 @@ def index():
 
                 domestic_flights, international_flights = [], []
 
-                if not departure_date:
-                    return redirect(url_for('index') + '?error=Please+select+a+departure+date.')
-
                 depart_str = datetime.strptime(departure_date, '%Y-%m-%d').strftime('%d%m')
-                return_str = datetime.strptime(return_date, '%Y-%m-%d').strftime('%d%m') if trip_type == 'roundtrip' and return_date else None
+                return_str = datetime.strptime(return_date, '%Y-%m-%d').strftime('%d%m') if return_date else None
 
                 for flight in data:
-                    dest_code = flight.get('destination', 'N/A')
-                    price = flight.get('value', 'N/A')
-                    num_stops = flight.get('number_of_changes', 0)
+                    dest_code = flight['destination']
+                    price = flight['price']
+                    num_stops = flight['stops']
                     if max_price and isinstance(price, (int, float)) and price > max_price:
                         continue
 
@@ -794,8 +887,8 @@ def index():
                 flights = domestic_flights[:10] + international_flights[:10]
                 # Cheapest first, whatever the page script does
                 flights.sort(key=lambda f: f['price'] if isinstance(f['price'], (int, float)) else float('inf'))
-        except Exception:
-            pass
+        except Exception as e:
+            app.logger.warning("search failed: %s", e)
 
     origin_country = _origin_country_for(form_data.get('origin_code', ''))
 
