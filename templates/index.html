@@ -40,7 +40,7 @@
     display: flex;
     align-items: stretch;
     min-height: 520px;
-    background: #f8f9fc;
+    background: var(--c-mist);
   }
   .hero-left {
     flex: 0 0 58%;
@@ -89,28 +89,28 @@
   /* ── FORM ─────────────────────────────────────────── */
   .form-container {
     background: #ffffff;
-    border: 1px solid #dde6f5;
+    border: 1px solid var(--c-line);
     border-radius: 20px;
-    box-shadow: 0 4px 24px rgba(26,39,68,.10);
+    box-shadow: 0 4px 24px rgba(14,26,60,.10);
     position: relative;
     overflow: visible;
   }
 
   .form-control, .form-select {
-    background: #f5f8ff;
-    border: 1px solid #d0daf0;
-    color: #1a2744;
+    background: var(--c-mist);
+    border: 1px solid var(--c-line);
+    color: var(--c-ink);
     border-radius: 10px;
   }
   .form-control:focus, .form-select:focus {
     background: #ffffff;
-    border-color: #3b7dd8;
-    color: #1a2744;
-    box-shadow: 0 0 0 3px rgba(59,125,216,.12);
+    border-color: var(--c-link);
+    color: var(--c-ink);
+    box-shadow: 0 0 0 3px rgba(14,26,60,.12);
   }
-  .form-control::placeholder { color: #9babc8; }
+  .form-control::placeholder { color: var(--c-faint); }
   .form-label {
-    color: #4a5880;
+    color: var(--c-muted);
     font-size: 0.75rem;
     font-weight: 700;
     letter-spacing: .06em;
@@ -120,18 +120,18 @@
 
   /* trip type toggle */
   .trip-toggle .btn-check + .btn {
-    background: #f0f4fb;
-    border: 1px solid #d0daf0;
-    color: #4a5880;
+    background: var(--c-mist);
+    border: 1px solid var(--c-line);
+    color: var(--c-muted);
     border-radius: 10px;
     font-size: 0.85rem;
     padding: 7px 18px;
     transition: background .15s, color .15s;
   }
   .trip-toggle .btn-check:checked + .btn {
-    background: #dde9fb;
-    border-color: #3b7dd8;
-    color: #1a2744;
+    background: var(--c-sky);
+    border-color: var(--c-link);
+    color: var(--c-ink);
     font-weight: 600;
   }
   .trip-toggle .btn-check + .btn:first-of-type { border-radius: 10px 0 0 10px; }
@@ -145,26 +145,26 @@
     max-height: 320px;
     overflow: auto;
     background: #ffffff;
-    border: 1px solid #d0daf0;
+    border: 1px solid var(--c-line);
     border-radius: 14px;
-    box-shadow: 0 12px 40px rgba(26,39,68,.16);
+    box-shadow: 0 12px 40px rgba(14,26,60,.16);
     margin-top: 6px;
   }
   .autocomplete-item {
     padding: 11px 14px;
     cursor: pointer;
-    border-bottom: 1px solid #f0f4fb;
+    border-bottom: 1px solid var(--c-mist);
     display: flex;
     align-items: center;
     gap: 12px;
   }
   .autocomplete-item:last-child { border-bottom: none; }
   .autocomplete-item:hover, .autocomplete-item.active {
-    background: #f0f5ff;
+    background: var(--c-mist);
   }
   .airport-code-badge {
-    background: #dde9fb;
-    color: #1a55b0;
+    background: var(--c-sky);
+    color: var(--c-ink);
     font-size: 11px;
     font-weight: 700;
     letter-spacing: .04em;
@@ -181,24 +181,24 @@
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    color: #1a2744;
+    color: var(--c-ink);
   }
-  .airport-sub { font-size: 11px; color: #6b7eb5; margin-top: 1px; }
+  .airport-sub { font-size: 11px; color: var(--c-muted-2); margin-top: 1px; }
 
   /* ── SEARCH BUTTON ────────────────────────────────── */
   .btn-search {
-    background: linear-gradient(135deg, #3b7dd8 0%, #1a55b0 100%);
+    background: var(--c-amber);
     border: none;
-    color: #fff;
+    color: var(--c-ink);
     border-radius: 12px;
-    font-weight: 700;
-    font-size: 1rem;
+    font-family: var(--f-display);
+    font-weight: 800;
+    font-size: 1.05rem;
     padding: 13px;
-    transition: opacity .2s, transform .1s;
-    letter-spacing: .02em;
+    transition: background .15s, transform .1s;
   }
-  .btn-search:hover:not(:disabled) { opacity: .88; transform: translateY(-1px); color: #fff; }
-  .btn-search:disabled { opacity: .45; cursor: not-allowed; }
+  .btn-search:hover:not(:disabled) { background: var(--c-amber-2); transform: translateY(-1px); color: var(--c-ink); }
+  .btn-search:disabled { background: var(--c-amber); border: none; opacity: .5; cursor: not-allowed; color: var(--c-ink); }
 
   /* ── RESULTS ──────────────────────────────────────── */
   .results-header {
@@ -209,30 +209,30 @@
     gap: 10px;
     margin-bottom: 14px;
   }
-  .results-count { font-size: 0.88rem; color: #4a5880; }
+  .results-count { font-size: 0.88rem; color: var(--c-muted); }
   .sort-controls { display: flex; gap: 6px; }
   .sort-btn {
-    background: #f0f4fb;
-    border: 1px solid #d0daf0;
-    color: #4a5880;
+    background: var(--c-mist);
+    border: 1px solid var(--c-line);
+    color: var(--c-muted);
     border-radius: 8px;
     font-size: 0.78rem;
     padding: 5px 12px;
     cursor: pointer;
     transition: background .15s, color .15s;
   }
-  .sort-btn:hover { background: #dde9fb; color: #1a2744; }
+  .sort-btn:hover { background: var(--c-sky); color: var(--c-ink); }
   .sort-btn.active {
-    background: #dde9fb;
-    border-color: #3b7dd8;
-    color: #1a2744;
+    background: var(--c-sky);
+    border-color: var(--c-link);
+    color: var(--c-ink);
     font-weight: 600;
   }
 
   /* flight card */
   .flight-card {
     background: #ffffff;
-    border: 1px solid #e2e8f4;
+    border: 1px solid var(--c-line);
     border-radius: 16px;
     padding: 18px 20px;
     margin-bottom: 10px;
@@ -251,8 +251,8 @@
     box-shadow: 0 1px 4px rgba(0,0,0,.12);
   }
   .flight-card:hover {
-    border-color: #3b7dd8;
-    box-shadow: 0 4px 16px rgba(59,125,216,.12);
+    border-color: var(--c-link);
+    box-shadow: 0 4px 16px rgba(14,26,60,.12);
   }
   .flight-dest { flex: 1; min-width: 0; }
   .flight-dest-top {
@@ -262,13 +262,15 @@
     margin-bottom: 3px;
   }
   .flight-city {
-    font-size: 1.05rem;
+    font-family: var(--f-display);
+    font-size: 1.15rem;
     font-weight: 700;
-    color: #1a2744;
+    color: var(--c-ink);
   }
   .flight-iata {
-    background: #dde9fb;
-    color: #1a55b0;
+    font-family: var(--f-mono);
+    background: var(--c-sky);
+    color: var(--c-ink);
     font-size: 10px;
     font-weight: 700;
     letter-spacing: .05em;
@@ -279,7 +281,7 @@
   }
   .flight-airport-name {
     font-size: 0.75rem;
-    color: #6b7eb5;
+    color: var(--c-muted-2);
   }
   .flight-right {
     display: flex;
@@ -289,12 +291,15 @@
   }
   .flight-price-block { text-align: right; }
   .flight-price {
-    font-size: 1.55rem;
-    font-weight: 800;
-    color: #1a55b0;
+    font-family: var(--f-mono);
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.03em;
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--c-ink);
     line-height: 1;
   }
-  .flight-price-label { font-size: 0.68rem; color: #6b7eb5; margin-top: 2px; }
+  .flight-price-label { font-size: 0.68rem; color: var(--c-muted-2); margin-top: 2px; }
   .stops-badge {
     font-size: 0.7rem;
     font-weight: 600;
@@ -318,11 +323,11 @@
     border: 1px solid #fca5a5;
   }
   .btn-book {
-    background: linear-gradient(135deg, #3b7dd8 0%, #1a55b0 100%);
+    background: var(--c-ink);
     border: none;
     color: #fff;
     border-radius: 10px;
-    font-weight: 600;
+    font-weight: 700;
     font-size: 0.82rem;
     padding: 8px 16px;
     white-space: nowrap;
@@ -330,12 +335,12 @@
     transition: opacity .2s, transform .1s;
     display: inline-block;
   }
-  .btn-book:hover { opacity: .88; transform: translateY(-1px); color: #fff; }
+  .btn-book:hover { background: var(--c-ink-2); transform: translateY(-1px); color: #fff; }
 
   /* hotel link on card */
   .hotel-link {
     font-size: 0.75rem;
-    color: #6b7eb5;
+    color: var(--c-muted-2);
     text-decoration: none;
     margin-top: 6px;
     display: inline-flex;
@@ -344,7 +349,7 @@
     opacity: .85;
     transition: opacity .15s;
   }
-  .hotel-link:hover { opacity: 1; color: #1a55b0; }
+  .hotel-link:hover { opacity: 1; color: var(--c-ink); }
   .klook-link { color: #e05c2a; margin-top: 4px; }
   .klook-link:hover { color: #c04010; }
 
@@ -354,8 +359,8 @@
     align-items: center;
     justify-content: space-between;
     gap: 16px;
-    background: #f0f5ff;
-    border: 1px solid #c7d9f5;
+    background: var(--c-mist);
+    border: 1px solid var(--c-line);
     border-radius: 14px;
     padding: 16px 20px;
     margin: 16px auto 0;
@@ -364,8 +369,8 @@
     transition: background .2s, border-color .2s;
   }
   .compensair-banner:hover {
-    background: #e0ecff;
-    border-color: #3b7dd8;
+    background: var(--c-mist);
+    border-color: var(--c-link);
   }
   .compensair-banner-left {
     display: flex;
@@ -374,23 +379,23 @@
   }
   .compensair-icon {
     font-size: 1.4rem;
-    color: #3b7dd8;
+    color: var(--c-link);
     flex-shrink: 0;
   }
   .compensair-title {
     font-size: 0.9rem;
     font-weight: 600;
-    color: #1a2744;
+    color: var(--c-ink);
   }
   .compensair-sub {
     font-size: 0.78rem;
-    color: #4a5880;
+    color: var(--c-muted);
     margin-top: 3px;
   }
   .compensair-cta {
     font-size: 0.82rem;
     font-weight: 600;
-    color: #1a55b0;
+    color: var(--c-ink);
     white-space: nowrap;
     flex-shrink: 0;
   }
@@ -401,57 +406,95 @@
 
   /* ── EMAIL CAPTURE ────────────────────────────────── */
   .email-capture {
-    background: #f0f5ff;
-    border: 1px solid #c7d9f5;
+    background: var(--c-mist);
+    border: 1px solid var(--c-line);
     border-radius: 16px;
     padding: 24px;
     margin-top: 28px;
   }
-  .email-capture h3 { font-size: 1rem; font-weight: 700; margin-bottom: 4px; color: #1a2744; }
-  .email-capture p  { font-size: 0.85rem; color: #4a5880; margin-bottom: 14px; }
+  .email-capture h3 { font-size: 1rem; font-weight: 700; margin-bottom: 4px; color: var(--c-ink); }
+  .email-capture p  { font-size: 0.85rem; color: var(--c-muted); margin-bottom: 14px; }
   .email-input-row { display: flex; gap: 8px; flex-wrap: wrap; }
   .email-input-row .form-control { flex: 1; min-width: 200px; }
   .btn-subscribe {
-    background: linear-gradient(135deg, #3b7dd8 0%, #1a55b0 100%);
+    background: var(--c-ink);
     border: none; color: #fff; border-radius: 10px;
-    font-weight: 600; font-size: 0.88rem; padding: 10px 20px;
-    white-space: nowrap; cursor: pointer; transition: opacity .2s;
+    font-weight: 700; font-size: 0.88rem; padding: 10px 20px;
+    white-space: nowrap; cursor: pointer; transition: background .15s;
   }
-  .btn-subscribe:hover { opacity: .88; }
+  .btn-subscribe:hover { background: var(--c-ink-2); }
   #subscribeMsg { font-size: 0.82rem; margin-top: 8px; }
 
   /* ── SEO PAGE HEADER ──────────────────────────────── */
   .seo-header {
-    background: #f5f8ff;
-    border: 1px solid #d0daf0;
+    background: var(--c-mist);
+    border: 1px solid var(--c-line);
     border-radius: 14px;
     padding: 18px 20px;
     margin-bottom: 20px;
   }
-  .seo-header h2 { font-size: 1.15rem; font-weight: 700; margin-bottom: 4px; color: #1a2744; }
-  .seo-header p  { font-size: 0.82rem; color: #4a5880; margin: 0; }
+  .seo-header h2 { font-size: 1.15rem; font-weight: 700; margin-bottom: 4px; color: var(--c-ink); }
+  .seo-header p  { font-size: 0.82rem; color: var(--c-muted); margin: 0; }
 
-  /* ── LOADING OVERLAY ──────────────────────────────── */
-  #loadingOverlay {
-    display: none;
-    position: fixed;
-    inset: 0;
-    background: rgba(248,249,252,.9);
-    z-index: 9999;
-    backdrop-filter: blur(4px);
-    align-items: center;
-    justify-content: center;
-    flex-direction: column;
-    gap: 14px;
+  /* ── LOADING: placeholder cards instead of a frozen screen ── */
+  .search-skeleton { margin-top: 24px; }
+  .skeleton-status { font-size: 0.9rem; color: var(--c-muted); margin-bottom: 12px; display: flex; align-items: center; gap: 10px; }
+  .skeleton-card {
+    background: var(--c-paper); border: 1px solid var(--c-line); border-radius: 16px;
+    padding: 18px 20px; margin-bottom: 10px; display: flex; align-items: center; gap: 16px;
   }
-  #loadingOverlay.show { display: flex; }
-  .loading-text { color: #1a2744; font-weight: 600; font-size: 1rem; }
+  .sk { background: var(--c-mist); border-radius: 8px; position: relative; overflow: hidden; }
+  .sk::after {
+    content: ""; position: absolute; inset: 0;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,.7), transparent);
+    transform: translateX(-100%); animation: skShimmer 1.3s infinite;
+  }
+  @keyframes skShimmer { to { transform: translateX(100%); } }
+  @media (prefers-reduced-motion: reduce) { .sk::after { animation: none; } }
+
+  /* ── PLAN THE TRIP (extras tucked into a drop-down) ── */
+  .plan-trip { margin-top: 6px; font-size: 0.8rem; }
+  .plan-trip summary {
+    cursor: pointer; color: var(--c-link); font-weight: 600; list-style: none;
+    display: inline-flex; align-items: center; gap: 5px; padding: 4px 0;
+  }
+  .plan-trip summary::-webkit-details-marker { display: none; }
+  .plan-trip summary i { transition: transform .15s; font-size: .7rem; }
+  .plan-trip[open] summary i { transform: rotate(180deg); }
+  .plan-trip-links { display: flex; flex-wrap: wrap; gap: 6px 14px; padding-top: 4px; }
+  .plan-trip-links a { color: var(--c-muted); text-decoration: none; display: inline-flex; align-items: center; gap: 5px; padding: 4px 0; }
+  .plan-trip-links a:hover { color: var(--c-ink); text-decoration: underline; }
+
+  /* ── SEARCH SUMMARY (mobile, after a search) ── */
+  .search-summary { display: none; }
+  @media (max-width: 768px) {
+    .hero-outer.has-results .hero-intro,
+    .hero-outer.has-results .hero-right { display: none; }
+    .hero-outer.has-results:not(.editing) #searchForm { display: none; }
+    .hero-outer.has-results .hero-left { padding: 14px 16px 4px !important; }
+    .hero-outer.has-results .search-summary {
+      display: flex; width: 100%; align-items: center; justify-content: space-between; gap: 10px;
+      background: var(--c-paper); border: 1px solid var(--c-line); border-radius: 999px;
+      padding: 10px 16px; color: var(--c-ink); font-size: 0.92rem; text-align: left;
+      box-shadow: 0 6px 16px -10px rgba(14,26,60,.4);
+    }
+    .hero-outer.has-results.editing .search-summary { margin-bottom: 10px; }
+    .search-summary-text { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .search-summary-edit { color: var(--c-link); font-weight: 700; flex-shrink: 0; }
+  }
+
+  /* ── HERO TYPE ── */
+  .hero-title { font-size: 2.6rem; font-weight: 800; line-height: 1.08; color: var(--c-ink); margin-bottom: 12px; }
+  .hero-title .hl { background: linear-gradient(transparent 62%, rgba(255,178,36,.55) 62%); padding: 0 2px; }
+  .hero-sub { color: var(--c-muted); max-width: 480px; font-size: 1.05rem; }
+  .trust-line { margin-top: 12px; font-size: 0.85rem; color: var(--c-muted-2); display: flex; flex-wrap: wrap; gap: 4px 14px; }
+  .trust-line i { color: #0F7B4F; margin-right: 5px; }
 
   /* ── NO RESULTS ───────────────────────────────────── */
   .no-results {
     text-align: center;
     padding: 48px 24px;
-    color: #6b7eb5;
+    color: var(--c-muted-2);
   }
   .no-results i { opacity: .35; margin-bottom: 16px; }
 
@@ -525,7 +568,7 @@
     .compensair-cta { align-self: flex-end; }
 
     /* Hero headline — slightly smaller for tight screens */
-    .hero-left h1 { font-size: 1.8rem !important; }
+    .hero-left h1 { font-size: 2rem !important; }
   }
 
   /* Very small phones — hide photo mosaic to keep focus on search */
@@ -533,7 +576,6 @@
     .hero-right { display: none; }
     .hero-left { padding: 20px 16px 16px !important; }
     /* Hide tiny disclaimer text on very small screens */
-    .book-disclaimer { display: none; }
     /* Deal chips — slightly larger on small screens */
     .deal-chip { padding: 12px 14px; }
   }
@@ -551,7 +593,7 @@
     align-items: center;
     gap: 7px;
     font-size: 0.82rem;
-    color: #4a5880;
+    color: var(--c-muted);
   }
   .trust-item i { color: #059669; font-size: 0.78rem; }
   .social-proof {
@@ -560,7 +602,7 @@
     gap: 8px;
     margin-top: 10px;
     font-size: 0.78rem;
-    color: #3b7dd8;
+    color: var(--c-link);
     letter-spacing: .02em;
   }
   .pulse-dot {
@@ -585,7 +627,7 @@
     margin-bottom: 10px;
     font-size: 0.75rem;
     font-weight: 700;
-    color: #4a5880;
+    color: var(--c-muted);
     text-transform: uppercase;
     letter-spacing: .07em;
   }
@@ -595,18 +637,18 @@
     overflow-x: auto;
     padding-bottom: 10px;
     scrollbar-width: thin;
-    scrollbar-color: #c7d9f5 #f0f4fb;
+    scrollbar-color: var(--c-line) var(--c-mist);
     cursor: grab;
     -webkit-overflow-scrolling: touch;
   }
   .live-feed-scroll.is-dragging { cursor: grabbing; user-select: none; }
   .live-feed-scroll::-webkit-scrollbar { height: 4px; }
-  .live-feed-scroll::-webkit-scrollbar-track { background: #f0f4fb; border-radius: 2px; }
-  .live-feed-scroll::-webkit-scrollbar-thumb { background: #c7d9f5; border-radius: 2px; }
-  .live-feed-scroll::-webkit-scrollbar-thumb:hover { background: #3b7dd8; }
+  .live-feed-scroll::-webkit-scrollbar-track { background: var(--c-mist); border-radius: 2px; }
+  .live-feed-scroll::-webkit-scrollbar-thumb { background: var(--c-line); border-radius: 2px; }
+  .live-feed-scroll::-webkit-scrollbar-thumb:hover { background: var(--c-link); }
   .deal-chip {
     background: #ffffff;
-    border: 1px solid #e2e8f4;
+    border: 1px solid var(--c-line);
     border-radius: 12px;
     padding: 10px 14px;
     white-space: nowrap;
@@ -614,12 +656,12 @@
     transition: border-color .2s, box-shadow .2s;
   }
   .deal-chip:hover {
-    border-color: #3b7dd8;
-    box-shadow: 0 2px 10px rgba(59,125,216,.1);
+    border-color: var(--c-link);
+    box-shadow: 0 2px 10px rgba(14,26,60,.1);
   }
-  .deal-chip-route { color: #1a2744; font-size: 0.8rem; font-weight: 600; margin-bottom: 2px; }
-  .deal-chip-date  { color: #6b7eb5; font-size: 0.7rem; margin-bottom: 3px; }
-  .deal-chip-price { color: #1a55b0; font-size: 1rem; font-weight: 800; }
+  .deal-chip-route { color: var(--c-ink); font-size: 0.8rem; font-weight: 600; margin-bottom: 2px; }
+  .deal-chip-date  { color: var(--c-muted-2); font-size: 0.7rem; margin-bottom: 3px; }
+  .deal-chip-price { color: var(--c-ink); font-family: var(--f-mono); font-size: 1rem; font-weight: 700; letter-spacing: -0.02em; }
 
   /* ── GENERAL NEWSLETTER ────────────────────────── */
   .newsletter-section {
@@ -628,14 +670,14 @@
     padding: 0 12px;
   }
   .newsletter-box {
-    background: #f0f5ff;
-    border: 1px solid #c7d9f5;
+    background: var(--c-mist);
+    border: 1px solid var(--c-line);
     border-radius: 16px;
     padding: 26px 24px;
     text-align: center;
   }
-  .newsletter-box h3 { font-size: 1.05rem; font-weight: 700; margin-bottom: 6px; color: #1a2744; }
-  .newsletter-box p  { font-size: 0.85rem; color: #4a5880; margin-bottom: 16px; }
+  .newsletter-box h3 { font-size: 1.05rem; font-weight: 700; margin-bottom: 6px; color: var(--c-ink); }
+  .newsletter-box p  { font-size: 0.85rem; color: var(--c-muted); margin-bottom: 16px; }
   @media (max-width: 576px) {
     .newsletter-box { padding: 20px 16px; }
     .newsletter-section { padding: 0 8px; }
@@ -664,7 +706,7 @@
   .blog-section-title {
     font-size: 0.75rem;
     font-weight: 700;
-    color: #4a5880;
+    color: var(--c-muted);
     text-transform: uppercase;
     letter-spacing: .07em;
     margin-bottom: 14px;
@@ -679,7 +721,7 @@
   }
   .blog-card {
     background: #ffffff;
-    border: 1px solid #e2e8f4;
+    border: 1px solid var(--c-line);
     border-radius: 14px;
     padding: 16px;
     text-decoration: none;
@@ -687,20 +729,20 @@
     transition: border-color .2s, box-shadow .2s;
   }
   .blog-card:hover {
-    border-color: #3b7dd8;
-    box-shadow: 0 4px 16px rgba(59,125,216,.1);
+    border-color: var(--c-link);
+    box-shadow: 0 4px 16px rgba(14,26,60,.1);
   }
   .blog-card-emoji { font-size: 1.3rem; margin-bottom: 8px; display: block; }
   .blog-card-title {
     font-size: 0.85rem;
     font-weight: 600;
-    color: #1a2744;
+    color: var(--c-ink);
     margin-bottom: 5px;
     line-height: 1.35;
   }
   .blog-card { position: relative; }
   .blog-card-title a { color: inherit; text-decoration: none; }
-  .blog-card-meta { font-size: 0.8rem; color: #5b6b99; }
+  .blog-card-meta { font-size: 0.8rem; color: var(--c-muted-2); }
 </style>
 
 <!-- Error toast -->
@@ -710,45 +752,47 @@
   padding:14px 20px; z-index:10000; max-width:380px; width:90%;
   box-shadow:0 8px 32px rgba(0,0,0,.15); display:none; align-items:center; gap:12px;">
   <i class="fa fa-circle-exclamation" style="color:#dc2626; font-size:1.1rem; flex-shrink:0;"></i>
-  <span id="errorToastMsg" style="color:#1a2744; font-size:0.9rem; flex:1;"></span>
+  <span id="errorToastMsg" style="color:var(--c-ink); font-size:0.9rem; flex:1;"></span>
   <button onclick="document.getElementById('errorToast').style.display='none'"
-          style="background:none;border:none;color:#6b7eb5;font-size:1rem;cursor:pointer;padding:0;flex-shrink:0;">
+          style="background:none;border:none;color:var(--c-muted-2);font-size:1rem;cursor:pointer;padding:0;flex-shrink:0;">
     <i class="fa fa-xmark"></i>
   </button>
 </div>
 
-<!-- Loading overlay -->
-<div id="loadingOverlay">
-  <div class="spinner-border text-primary" style="width:3rem;height:3rem;" role="status"></div>
-  <div class="loading-text">Searching for the cheapest flights...</div>
 </div>
 
 <!-- HERO 2-column layout -->
-<div class="hero-outer">
+<div class="hero-outer{% if flights %} has-results{% endif %}" id="heroOuter">
   <div class="hero-left">
-    <header class="py-2">
+    <header class="py-2 hero-intro">
       {% if seo_page %}
-        <h1 class="fw-bold mb-2" style="font-size:2rem; color:#1a2744; line-height:1.2;">Cheap Flights from {{ seo_page.city }} ✈️</h1>
-        <p style="color:#4a5880; max-width:480px;">
-          No destination needed. Pick a date and we'll show you the cheapest places to fly from <strong style="color:#1a2744">{{ seo_page.city }}</strong>.
+        <h1 class="hero-title">Cheap flights from <span class="hl">{{ seo_page.city }}</span></h1>
+        <p class="hero-sub">
+          No destination needed. Pick a date and we'll show you the cheapest places to fly from <strong style="color:var(--c-ink)">{{ seo_page.city }}</strong>.
         </p>
       {% else %}
-        <h1 class="fw-bold mb-2" style="font-size:2.2rem; color:#1a2744; line-height:1.2;">Find cheap flights<br>from your airport</h1>
-        <p style="color:#4a5880; max-width:480px;">
+        <h1 class="hero-title">Cheap flights from your airport to <span class="hl">anywhere</span></h1>
+        <p class="hero-sub">
           No destination in mind? Just pick your airport and we'll show you the cheapest places you can fly to.
         </p>
       {% endif %}
 
-      <!-- Trust signals -->
-      <div class="trust-bar">
-        <div class="trust-item"><i class="fa fa-circle-check"></i> No fees. No faff. Just cheap flights.</div>
-        <div class="trust-item"><i class="fa fa-bolt"></i> Real prices, updated every search</div>
-        <div class="trust-item"><i class="fa fa-lock"></i> 100% free to use</div>
-      </div>
-      <div class="social-proof">
-        <span class="pulse-dot"></span> 10,000+ flights searched this week
+      <div class="trust-line">
+        <span><i class="fa fa-circle-check"></i>Free, no sign-up</span>
+        <span><i class="fa fa-circle-check"></i>Live prices from Aviasales</span>
       </div>
     </header>
+
+    {% if flights %}
+    <button type="button" class="search-summary" id="searchSummary" aria-controls="searchForm" aria-expanded="false">
+      <span class="search-summary-text">
+        <i class="fa fa-plane-departure me-1"></i>
+        <strong>{{ origin_label or form_data.origin }}</strong> → Anywhere
+        · <span id="summaryDate" data-date="{{ form_data.departure_date }}">{{ form_data.departure_date }}</span>
+      </span>
+      <span class="search-summary-edit">Edit</span>
+    </button>
+    {% endif %}
 
     <!-- SEARCH FORM -->
     <form method="POST" id="searchForm" class="p-4 form-container mt-3" autocomplete="off">
@@ -794,7 +838,7 @@
         {% if form_data.origin_code %}
           <span style="color:#059669"><i class="fa fa-circle-check me-1"></i>{{ form_data.origin }}</span>
         {% else %}
-          <span style="color:#6b7eb5">Start typing to search airports</span>
+          <span style="color:var(--c-muted-2)">Start typing to search airports</span>
         {% endif %}
       </div>
     </div>
@@ -852,15 +896,35 @@
 
 </div><!-- /hero-outer -->
 
+<!-- Shown while a search is running -->
+<div class="container px-3 px-md-4" style="max-width:900px;">
+  <div id="searchSkeleton" class="search-skeleton" hidden aria-live="polite">
+    <div class="skeleton-status">
+      <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+      <span>Finding the cheapest places from <strong id="skeletonOrigin">your airport</strong>…</span>
+    </div>
+    {% for i in range(4) %}
+    <div class="skeleton-card" aria-hidden="true">
+      <div class="sk" style="width:48px;height:32px;"></div>
+      <div style="flex:1; display:grid; gap:8px;">
+        <div class="sk" style="height:16px;width:{{ [40,55,35,48][i] }}%;"></div>
+        <div class="sk" style="height:11px;width:{{ [62,44,58,50][i] }}%;"></div>
+      </div>
+      <div class="sk" style="width:72px;height:28px;"></div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+
 <!-- LIVE DEALS FEED — full-width strip below hero -->
 {% if not seo_page %}
-<div id="liveFeedWrapper" style="display:none; background:#f8f9fc; border-top:1px solid #e2e8f4; border-bottom:1px solid #e2e8f4; padding:18px 0 14px;">
+<div id="liveFeedWrapper" style="display:none; background:var(--c-mist); border-top:1px solid var(--c-line); border-bottom:1px solid var(--c-line); padding:18px 0 14px;">
   <div style="max-width:1200px; margin:0 auto; padding:0 24px;">
     <div class="live-feed-header">
       <span class="pulse-dot"></span> This week's deals
     </div>
     <div class="live-feed-scroll" id="liveFeedScroll"></div>
-    <div style="font-size:0.7rem; color:#9babc8; margin-top:6px;">
+    <div style="font-size:0.7rem; color:var(--c-faint); margin-top:6px;">
       Departing in the next 7 days · prices from Aviasales · one-way per person
     </div>
   </div>
@@ -909,33 +973,28 @@
             <span class="flight-iata">{{ flight.destination_code }}</span>
           </div>
           <div class="flight-airport-name">{{ flight.destination_label }}</div>
-          <div style="display:flex; flex-direction:column; gap:3px; margin-top:5px;">
-            {% if flight.destination_country and origin_country and flight.destination_country|lower != origin_country|lower %}
-            <a class="hotel-link"
-               href="https://yesim.tpm.li/ZpiVkrqG"
-               target="_blank" rel="noopener"
-               style="color:#7c3aed;">
-              <i class="fa fa-signal"></i> eSIM — use code FALLY20
-            </a>
-            {% endif %}
-            <a class="hotel-link"
-               href="https://localrent.tpm.li/mXHNfspd"
-               target="_blank" rel="noopener"
-               style="color:#16a34a;">
-              <i class="fa fa-car"></i> Rent a car
-            </a>
-            <a class="hotel-link klook-link"
-               href="https://klook.tpm.li/17VmdJ38"
-               target="_blank" rel="noopener">
-              <i class="fa fa-map-marker"></i> Things to do
-            </a>
-          </div>
+          <details class="plan-trip">
+            <summary>Plan the trip <i class="fa fa-chevron-down"></i></summary>
+            <div class="plan-trip-links">
+              {% if flight.destination_country and origin_country and flight.destination_country|lower != origin_country|lower %}
+              <a href="https://yesim.tpm.li/ZpiVkrqG" target="_blank" rel="noopener">
+                <i class="fa fa-signal"></i> eSIM (code FALLY20)
+              </a>
+              {% endif %}
+              <a href="https://localrent.tpm.li/mXHNfspd" target="_blank" rel="noopener">
+                <i class="fa fa-car"></i> Rent a car
+              </a>
+              <a href="https://klook.tpm.li/17VmdJ38" target="_blank" rel="noopener">
+                <i class="fa fa-map-marker"></i> Things to do
+              </a>
+            </div>
+          </details>
         </div>
 
         <div class="flight-right">
           <div class="flight-price-block">
             <div class="flight-price">{{ form_data.currency_symbol or '£' }}{{ flight.price }}</div>
-            <div class="flight-price-label">per person</div>
+            <div class="flight-price-label">per person · Aviasales</div>
           </div>
 
           {% if flight.num_stops == 0 %}
@@ -946,14 +1005,10 @@
             <span class="stops-badge stops-2plus">{{ flight.num_stops }} stops</span>
           {% endif %}
 
-          <div style="display:flex; flex-direction:column; align-items:center; gap:4px;">
-            <a href="{{ flight.booking_url }}" target="_blank" rel="noopener" class="btn-book">
-              Book for {{ form_data.currency_symbol or '£' }}{{ flight.price }} <i class="fa fa-arrow-right ms-1"></i>
-            </a>
-            <div class="book-disclaimer" style="font-size:0.68rem; color:#9babc8; text-align:center;">
-              Click Book Now to check Aviasales for more options &amp; prices
-            </div>
-          </div>
+          <a href="{{ flight.booking_url }}" target="_blank" rel="noopener" class="btn-book"
+             aria-label="See flight to {{ flight.destination_city or flight.destination_code }} for {{ form_data.currency_symbol or '£' }}{{ flight.price }} on Aviasales">
+            See flight <i class="fa fa-arrow-right ms-1"></i>
+          </a>
         </div>
       </div>
       {% endfor %}
@@ -984,10 +1039,10 @@
   <!-- EMAIL CAPTURE -->
   {% if form_data.origin_code %}
   <div class="email-capture">
-    <h2 style="font-size:1.1rem; font-weight:700;"><i class="fa fa-bell me-2" style="color:#3b7dd8"></i>Get price alerts</h2>
+    <h2 style="font-size:1.1rem; font-weight:700;"><i class="fa fa-bell me-2" style="color:var(--c-link)"></i>Get price alerts</h2>
     <p>
       We'll email you when cheap flights from
-      <strong style="color:#1a2744">{{ origin_label or form_data.origin }}</strong> drop even lower.
+      <strong style="color:var(--c-ink)">{{ origin_label or form_data.origin }}</strong> drop even lower.
     </p>
     <form id="subscribeForm" onsubmit="handleSubscribe(event)">
       <input type="hidden" name="airport_code" value="{{ form_data.origin_code }}">
@@ -1009,55 +1064,55 @@
 <section style="max-width:700px; margin:0 auto 48px; padding:0 16px;">
 
   <div style="margin-bottom:28px;">
-    <h2 style="font-size:1.15rem; font-weight:700; color:#1a2744; margin-bottom:10px;">
+    <h2 style="font-size:1.15rem; font-weight:700; color:var(--c-ink); margin-bottom:10px;">
       About {{ seo_page.city }} Airport
     </h2>
-    <p style="font-size:0.92rem; color:#4a5880; line-height:1.75;">{{ seo_content.about }}</p>
+    <p style="font-size:0.92rem; color:var(--c-muted); line-height:1.75;">{{ seo_content.about }}</p>
   </div>
 
   <div style="margin-bottom:28px;">
-    <h2 style="font-size:1.15rem; font-weight:700; color:#1a2744; margin-bottom:14px;">
+    <h2 style="font-size:1.15rem; font-weight:700; color:var(--c-ink); margin-bottom:14px;">
       Popular Routes from {{ seo_page.city }}
     </h2>
     <div style="display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:10px;">
       {% for dest, iata, price, airline in seo_content.routes %}
-      <div style="background:#ffffff; border:1px solid #e2e8f4;
+      <div style="background:#ffffff; border:1px solid var(--c-line);
                   border-radius:12px; padding:14px 16px; display:flex; justify-content:space-between; align-items:center;">
         <div>
-          <div style="font-weight:600; font-size:0.92rem; color:#1a2744;">{{ dest }}</div>
-          <div style="font-size:0.78rem; color:#3b7dd8; margin-top:2px;">{{ airline }}</div>
+          <div style="font-weight:600; font-size:0.92rem; color:var(--c-ink);">{{ dest }}</div>
+          <div style="font-size:0.78rem; color:var(--c-link); margin-top:2px;">{{ airline }}</div>
         </div>
-        <div style="font-size:1rem; font-weight:700; color:#1a55b0;">from {{ price }}</div>
+        <div style="font-size:1rem; font-weight:700; color:var(--c-ink);">from {{ price }}</div>
       </div>
       {% endfor %}
     </div>
-    <p style="font-size:0.75rem; color:#6b7eb5; margin-top:10px;">
+    <p style="font-size:0.75rem; color:var(--c-muted-2); margin-top:10px;">
       <i class="fa fa-circle-info" style="margin-right:4px;"></i>
       Prices shown are typical one-way fares seen on this route. Actual prices vary by date — use the search above for live prices.
     </p>
   </div>
 
   <div>
-    <h2 style="font-size:1.15rem; font-weight:700; color:#1a2744; margin-bottom:10px;">
+    <h2 style="font-size:1.15rem; font-weight:700; color:var(--c-ink); margin-bottom:10px;">
       Tips for Flying from {{ seo_page.city }}
     </h2>
-    <p style="font-size:0.92rem; color:#4a5880; line-height:1.75;">{{ seo_content.tips }}</p>
+    <p style="font-size:0.92rem; color:var(--c-muted); line-height:1.75;">{{ seo_content.tips }}</p>
   </div>
 
   {% if blog_cards %}
   <div style="margin-top:28px;">
-    <h2 style="font-size:0.75rem; font-weight:700; color:#4a5880; text-transform:uppercase; letter-spacing:.07em; margin-bottom:12px;">
+    <h2 style="font-size:0.75rem; font-weight:700; color:var(--c-muted); text-transform:uppercase; letter-spacing:.07em; margin-bottom:12px;">
       <i class="fa fa-compass me-1"></i> Flight Deal Guides
     </h2>
     <div style="display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:8px;">
       {% for post in blog_cards[:4] %}
       <a href="{{ url_for('blog_post', slug=post.slug) }}"
-         style="background:#ffffff; border:1px solid #e2e8f4; border-radius:12px;
+         style="background:#ffffff; border:1px solid var(--c-line); border-radius:12px;
                 padding:14px; text-decoration:none; display:block; transition:border-color .2s, box-shadow .2s;"
-         onmouseover="this.style.borderColor='#3b7dd8';this.style.boxShadow='0 4px 16px rgba(59,125,216,.1)'"
-         onmouseout="this.style.borderColor='#e2e8f4';this.style.boxShadow='none'">
+         onmouseover="this.style.borderColor='var(--c-link)';this.style.boxShadow='0 4px 16px rgba(14,26,60,.1)'"
+         onmouseout="this.style.borderColor='var(--c-line)';this.style.boxShadow='none'">
         <span style="font-size:1.2rem; display:block; margin-bottom:6px;">{{ post.emoji if post.emoji else '✈️' }}</span>
-        <div style="font-size:0.82rem; font-weight:600; color:#1a2744; line-height:1.35;">{{ post.title }}</div>
+        <div style="font-size:0.82rem; font-weight:600; color:var(--c-ink); line-height:1.35;">{{ post.title }}</div>
       </a>
       {% endfor %}
     </div>
@@ -1071,7 +1126,7 @@
 {% if not form_data.origin_code %}
 <div class="newsletter-section">
   <div class="newsletter-box">
-    <h2 style="font-size:1.1rem; font-weight:700;"><i class="fa fa-envelope me-2" style="color:#3b7dd8"></i>Get the week's cheapest deals to your inbox</h2>
+    <h2 style="font-size:1.1rem; font-weight:700;"><i class="fa fa-envelope me-2" style="color:var(--c-link)"></i>Get the week's cheapest deals to your inbox</h2>
     <p>Free. No spam. The best flight deals from your airport, every week.</p>
     <form id="newsletterForm" onsubmit="handleNewsletter(event)" autocomplete="off">
       <input type="hidden" id="nl_airport_code" name="airport_code" value="">
@@ -1112,7 +1167,7 @@
     </div>
     {% endfor %}
   </div>
-  <p style="margin-top:14px; font-size:0.9rem;"><a href="{{ url_for('blog_index') }}" style="color:#3b7dd8; font-weight:600;">All flight deal guides →</a></p>
+  <p style="margin-top:14px; font-size:0.9rem;"><a href="{{ url_for('blog_index') }}" style="color:var(--c-link); font-weight:600;">All flight deal guides →</a></p>
 </section>
 {% endif %}
 
@@ -1156,11 +1211,11 @@
   </div>
 </section>
 <style>
-  .home-intro { max-width: 700px; margin: 8px auto 40px; padding: 0 12px; color: #4a5880; }
-  .home-intro h2 { font-size: 1.15rem; font-weight: 700; color: #1a2744; margin: 28px 0 10px; }
-  .home-intro h3 { font-size: 0.8rem; font-weight: 700; color: #4a5880; text-transform: uppercase; letter-spacing: .06em; margin: 0 0 6px; }
+  .home-intro { max-width: 700px; margin: 8px auto 40px; padding: 0 12px; color: var(--c-muted); }
+  .home-intro h2 { font-size: 1.15rem; font-weight: 700; color: var(--c-ink); margin: 28px 0 10px; }
+  .home-intro h3 { font-size: 0.8rem; font-weight: 700; color: var(--c-muted); text-transform: uppercase; letter-spacing: .06em; margin: 0 0 6px; }
   .home-intro p { font-size: 0.95rem; line-height: 1.75; margin-bottom: 12px; }
-  .home-intro a { color: #3b7dd8; }
+  .home-intro a { color: var(--c-link); }
   .home-airports { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
   .home-airports ul { list-style: none; padding: 0; margin: 0; }
   .home-airports li a { display: block; padding: 8px 0; min-height: 40px; font-size: 0.95rem; }
@@ -1268,7 +1323,33 @@ document.addEventListener('DOMContentLoaded', () => {
   const hidden    = document.getElementById('origin_code');
   const searchBtn = document.getElementById('searchButton');
   const form      = document.getElementById('searchForm');
-  const overlay   = document.getElementById('loadingOverlay');
+  const skeleton  = document.getElementById('searchSkeleton');
+  const searchBtnHTML = searchBtn.innerHTML;
+
+  // Restore the button if the visitor comes back with the Back button
+  window.addEventListener('pageshow', () => {
+    searchBtn.innerHTML = searchBtnHTML;
+    searchBtn.disabled = !document.getElementById('origin_code').value;
+    if (skeleton) skeleton.hidden = true;
+    const rc = document.getElementById('resultsContainer');
+    if (rc) rc.hidden = false;
+  });
+
+  // Mobile: collapsed search summary after a search
+  const heroOuter = document.getElementById('heroOuter');
+  const summary   = document.getElementById('searchSummary');
+  const summaryDate = document.getElementById('summaryDate');
+  if (summaryDate && summaryDate.dataset.date) {
+    const d = new Date(summaryDate.dataset.date + 'T12:00:00');
+    if (!isNaN(d)) summaryDate.textContent = d.toLocaleDateString(undefined, { weekday: 'short', day: 'numeric', month: 'short' });
+  }
+  if (summary && heroOuter) {
+    summary.addEventListener('click', () => {
+      const editing = heroOuter.classList.toggle('editing');
+      summary.setAttribute('aria-expanded', editing);
+      summary.querySelector('.search-summary-edit').textContent = editing ? 'Close' : 'Edit';
+    });
+  }
 
   // ── Trip type toggle ────────────────────────────────
   const tripOneway    = document.getElementById('trip_oneway');
@@ -1293,7 +1374,7 @@ document.addEventListener('DOMContentLoaded', () => {
     input.value  = a.name;
     hidden.value = a.code;
     if (autoDetected) {
-      helper.innerHTML = `<span style="color:#3b7dd8"><i class="fa fa-location-dot me-1"></i>${a.name} <span style="opacity:.7;font-size:0.75em">(detected from your location)</span></span>`;
+      helper.innerHTML = `<span style="color:var(--c-link)"><i class="fa fa-location-dot me-1"></i>${a.name} <span style="opacity:.7;font-size:0.75em">(detected from your location)</span></span>`;
     } else {
       helper.innerHTML = `<span style="color:#059669"><i class="fa fa-circle-check me-1"></i>${a.name}</span>`;
     }
@@ -1335,7 +1416,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (currencyInput && window._geoCurrency) currencyInput.value = window._geoCurrency;
     if (symbolInput   && window._geoSymbol)   symbolInput.value   = window._geoSymbol;
     setEnabled(false);
-    helper.innerHTML = '<span style="color:#6b7eb5">Start typing to search airports</span>';
+    helper.innerHTML = '<span style="color:var(--c-muted-2)">Start typing to search airports</span>';
     const q = input.value.trim();
     if (!q) { closeList(); return; }
     debounceTimer = setTimeout(() => {
@@ -1381,7 +1462,17 @@ document.addEventListener('DOMContentLoaded', () => {
       showError('Please select a departure date.');
       return;
     }
-    overlay.classList.add('show');
+    // Show placeholder results instead of freezing the whole screen
+    searchBtn.disabled = true;
+    searchBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" aria-hidden="true"></span>Searching…';
+    if (skeleton) {
+      const originName = (input.value || '').split(',')[0].trim();
+      if (originName) document.getElementById('skeletonOrigin').textContent = originName;
+      const rc = document.getElementById('resultsContainer');
+      if (rc) rc.hidden = true;
+      skeleton.hidden = false;
+      if (window.innerWidth <= 768) skeleton.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
     form.submit();
   };
 

@@ -5,6 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <!-- Preconnect to external resources for faster load -->
   <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="preconnect" href="https://pagead2.googlesyndication.com" crossorigin>
   <link rel="preconnect" href="https://plausible.io" crossorigin>
   <link rel="dns-prefetch" href="https://flagcdn.com">
@@ -53,45 +55,98 @@
   <link rel="preconnect" href="https://images.unsplash.com" crossorigin>
   <link rel="preload" as="image" href="{{ url_for('static', filename='alejandro-pinero-amerio-Lx3l-Hf_P5I-unsplash.webp') }}">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&family=Figtree:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet" />
   <link href="{{ url_for('static', filename='index.css') }}" rel="stylesheet" />
   <link rel="stylesheet" href="{{ url_for('static', filename='fontawesome-free-6.7.2-web/css/all.min.css') }}" media="print" onload="this.media='all'">
   <noscript><link rel="stylesheet" href="{{ url_for('static', filename='fontawesome-free-6.7.2-web/css/all.min.css') }}"></noscript>
   <script defer data-domain="getmeoutofhere.live" src="https://plausible.io/js/script.js"></script>
   <style>
+    /* Brand kit: one place for colours and fonts. Change a value here and it updates everywhere. */
+    :root {
+      --c-ink: #0E1A3C;        /* main text, header, dark buttons */
+      --c-ink-2: #1B2A55;      /* hover for dark buttons */
+      --c-amber: #FFB224;      /* main call-to-action, highlights */
+      --c-amber-2: #F2A00F;    /* hover for amber buttons */
+      --c-link: #2A4596;       /* links, focus rings, active states */
+      --c-muted: #4E5878;      /* secondary text */
+      --c-muted-2: #6A7393;    /* small print */
+      --c-faint: #9CA3BC;      /* placeholders */
+      --c-line: #E1E5F0;       /* borders */
+      --c-mist: #F2F4FA;       /* soft backgrounds */
+      --c-sky: #E4E9F7;        /* chips, badges */
+      --c-paper: #FFFFFF;
+      --f-display: "Bricolage Grotesque", "Avenir Next", system-ui, sans-serif;
+      --f-body: "Figtree", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      --f-mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+      --bs-body-font-family: var(--f-body);
+      --bs-link-color: var(--c-link);
+      --bs-link-color-rgb: 42,69,150;
+      --bs-link-hover-color: var(--c-ink);
+    }
     body {
       min-height: 100vh;
-      background: #ffffff;
-      color: #1a2744;
+      background: var(--c-paper);
+      color: var(--c-ink);
+      font-family: var(--f-body);
     }
+    h1, h2, h3, .display-font {
+      font-family: var(--f-display);
+      letter-spacing: -0.015em;
+      text-wrap: balance;
+    }
+    .price-font { font-family: var(--f-mono); font-variant-numeric: tabular-nums; letter-spacing: -0.02em; }
+    :focus-visible { outline: 3px solid var(--c-amber); outline-offset: 2px; }
+
+    /* Buttons: one primary (amber) and one secondary (ink) style, used site-wide */
+    .btn-primary-brand {
+      background: var(--c-amber); color: var(--c-ink); border: none;
+      border-radius: 12px; font-family: var(--f-display); font-weight: 800;
+      transition: background .15s, transform .1s;
+    }
+    .btn-primary-brand:hover:not(:disabled) { background: var(--c-amber-2); color: var(--c-ink); transform: translateY(-1px); }
+    .btn-secondary-brand {
+      background: var(--c-ink); color: #fff; border: none;
+      border-radius: 10px; font-weight: 700; text-decoration: none;
+      transition: background .15s, transform .1s;
+    }
+    .btn-secondary-brand:hover:not(:disabled) { background: var(--c-ink-2); color: #fff; transform: translateY(-1px); }
+
     .container-narrow { max-width: 900px; }
     /* Top navigation banner */
-    .top-nav-bar {
-      background: #0d1f4a;
-      padding: 0;
+    .top-nav-bar { background: var(--c-ink); padding: 0; }
+    .brand-logo {
+      font-family: var(--f-display); font-weight: 800; font-size: 1.15rem;
+      color: #fff; text-decoration: none; display: inline-flex; align-items: center; gap: 8px;
+      letter-spacing: -0.01em;
     }
+    .brand-logo:hover { color: #fff; }
+    .brand-logo .brand-mark {
+      width: 26px; height: 26px; border-radius: 7px; background: var(--c-amber); color: var(--c-ink);
+      display: inline-grid; place-items: center; font-size: 0.8rem;
+    }
+    .brand-logo .brand-tld { color: var(--c-amber); }
     .top-nav-link {
-      color: #9fb0ff;
+      color: #C7D0EE;
       text-decoration: none;
-      font-weight: 600;
-      font-size: 0.9rem;
+      font-weight: 500;
+      font-size: 0.92rem;
       padding: 4px 2px;
       display: inline-block;
     }
-    .top-nav-link:hover { color: #cfe0ff; }
+    .top-nav-link:hover { color: #fff; }
     .top-nav-toggler {
       background: none;
-      border: 1px solid rgba(159,176,255,.4);
-      border-radius: 6px;
-      color: #9fb0ff;
-      padding: 6px 10px;
+      border: 1px solid rgba(255,255,255,.25);
+      border-radius: 8px;
+      color: #fff;
+      padding: 8px 12px;
       cursor: pointer;
       font-size: 1rem;
       line-height: 1;
     }
-    .top-nav-toggler:focus { outline: none; border-color: #9fb0ff; }
     .top-nav-collapse {
       display: flex;
-      gap: 16px;
+      gap: 22px;
       align-items: center;
       flex-wrap: wrap;
     }
@@ -103,39 +158,36 @@
         gap: 0;
         width: 100%;
         padding: 8px 0 12px;
-        border-top: 1px solid rgba(159,176,255,.2);
-        margin-top: 8px;
+        border-top: 1px solid rgba(255,255,255,.12);
+        margin-top: 10px;
       }
       .top-nav-collapse.open { display: flex; }
-      .top-nav-link {
-        font-size: 0.95rem;
-        padding: 8px 4px;
-        width: 100%;
-      }
+      .top-nav-link { font-size: 1rem; padding: 10px 4px; width: 100%; }
       .top-nav-toggler { display: block; }
     }
     @media (min-width: 769px) {
       .top-nav-toggler { display: none; }
     }
+
+    /* Footer */
+    .site-footer { color: var(--c-muted-2); font-size: 0.85rem; border-top: 1px solid var(--c-line); margin-top: 2rem; }
+    .site-footer a { color: var(--c-link); display: inline-block; padding: 10px 8px; min-height: 44px; }
   </style>
 </head>
 <body>
   <div class="top-nav-bar">
   <nav class="container" style="padding-top:12px; padding-bottom:12px;">
     <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap;">
-      <div class="d-flex align-items-center gap-2">
-        <a href="{{ url_for('index') }}" class="fs-5 fw-bold text-decoration-none text-light">GetMeOutOfHere<span class="text-info">.Live</span></a>
-        <i class="fa fa-plane ms-1" style="font-size:18px; opacity:.8"></i>
-      </div>
+      <a href="{{ url_for('index') }}" class="brand-logo">
+        <span class="brand-mark" aria-hidden="true"><i class="fa fa-plane"></i></span><span>GetMeOutOfHere<span class="brand-tld">.live</span></span>
+      </a>
       <button class="top-nav-toggler" id="navToggler" aria-label="Toggle navigation" aria-expanded="false">
         <i class="fa fa-bars" id="navTogglerIcon"></i>
       </button>
       <div class="top-nav-collapse" id="navCollapse">
-        <a href="{{ url_for('about') }}" class="top-nav-link">About</a>
-        <a href="{{ url_for('blog_index') }}" class="top-nav-link">Blog</a>
+        <a href="{{ url_for('blog_index') }}" class="top-nav-link">Travel guides</a>
         <a href="{{ url_for('faq') }}" class="top-nav-link">FAQ</a>
-        <a href="{{ url_for('privacy') }}" class="top-nav-link">Privacy</a>
-        <a href="{{ url_for('terms') }}" class="top-nav-link">Terms</a>
+        <a href="{{ url_for('about') }}" class="top-nav-link">About</a>
         <a href="{{ url_for('contact') }}" class="top-nav-link">Contact</a>
       </div>
     </div>
@@ -146,18 +198,17 @@
     {% block content %}{% endblock %}
   </main>
 
-  <style>.footer-links a, footer a { display:inline-block; padding:10px 8px; min-height:44px; }</style>
-  <footer class="container py-4 text-center" style="color:#6b7eb5; font-size:0.82rem; border-top:1px solid #e2e8f0; margin-top:2rem;">
+  <footer class="container py-4 text-center site-footer">
     <div class="footer-links d-flex flex-wrap justify-content-center gap-2 mb-2">
-      <a href="{{ url_for('about') }}" style="color:#3b7dd8;">About</a>
-      <a href="{{ url_for('blog_index') }}" style="color:#3b7dd8;">Blog</a>
-      <a href="{{ url_for('faq') }}" style="color:#3b7dd8;">FAQ</a>
-      <a href="{{ url_for('privacy') }}" style="color:#3b7dd8;">Privacy</a>
-      <a href="{{ url_for('terms') }}" style="color:#3b7dd8;">Terms</a>
-      <a href="{{ url_for('contact') }}" style="color:#3b7dd8;">Contact</a>
+      <a href="{{ url_for('about') }}">About</a>
+      <a href="{{ url_for('blog_index') }}">Travel guides</a>
+      <a href="{{ url_for('faq') }}">FAQ</a>
+      <a href="{{ url_for('privacy') }}">Privacy</a>
+      <a href="{{ url_for('terms') }}">Terms</a>
+      <a href="{{ url_for('contact') }}">Contact</a>
     </div>
     © {{ current_year if current_year else 2026 }} GetMeOutOfHere.Live &nbsp;·&nbsp;
-    Prices sourced from <a href="https://www.aviasales.com" target="_blank" rel="noopener" style="color:#3b7dd8;">Aviasales</a>
+    Prices sourced from <a href="https://www.aviasales.com" target="_blank" rel="noopener">Aviasales</a>
   </footer>
 
   <script defer src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
