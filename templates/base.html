@@ -90,7 +90,8 @@
     }
     /* Never let anything push the page sideways on phones */
     html, body { overflow-x: clip; }
-    input[type="date"].form-control { -webkit-appearance: none; appearance: none; display: block; width: 100%; min-width: 0; min-height: 44px; }
+    input[type="date"].form-control { -webkit-appearance: none; appearance: none; display: block; width: 100%; min-width: 0; }
+    input[type="date"].form-control::-webkit-date-and-time-value { text-align: left; }
     h1, h2, h3, .display-font {
       font-family: var(--f-display);
       letter-spacing: -0.015em;
