@@ -588,6 +588,50 @@ def _display_name(label: str, code: str) -> str:
         return label
     return f"{label} ({code})" if (label and code) else (label or code)
 
+# Cities with several airports. Searching the city code covers all of them.
+CITY_CODES = {
+    'LON': ('London', 'GB'),
+    'NYC': ('New York', 'US'),
+    'PAR': ('Paris', 'FR'),
+    'MIL': ('Milan', 'IT'),
+    'ROM': ('Rome', 'IT'),
+    'TYO': ('Tokyo', 'JP'),
+    'CHI': ('Chicago', 'US'),
+    'WAS': ('Washington', 'US'),
+    'STO': ('Stockholm', 'SE'),
+    'YTO': ('Toronto', 'CA'),
+    'YMQ': ('Montreal', 'CA'),
+    'SAO': ('São Paulo', 'BR'),
+    'BUE': ('Buenos Aires', 'AR'),
+    'SEL': ('Seoul', 'KR'),
+    'OSA': ('Osaka', 'JP'),
+}
+
+
+def _city_code_matches(q: str) -> list:
+    """Return 'all airports' entries for cities whose name starts with the query."""
+    qn = _normalize(q)
+    if len(qn) < 3:
+        return []
+    hits = []
+    for code, (city, _country) in CITY_CODES.items():
+        if _normalize(city).startswith(qn) or qn == code.lower():
+            hits.append({
+                "code": code,
+                "label": f"{city} – all airports",
+                "city": city,
+                "name": f"{city} – all airports ({code})",
+            })
+    return hits
+
+
+def _origin_country_for(code: str) -> str:
+    code = (code or '').upper()
+    if code in CITY_CODES:
+        return CITY_CODES[code][1]
+    return _get_airport_index().get(code, {}).get('country', '')
+
+
 def resolve_label_for_code(code: str) -> str:
     """
     Try to find 'Name (CODE)' using local file first, then Amadeus, else CODE.
@@ -595,6 +639,8 @@ def resolve_label_for_code(code: str) -> str:
     code = (code or "").upper().strip()
     if not code:
         return ""
+    if code in CITY_CODES:
+        return f"{CITY_CODES[code][0]} – all airports ({code})"
 
     for a in _load_local_airports():
         if a["code"] == code:
@@ -637,6 +683,7 @@ def index():
         'origin_code': request.form.get('origin_code', ''),
         'currency': request.form.get('currency', 'gbp'),
         'currency_symbol': request.form.get('currency_symbol', '£'),
+        'max_price': request.form.get('max_price', ''),
     }
 
     if request.method == 'POST':
@@ -690,8 +737,11 @@ def index():
             if r.status_code == 200:
                 data = r.json().get('data', [])
                 airport_index = _get_airport_index()
-                origin_info = airport_index.get(origin_code, {})
-                origin_country = origin_info.get('country', '')
+                origin_country = _origin_country_for(origin_code)
+                try:
+                    max_price = float(form_data.get('max_price') or 0)
+                except ValueError:
+                    max_price = 0
 
                 domestic_flights, international_flights = [], []
 
@@ -705,6 +755,8 @@ def index():
                     dest_code = flight.get('destination', 'N/A')
                     price = flight.get('value', 'N/A')
                     num_stops = flight.get('number_of_changes', 0)
+                    if max_price and isinstance(price, (int, float)) and price > max_price:
+                        continue
 
                     dest_info = airport_index.get(dest_code, {})
                     dest_label = _display_name(dest_info.get('label') or dest_code, dest_code) if dest_info else dest_code
@@ -725,7 +777,8 @@ def index():
                         'destination_country': dest_country,
                         'price': price,
                         'num_stops': num_stops,
-                        'booking_url': booking_url
+                        'booking_url': booking_url,
+                        'tile': sum(map(ord, dest_code)) % 8,
                     }
 
                     if origin_country and dest_country == origin_country:
@@ -738,8 +791,7 @@ def index():
         except Exception:
             pass
 
-    airport_index = _get_airport_index()
-    origin_country = airport_index.get(form_data.get('origin_code', ''), {}).get('country', '')
+    origin_country = _origin_country_for(form_data.get('origin_code', ''))
 
     all_posts = _get_all_blog_posts()
     # Show up to 6 cards: newest disk posts first, then static fallbacks
@@ -869,6 +921,11 @@ def get_airports():
             "city": a.get("city", ""),
             "name": _display_name(a.get("label"), a.get("code"))
         } for a in hits]
+
+    city_hits = _city_code_matches(q)
+    if city_hits:
+        seen = {c["code"] for c in city_hits}
+        results = city_hits + [r for r in results if r["code"] not in seen]
 
     return jsonify(results)
 

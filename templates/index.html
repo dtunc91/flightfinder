@@ -35,57 +35,6 @@
 
 {% block content %}
 <style>
-  /* ── HERO LAYOUT ──────────────────────────────────── */
-  .hero-outer {
-    display: flex;
-    align-items: stretch;
-    min-height: 520px;
-    background: var(--c-mist);
-  }
-  .hero-left {
-    flex: 0 0 58%;
-    max-width: 58%;
-    padding: 40px 40px 36px 5%;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-  }
-  .hero-right {
-    flex: 0 0 42%;
-    max-width: 42%;
-    position: relative;
-    overflow: hidden;
-    /* overflow stays here to clip photos, not on hero-outer which clips autocomplete */
-  }
-  /* Photo mosaic */
-  .photo-mosaic {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    grid-template-rows: 1fr 1fr 1fr;
-    gap: 8px;
-    height: 100%;
-    min-height: 520px;
-    padding: 16px 16px 16px 0;
-  }
-  .photo-mosaic img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    border-radius: 16px;
-    display: block;
-  }
-  .photo-mosaic .photo-tall {
-    grid-row: span 2;
-  }
-
-  @media (max-width: 768px) {
-    .hero-outer { flex-direction: column; min-height: auto; }
-    .hero-left  { flex: unset; max-width: 100%; padding: 28px 20px 20px; }
-    .hero-right { flex: unset; max-width: 100%; }
-    .photo-mosaic { min-height: 200px; padding: 0 16px 16px; grid-template-rows: 140px 140px; grid-template-columns: 1fr 1fr 1fr; }
-    .photo-mosaic .photo-tall { grid-row: span 1; }
-  }
-
   /* ── FORM ─────────────────────────────────────────── */
   .form-container {
     background: #ffffff;
@@ -465,30 +414,6 @@
   .plan-trip-links a { color: var(--c-muted); text-decoration: none; display: inline-flex; align-items: center; gap: 5px; padding: 4px 0; }
   .plan-trip-links a:hover { color: var(--c-ink); text-decoration: underline; }
 
-  /* ── SEARCH SUMMARY (mobile, after a search) ── */
-  .search-summary { display: none; }
-  @media (max-width: 768px) {
-    .hero-outer.has-results .hero-intro,
-    .hero-outer.has-results .hero-right { display: none; }
-    .hero-outer.has-results:not(.editing) #searchForm { display: none; }
-    .hero-outer.has-results .hero-left { padding: 14px 16px 4px !important; }
-    .hero-outer.has-results .search-summary {
-      display: flex; width: 100%; align-items: center; justify-content: space-between; gap: 10px;
-      background: var(--c-paper); border: 1px solid var(--c-line); border-radius: 999px;
-      padding: 10px 16px; color: var(--c-ink); font-size: 0.92rem; text-align: left;
-      box-shadow: 0 6px 16px -10px rgba(14,26,60,.4);
-    }
-    .hero-outer.has-results.editing .search-summary { margin-bottom: 10px; }
-    .search-summary-text { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-    .search-summary-edit { color: var(--c-link); font-weight: 700; flex-shrink: 0; }
-  }
-
-  /* ── HERO TYPE ── */
-  .hero-title { font-size: 2.6rem; font-weight: 800; line-height: 1.08; color: var(--c-ink); margin-bottom: 12px; }
-  .hero-title .hl { background: linear-gradient(transparent 62%, rgba(255,178,36,.55) 62%); padding: 0 2px; }
-  .hero-sub { color: var(--c-muted); max-width: 480px; font-size: 1.05rem; }
-  .trust-line { margin-top: 12px; font-size: 0.85rem; color: var(--c-muted-2); display: flex; flex-wrap: wrap; gap: 4px 14px; }
-  .trust-line i { color: #0F7B4F; margin-right: 5px; }
 
   /* ── NO RESULTS ───────────────────────────────────── */
   .no-results {
@@ -568,13 +493,10 @@
     .compensair-cta { align-self: flex-end; }
 
     /* Hero headline — slightly smaller for tight screens */
-    .hero-left h1 { font-size: 2rem !important; }
   }
 
   /* Very small phones — hide photo mosaic to keep focus on search */
   @media (max-width: 480px) {
-    .hero-right { display: none; }
-    .hero-left { padding: 20px 16px 16px !important; }
     /* Hide tiny disclaimer text on very small screens */
     /* Deal chips — slightly larger on small screens */
     .deal-chip { padding: 12px 14px; }
@@ -743,6 +665,152 @@
   .blog-card { position: relative; }
   .blog-card-title a { color: inherit; text-decoration: none; }
   .blog-card-meta { font-size: 0.8rem; color: var(--c-muted-2); }
+
+  /* ── HERO: sentence search ─────────────────────────── */
+  .hero-band {
+    background: var(--c-ink);
+    color: #fff;
+    position: relative;
+    overflow: visible;
+    isolation: isolate;
+  }
+  .hero-band::before {
+    content: ""; position: absolute; inset: 0; z-index: -1; overflow: hidden; pointer-events: none;
+    background:
+      radial-gradient(ellipse at 100% 0%, rgba(255,178,36,.16), transparent 45%),
+      radial-gradient(ellipse at 0% 100%, rgba(84,120,220,.22), transparent 50%);
+  }
+  .hero-inner { max-width: 1100px; margin: 0 auto; padding: 40px 24px 34px; display: grid; grid-template-columns: minmax(0, 1fr); gap: 18px; }
+  .hero-kicker {
+    font-family: var(--f-body); font-size: 0.82rem; font-weight: 700; letter-spacing: .12em;
+    text-transform: uppercase; color: var(--c-amber); margin: 0;
+  }
+  .madlib-form { display: grid; gap: 16px; }
+  .madlib {
+    font-family: var(--f-display); font-weight: 700; letter-spacing: -0.02em;
+    font-size: clamp(1.6rem, 3.6vw, 2.75rem); line-height: 1.45;
+    display: flex; flex-wrap: wrap; align-items: baseline; column-gap: .35em; row-gap: .1em;
+  }
+  .ml-group { display: inline-flex; align-items: baseline; gap: .3em; flex-wrap: nowrap; max-width: 100%; }
+  .ml-word { white-space: nowrap; }
+  .ml-slot { position: relative; display: inline-block; min-width: 0; max-width: 100%; }
+  .ml-input {
+    font: inherit; letter-spacing: inherit; color: var(--c-amber);
+    background: transparent; border: 0; border-bottom: 3px solid var(--c-amber);
+    border-radius: 0; padding: 0 .1em; margin: 0; outline: none;
+    max-width: 100%; color-scheme: dark;
+  }
+  .ml-input::placeholder { color: rgba(255,178,36,.55); }
+  .ml-input:hover { border-bottom-color: #fff; }
+  .ml-input:focus { background: rgba(255,178,36,.10); border-bottom-color: #fff; }
+  .ml-origin .ml-input { width: 11.5em; field-sizing: content; min-width: 6.5em; }
+  .ml-date { width: 7.8em; }
+  .ml-date::-webkit-calendar-picker-indicator { filter: invert(78%) sepia(60%) saturate(900%) hue-rotate(350deg); cursor: pointer; }
+  .ml-select { appearance: none; -webkit-appearance: none; cursor: pointer; padding-right: .2em; }
+  .ml-select option { color: var(--c-ink); background: #fff; font-family: var(--f-body); font-size: 1rem; }
+  .ml-origin .autocomplete-items { width: min(440px, 88vw); left: 0; top: 100%; font-family: var(--f-body); letter-spacing: 0; line-height: 1.4; }
+
+  .ml-helper { font-size: 0.85rem; min-height: 1.3em; margin-top: -6px; }
+  .ml-helper .helper-ok { color: #6EE7B7; }
+  .ml-helper .helper-info { color: #C7D0EE; }
+  .ml-helper .helper-muted { color: #9AA6CC; }
+  .ml-helper .helper-err { color: #FF9B91; }
+
+  .ml-controls { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+  .chip-group { display: inline-flex; gap: 6px; flex-wrap: wrap; }
+  .hero-band .chip {
+    display: inline-flex; align-items: center; gap: 6px; cursor: pointer; user-select: none;
+    border: 1px solid rgba(255,255,255,.25); color: #DCE3F8; background: transparent;
+    border-radius: 999px; padding: 8px 14px; font-size: 0.88rem; font-weight: 500; line-height: 1.2;
+    min-height: 40px; transition: background .15s, color .15s, border-color .15s;
+  }
+  .hero-band .chip:hover { border-color: rgba(255,255,255,.6); color: #fff; }
+  .hero-band .btn-check:checked + .chip { background: #fff; color: var(--c-ink); border-color: #fff; font-weight: 700; }
+  .hero-band .btn-check:focus-visible + .chip { outline: 3px solid var(--c-amber); outline-offset: 2px; }
+  .pax-chip input {
+    width: 2.2em; background: transparent; border: 0; color: #fff; font: inherit; font-weight: 700;
+    padding: 0; color-scheme: dark; outline: none;
+  }
+  .hero-band .btn-search { padding: 12px 24px; margin-left: auto; min-height: 48px; }
+  .trust-line { font-size: 0.85rem; color: #9AA6CC; display: flex; flex-wrap: wrap; gap: 4px 16px; }
+  .trust-line i { color: #6EE7B7; margin-right: 6px; }
+
+  /* Search summary pill (phones, after a search) */
+  .search-summary { display: none; }
+  @media (max-width: 768px) {
+    .hero-inner { padding: 22px 16px 22px; gap: 14px; }
+    .madlib { font-size: 1.55rem; line-height: 1.35; row-gap: 10px; }
+    .ml-group { display: flex; width: 100%; }
+    .ml-group-origin { flex-wrap: wrap; }
+    .ml-slot { flex: 1; }
+    .ml-input, .ml-origin .ml-input, .ml-date { width: 100%; }
+    .ml-controls { gap: 8px; }
+    .hero-band .btn-search { width: 100%; margin-left: 0; font-size: 1.1rem; min-height: 54px; }
+    .hero-band.has-results .hero-intro,
+    .hero-band.has-results .trust-line { display: none; }
+    .hero-band.has-results:not(.editing) #searchForm { display: none; }
+    .hero-band.has-results .hero-inner { padding: 14px 16px; }
+    .hero-band.has-results .search-summary {
+      display: flex; width: 100%; align-items: center; justify-content: space-between; gap: 10px;
+      background: #fff; border: 0; border-radius: 999px;
+      padding: 11px 16px; color: var(--c-ink); font-size: 0.92rem; text-align: left;
+    }
+    .search-summary-text { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .search-summary-edit { color: var(--c-link); font-weight: 700; flex-shrink: 0; }
+  }
+
+  /* ── DESTINATION TILES (colour stand-ins until real photos) ── */
+  .tile-0 { background: linear-gradient(160deg,#2F6FB0,#7CC0E0 60%,#F2D6A2); }
+  .tile-1 { background: linear-gradient(170deg,#E9A16B,#C8553D 60%,#5B2A3C); }
+  .tile-2 { background: linear-gradient(170deg,#6AA6C9,#C9D8D3 60%,#B79A72); }
+  .tile-3 { background: linear-gradient(165deg,#28406E,#5671A6 55%,#E7B36A); }
+  .tile-4 { background: linear-gradient(170deg,#3E7D6B,#9CC5A1 60%,#E4D9B4); }
+  .tile-5 { background: linear-gradient(165deg,#7A4E9A,#C77DA8 55%,#F4C7A1); }
+  .tile-6 { background: linear-gradient(170deg,#0E6E78,#3FB1B0 55%,#F5E3B3); }
+  .tile-7 { background: linear-gradient(165deg,#9B3B2E,#E0795B 55%,#F7D49A); }
+  .flight-main { display: flex; align-items: center; gap: 14px; flex: 1; min-width: 0; }
+  .dest-tile {
+    width: 64px; height: 64px; border-radius: 12px; flex-shrink: 0; position: relative;
+    display: grid; place-items: center; color: #fff; overflow: hidden;
+  }
+  .dest-tile-code { font-family: var(--f-mono); font-weight: 700; font-size: 0.95rem; letter-spacing: .02em; text-shadow: 0 1px 6px rgba(0,0,0,.35); }
+  .dest-tile-flag { position: absolute; right: 5px; bottom: 5px; width: 20px; height: 14px; object-fit: cover; border-radius: 3px; box-shadow: 0 0 0 1.5px rgba(255,255,255,.85); }
+
+  /* ── PRICE BANDS ── */
+  .price-band {
+    font-family: var(--f-mono); font-size: 0.72rem; font-weight: 700; letter-spacing: .1em;
+    text-transform: uppercase; color: var(--c-muted); margin: 18px 2px 8px;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .price-band::after { content: ""; flex: 1; height: 1px; background: var(--c-line); }
+  .price-band:first-child { margin-top: 4px; }
+
+  /* ── RESULTS LAYOUT: controls beside the count; on phones, a bar stuck to the bottom ── */
+  #resultsContainer { display: grid; grid-template-columns: 1fr auto; grid-template-areas: "head controls" "list list"; column-gap: 12px; align-items: center; }
+  #resultsContainer > .results-header { grid-area: head; margin-bottom: 0; }
+  #resultsContainer > .sort-controls { grid-area: controls; }
+  #resultsContainer > #flightsList { grid-area: list; margin-top: 8px; }
+  @media (max-width: 576px) {
+    #resultsContainer { grid-template-columns: 1fr; grid-template-areas: "head" "list" "controls"; }
+    #resultsContainer > .sort-controls {
+      position: sticky; bottom: 0; z-index: 20;
+      background: var(--c-paper); border-top: 1px solid var(--c-line);
+      margin: 8px -16px 0; padding: 10px 16px calc(10px + env(safe-area-inset-bottom, 0px));
+      box-shadow: 0 -8px 20px -14px rgba(14,26,60,.45);
+    }
+    .flight-main { width: 100%; }
+    .dest-tile { width: 56px; height: 56px; }
+  }
+
+  /* ── DEALS STRIP: swipeable cards ── */
+  .live-feed-scroll { scroll-snap-type: x mandatory; scroll-padding-left: 2px; }
+  .deal-chip {
+    scroll-snap-align: start; width: 168px; white-space: normal; padding: 0; overflow: hidden;
+    display: flex; flex-direction: column; border-radius: 14px;
+  }
+  .deal-chip-tile { height: 64px; }
+  .deal-chip-body { padding: 10px 12px 12px; display: grid; gap: 2px; }
+  .deal-chip-price { font-size: 1.15rem; }
 </style>
 
 <!-- Error toast -->
@@ -761,26 +829,15 @@
 
 </div>
 
-<!-- HERO 2-column layout -->
-<div class="hero-outer{% if flights %} has-results{% endif %}" id="heroOuter">
-  <div class="hero-left">
-    <header class="py-2 hero-intro">
+<!-- HERO: search written as a sentence -->
+<section class="hero-band{% if flights %} has-results{% endif %}" id="heroOuter">
+  <div class="hero-inner">
+    <header class="hero-intro">
       {% if seo_page %}
-        <h1 class="hero-title">Cheap flights from <span class="hl">{{ seo_page.city }}</span></h1>
-        <p class="hero-sub">
-          No destination needed. Pick a date and we'll show you the cheapest places to fly from <strong style="color:var(--c-ink)">{{ seo_page.city }}</strong>.
-        </p>
+        <h1 class="hero-kicker">Cheap flights from {{ seo_page.city }}</h1>
       {% else %}
-        <h1 class="hero-title">Cheap flights from your airport to <span class="hl">anywhere</span></h1>
-        <p class="hero-sub">
-          No destination in mind? Just pick your airport and we'll show you the cheapest places you can fly to.
-        </p>
+        <h1 class="hero-kicker">Cheap flights from your airport to anywhere</h1>
       {% endif %}
-
-      <div class="trust-line">
-        <span><i class="fa fa-circle-check"></i>Free, no sign-up</span>
-        <span><i class="fa fa-circle-check"></i>Live prices from Aviasales</span>
-      </div>
     </header>
 
     {% if flights %}
@@ -794,107 +851,98 @@
     </button>
     {% endif %}
 
-    <!-- SEARCH FORM -->
-    <form method="POST" id="searchForm" class="p-4 form-container mt-3" autocomplete="off">
-
-    <!-- Trip type toggle -->
-    <div class="d-flex flex-wrap gap-3 mb-3">
-      <div class="trip-toggle btn-group" role="group">
-        <input type="radio" class="btn-check" name="trip_type" id="trip_oneway" value="oneway"
-               {% if form_data.trip_type != 'roundtrip' %}checked{% endif %}>
-        <label class="btn" for="trip_oneway">
-          <i class="fa fa-arrow-right me-1"></i> One-way
-        </label>
-        <input type="radio" class="btn-check" name="trip_type" id="trip_roundtrip" value="roundtrip"
-               {% if form_data.trip_type == 'roundtrip' %}checked{% endif %}>
-        <label class="btn" for="trip_roundtrip">
-          <i class="fa fa-right-left me-1"></i> Round-trip
-        </label>
+    <form method="POST" id="searchForm" class="madlib-form" autocomplete="off">
+      <div class="madlib">
+        <span class="ml-group ml-group-origin">
+          <span class="ml-word">Get me out of</span>
+          <span class="ml-slot ml-origin">
+            <label class="visually-hidden" for="origin">Your airport</label>
+            <input type="text" id="origin" name="origin" class="ml-input"
+                   placeholder="your airport" value="{{ form_data.origin }}" autocomplete="off">
+            <input type="hidden" id="origin_code" name="origin_code" value="{{ form_data.origin_code }}">
+            <input type="hidden" id="currency" name="currency" value="{{ form_data.currency or 'gbp' }}">
+            <input type="hidden" id="currency_symbol" name="currency_symbol" value="{{ form_data.currency_symbol or '£' }}">
+            <div id="origin-autocomplete-list" class="autocomplete-items d-none"></div>
+          </span>
+        </span>
+        <span class="ml-group">
+          <span class="ml-word">on</span>
+          <span class="ml-slot">
+            <label class="visually-hidden" for="departure_date">Departure date</label>
+            <input type="date" id="departure_date" name="departure_date" class="ml-input ml-date"
+                   required value="{{ form_data.departure_date }}">
+          </span>
+        </span>
+        <span class="ml-group" id="returnDateCol"
+              {% if form_data.trip_type != 'roundtrip' %}style="display:none"{% endif %}>
+          <span class="ml-word">back on</span>
+          <span class="ml-slot">
+            <label class="visually-hidden" for="return_date">Return date</label>
+            <input type="date" id="return_date" name="return_date" class="ml-input ml-date"
+                   value="{{ form_data.return_date }}">
+          </span>
+        </span>
+        <span class="ml-group">
+          <span class="ml-word">for under</span>
+          <span class="ml-slot">
+            <label class="visually-hidden" for="max_price">Maximum price per person</label>
+            <select id="max_price" name="max_price" class="ml-input ml-select">
+              <option value="" {% if not form_data.max_price %}selected{% endif %}>any price</option>
+              {% for amt in [30, 50, 80, 120, 200, 400] %}
+              <option value="{{ amt }}" data-amount="{{ amt }}" {% if form_data.max_price|string == amt|string %}selected{% endif %}>{{ form_data.currency_symbol or '£' }}{{ amt }}</option>
+              {% endfor %}
+            </select>
+          </span>
+        </span>
       </div>
 
-      <div class="trip-toggle btn-group" role="group" id="flightTypeToggle">
-        <input type="radio" class="btn-check" name="flight_type" id="ft_all" value="all" checked>
-        <label class="btn" for="ft_all">All</label>
-        <input type="radio" class="btn-check" name="flight_type" id="ft_domestic" value="domestic">
-        <label class="btn" for="ft_domestic"><i class="fa fa-house me-1"></i> Domestic</label>
-        <input type="radio" class="btn-check" name="flight_type" id="ft_international" value="international">
-        <label class="btn" for="ft_international"><i class="fa fa-earth-europe me-1"></i> International</label>
-      </div>
-    </div>
-
-    <!-- Airport autocomplete -->
-    <div class="mb-3 position-relative">
-      <label class="form-label" for="origin">
-        <i class="fa fa-plane-departure me-1"></i>Fly from
-      </label>
-      <input type="text" id="origin" name="origin" class="form-control"
-             placeholder="City or airport name..."
-             value="{{ form_data.origin }}" autocomplete="off">
-      <input type="hidden" id="origin_code" name="origin_code" value="{{ form_data.origin_code }}">
-      <input type="hidden" id="currency" name="currency" value="{{ form_data.currency or 'gbp' }}">
-      <input type="hidden" id="currency_symbol" name="currency_symbol" value="{{ form_data.currency_symbol or '£' }}">
-      <div id="origin-autocomplete-list" class="autocomplete-items d-none"></div>
-      <div id="origin-helper" class="small mt-1">
+      <div id="origin-helper" class="ml-helper">
         {% if form_data.origin_code %}
-          <span style="color:#059669"><i class="fa fa-circle-check me-1"></i>{{ form_data.origin }}</span>
+          <span class="helper-ok"><i class="fa fa-circle-check me-1"></i>{{ form_data.origin }}</span>
         {% else %}
-          <span style="color:var(--c-muted-2)">Start typing to search airports</span>
+          <span class="helper-muted">Start typing a city or airport, e.g. "London"</span>
         {% endif %}
       </div>
-    </div>
 
-    <!-- Dates + Passengers -->
-    <div class="row g-2 mb-3">
-      <div class="col-sm col-12">
-        <label class="form-label" for="departure_date">
-          <i class="fa fa-calendar me-1"></i>Departure
+      <div class="ml-controls">
+        <div class="chip-group trip-toggle" role="group" aria-label="Trip type">
+          <input type="radio" class="btn-check" name="trip_type" id="trip_oneway" value="oneway"
+                 {% if form_data.trip_type != 'roundtrip' %}checked{% endif %}>
+          <label class="chip" for="trip_oneway">One-way</label>
+          <input type="radio" class="btn-check" name="trip_type" id="trip_roundtrip" value="roundtrip"
+                 {% if form_data.trip_type == 'roundtrip' %}checked{% endif %}>
+          <label class="chip" for="trip_roundtrip">Return</label>
+        </div>
+
+        <div class="chip-group" role="group" aria-label="Destination type" id="flightTypeToggle">
+          <input type="radio" class="btn-check" name="flight_type" id="ft_all" value="all" checked>
+          <label class="chip" for="ft_all">Anywhere</label>
+          <input type="radio" class="btn-check" name="flight_type" id="ft_domestic" value="domestic">
+          <label class="chip" for="ft_domestic">Same country</label>
+          <input type="radio" class="btn-check" name="flight_type" id="ft_international" value="international">
+          <label class="chip" for="ft_international">Abroad</label>
+        </div>
+
+        <label class="chip pax-chip" for="passengers">
+          <i class="fa fa-user" aria-hidden="true"></i>
+          <span class="visually-hidden">Passengers</span>
+          <input type="number" id="passengers" name="passengers" min="1" max="9"
+                 value="{{ form_data.passengers or 1 }}">
         </label>
-        <input type="date" id="departure_date" name="departure_date" class="form-control"
-               required value="{{ form_data.departure_date }}">
+
+        <button type="button" id="searchButton" class="btn btn-search"
+                {% if not form_data.origin_code %}disabled{% endif %}>
+          Show me where <i class="fa fa-arrow-right ms-1"></i>
+        </button>
       </div>
-      <div id="returnDateCol" class="col-sm col-12"
-           {% if form_data.trip_type != 'roundtrip' %}style="display:none"{% endif %}>
-        <label class="form-label" for="return_date">
-          <i class="fa fa-calendar-check me-1"></i>Return
-        </label>
-        <input type="date" id="return_date" name="return_date" class="form-control"
-               value="{{ form_data.return_date }}">
-      </div>
-      <div class="col-sm-3 col-12">
-        <label class="form-label" for="passengers">
-          <i class="fa fa-user me-1"></i>Passengers
-        </label>
-        <input type="number" id="passengers" name="passengers" class="form-control"
-               min="1" max="9" value="{{ form_data.passengers or 1 }}">
-      </div>
+    </form>
+
+    <div class="trust-line">
+      <span><i class="fa fa-circle-check"></i>Free, no sign-up</span>
+      <span><i class="fa fa-circle-check"></i>Live prices from Aviasales</span>
     </div>
-
-    <button type="button" id="searchButton" class="btn btn-search w-100"
-            {% if not form_data.origin_code %}disabled{% endif %}>
-      <i class="fa fa-magnifying-glass me-2"></i>Search Flights
-    </button>
-  </form>
-
-  </div><!-- /hero-left -->
-
-  <!-- HERO RIGHT: photo mosaic -->
-  <div class="hero-right">
-    <div class="photo-mosaic">
-      <img class="photo-tall"
-           src="{{ url_for('static', filename='alejandro-pinero-amerio-Lx3l-Hf_P5I-unsplash.webp') }}"
-           alt="Travel destination" fetchpriority="high">
-      <img src="{{ url_for('static', filename='md-arafat-ul-alam-bnrouu6uqaM-unsplash.webp') }}"
-           alt="Flight view" loading="lazy">
-      <img src="https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=600&q=80&auto=format&fit=crop"
-           alt="Airplane in flight" loading="lazy">
-      <img src="https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?w=600&q=80&auto=format&fit=crop"
-           alt="Travel adventure" loading="lazy">
-      <img src="https://images.unsplash.com/photo-1488085061387-422e29b40080?w=600&q=80&auto=format&fit=crop"
-           alt="City destination" loading="lazy">
-    </div>
-  </div><!-- /hero-right -->
-
-</div><!-- /hero-outer -->
+  </div>
+</section><!-- /hero -->
 
 <!-- Shown while a search is running -->
 <div class="container px-3 px-md-4" style="max-width:900px;">
@@ -942,35 +990,36 @@
         <strong>{{ flights|length }}</strong> destination{{ 's' if flights|length != 1 }}
         from <strong>{{ origin_label }}</strong>
       </div>
-      <div class="sort-controls">
+    </div>
+
+    <div class="sort-controls" role="group" aria-label="Sort and filter results">
         <button class="sort-btn active" id="sortAsc" onclick="sortFlights('asc')">
-          <i class="fa fa-arrow-up-wide-short me-1"></i>Cheapest first
+          <i class="fa fa-arrow-up-wide-short me-1"></i>Cheapest
         </button>
         <button class="sort-btn" id="sortDesc" onclick="sortFlights('desc')">
-          <i class="fa fa-arrow-down-wide-short me-1"></i>Priciest first
+          <i class="fa fa-arrow-down-wide-short me-1"></i>Priciest
         </button>
         <button class="sort-btn" id="directOnlyBtn" onclick="toggleDirectOnly()">
           <i class="fa fa-plane me-1"></i>Direct only
         </button>
-      </div>
     </div>
 
     <div id="flightsList">
       {% for flight in flights %}
       <div class="flight-card" data-price="{{ flight.price }}" data-country="{{ flight.destination_country }}" data-stops="{{ flight.num_stops }}">
-        {% if flight.destination_country %}
-        <img class="flight-flag"
-             src="https://flagcdn.com/w80/{{ flight.destination_country|lower }}.png"
-             alt="{{ flight.destination_country }}"
-             loading="lazy"
-             onerror="this.style.display='none'">
-        {% endif %}
+        <div class="flight-main">
+        <div class="dest-tile tile-{{ flight.tile if flight.tile is defined else loop.index0 % 8 }}" aria-hidden="true">
+          <span class="dest-tile-code">{{ flight.destination_code }}</span>
+          {% if flight.destination_country %}
+          <img class="dest-tile-flag" src="https://flagcdn.com/w40/{{ flight.destination_country|lower }}.png"
+               alt="" loading="lazy" onerror="this.remove()">
+          {% endif %}
+        </div>
         <div class="flight-dest">
           <div class="flight-dest-top">
             <span class="flight-city">
               {{ flight.destination_city if flight.destination_city else flight.destination_code }}
             </span>
-            <span class="flight-iata">{{ flight.destination_code }}</span>
           </div>
           <div class="flight-airport-name">{{ flight.destination_label }}</div>
           <details class="plan-trip">
@@ -990,6 +1039,7 @@
             </div>
           </details>
         </div>
+        </div><!-- /flight-main -->
 
         <div class="flight-right">
           <div class="flight-price-block">
@@ -1245,10 +1295,14 @@
           chip.style.textDecoration = 'none';
           const s = d.symbol || symbol || '£';
           const dateStr = d.date ? `<div class="deal-chip-date">${d.date}</div>` : '';
+          let h = 0; for (const ch of String(d.route)) h += ch.charCodeAt(0);
           chip.innerHTML = `
-            <div class="deal-chip-route">${d.route}</div>
-            ${dateStr}
-            <div class="deal-chip-price">from ${s}${d.price}</div>
+            <div class="deal-chip-tile tile-${h % 8}"></div>
+            <div class="deal-chip-body">
+              <div class="deal-chip-route">${d.route}</div>
+              ${dateStr}
+              <div class="deal-chip-price">from ${s}${d.price}</div>
+            </div>
           `;
           scroll.appendChild(chip);
         });
@@ -1271,6 +1325,9 @@
       if (currencyInput && (!currencyInput.value || currencyInput.value === 'gbp')) {
         if (currencyInput) currencyInput.value = geo.currency || 'gbp';
         if (symbolInput)   symbolInput.value   = geo.symbol   || '£';
+        document.querySelectorAll('#max_price option[data-amount]').forEach(o => {
+          o.textContent = (geo.symbol || '£') + o.dataset.amount;
+        });
       }
 
       fetchLiveDeals(window._geoCountry, window._geoSymbol);
@@ -1374,9 +1431,9 @@ document.addEventListener('DOMContentLoaded', () => {
     input.value  = a.name;
     hidden.value = a.code;
     if (autoDetected) {
-      helper.innerHTML = `<span style="color:var(--c-link)"><i class="fa fa-location-dot me-1"></i>${a.name} <span style="opacity:.7;font-size:0.75em">(detected from your location)</span></span>`;
+      helper.innerHTML = `<span class="helper-info"><i class="fa fa-location-dot me-1"></i>${a.name} <span style="opacity:.75">(detected from your location)</span></span>`;
     } else {
-      helper.innerHTML = `<span style="color:#059669"><i class="fa fa-circle-check me-1"></i>${a.name}</span>`;
+      helper.innerHTML = `<span class="helper-ok"><i class="fa fa-circle-check me-1"></i>${a.name}</span>`;
     }
     setEnabled(true);
     closeList();
@@ -1416,7 +1473,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (currencyInput && window._geoCurrency) currencyInput.value = window._geoCurrency;
     if (symbolInput   && window._geoSymbol)   symbolInput.value   = window._geoSymbol;
     setEnabled(false);
-    helper.innerHTML = '<span style="color:var(--c-muted-2)">Start typing to search airports</span>';
+    helper.innerHTML = '<span class="helper-muted">Start typing a city or airport, e.g. "London"</span>';
     const q = input.value.trim();
     if (!q) { closeList(); return; }
     debounceTimer = setTimeout(() => {
@@ -1454,7 +1511,7 @@ document.addEventListener('DOMContentLoaded', () => {
   searchBtn.onclick = () => {
     if (!hidden.value) {
       showError('Please select an airport from the dropdown first.');
-      helper.innerHTML = '<span style="color:#dc2626"><i class="fa fa-circle-exclamation me-1"></i>Please select an airport from the dropdown</span>';
+      helper.innerHTML = '<span class="helper-err"><i class="fa fa-circle-exclamation me-1"></i>Pick your airport from the list</span>';
       return;
     }
     const depDate = document.getElementById('departure_date').value;
@@ -1493,16 +1550,16 @@ document.addEventListener('DOMContentLoaded', () => {
       .then(r => r.json())
       .then(data => {
         if (data.ok) {
-          msg.innerHTML = '<span style="color:#82ffd2"><i class="fa fa-circle-check me-1"></i>You\'re subscribed! We\'ll be in touch when prices drop.</span>';
+          msg.innerHTML = '<span style="color:#0F7B4F"><i class="fa fa-circle-check me-1"></i>You\'re subscribed! We\'ll be in touch when prices drop.</span>';
           form.querySelector('input[type="email"]').value = '';
         } else {
-          msg.innerHTML = `<span style="color:#ff8080">${data.error}</span>`;
+          msg.innerHTML = `<span style="color:#B42318">${data.error}</span>`;
           btn.disabled = false;
           btn.innerHTML = '<i class="fa fa-paper-plane me-1"></i> Notify me';
         }
       })
       .catch(() => {
-        msg.innerHTML = '<span style="color:#ff8080">Something went wrong. Please try again.</span>';
+        msg.innerHTML = '<span style="color:#B42318">Something went wrong. Please try again.</span>';
         btn.disabled = false;
         btn.innerHTML = '<i class="fa fa-paper-plane me-1"></i> Notify me';
       });
@@ -1520,16 +1577,16 @@ document.addEventListener('DOMContentLoaded', () => {
       .then(r => r.json())
       .then(data => {
         if (data.ok) {
-          msg.innerHTML = '<span style="color:#82ffd2"><i class="fa fa-circle-check me-1"></i>You\'re in! We\'ll send the best deals your way.</span>';
+          msg.innerHTML = '<span style="color:#0F7B4F"><i class="fa fa-circle-check me-1"></i>You\'re in! We\'ll send the best deals your way.</span>';
           form.querySelector('input[type="email"]').value = '';
         } else {
-          msg.innerHTML = `<span style="color:#ff8080">${data.error}</span>`;
+          msg.innerHTML = `<span style="color:#B42318">${data.error}</span>`;
           btn.disabled = false;
           btn.innerHTML = '<i class="fa fa-paper-plane me-1"></i> Subscribe free';
         }
       })
       .catch(() => {
-        msg.innerHTML = '<span style="color:#ff8080">Something went wrong. Please try again.</span>';
+        msg.innerHTML = '<span style="color:#B42318">Something went wrong. Please try again.</span>';
         btn.disabled = false;
         btn.innerHTML = '<i class="fa fa-paper-plane me-1"></i> Subscribe free';
       });
@@ -1584,7 +1641,35 @@ document.addEventListener('DOMContentLoaded', () => {
     cards.forEach(c => container.appendChild(c));
     document.getElementById('sortAsc').classList.toggle('active', order === 'asc');
     document.getElementById('sortDesc').classList.toggle('active', order === 'desc');
+    regroupBands();
   };
+
+  // Group visible results under price headings ("Under £30", "£30–£60" ...)
+  function regroupBands() {
+    const container = document.getElementById('flightsList');
+    if (!container) return;
+    container.querySelectorAll('.price-band').forEach(el => el.remove());
+    const sym = {{ (form_data.currency_symbol or '£') | tojson }};
+    const edges = [30, 60, 100];
+    const label = i => i === 0 ? `Under ${sym}${edges[0]}`
+                     : i === edges.length ? `${sym}${edges[edges.length - 1]} and up`
+                     : `${sym}${edges[i - 1]} – ${sym}${edges[i]}`;
+    let last = null;
+    container.querySelectorAll('.flight-card').forEach(card => {
+      if (card.style.display === 'none') return;
+      const price = parseFloat(card.dataset.price) || 0;
+      let band = edges.findIndex(e => price < e);
+      if (band === -1) band = edges.length;
+      if (band !== last) {
+        const h = document.createElement('div');
+        h.className = 'price-band';
+        h.textContent = label(band);
+        container.insertBefore(h, card);
+        last = band;
+      }
+    });
+  }
+  window.regroupBands = regroupBands;
 
   // ── Flight type + direct-only filters ───────────────
   const ORIGIN_COUNTRY = {{ origin_country | tojson }};
@@ -1607,6 +1692,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     const countEl = document.querySelector('.results-count strong');
     if (countEl) countEl.textContent = visibleCount;
+    regroupBands();
   }
 
   window.toggleDirectOnly = function() {
@@ -1615,6 +1701,8 @@ document.addEventListener('DOMContentLoaded', () => {
     if (btn) btn.classList.toggle('active', _directOnly);
     applyFlightTypeFilter();
   };
+
+  if (document.getElementById('flightsList')) window.sortFlights('asc');
 
   document.querySelectorAll('input[name="flight_type"]').forEach(r =>
     r.addEventListener('change', applyFlightTypeFilter)
