@@ -762,6 +762,10 @@ def index():
                     dest_label = _display_name(dest_info.get('label') or dest_code, dest_code) if dest_info else dest_code
                     dest_city = dest_info.get('city', '')
                     dest_country = dest_info.get('country', '')
+                    if not dest_info and dest_code in CITY_CODES:
+                        # Results can come back as a city code (e.g. PAR = Paris, any airport)
+                        dest_city, dest_country = CITY_CODES[dest_code]
+                        dest_label = f"{dest_city} – all airports"
 
                     if return_str:
                         search_code = f"{origin_code}{depart_str}{dest_code}{return_str}"
@@ -788,6 +792,8 @@ def index():
 
                 # Up to 10 of each, domestic first
                 flights = domestic_flights[:10] + international_flights[:10]
+                # Cheapest first, whatever the page script does
+                flights.sort(key=lambda f: f['price'] if isinstance(f['price'], (int, float)) else float('inf'))
         except Exception:
             pass
 
