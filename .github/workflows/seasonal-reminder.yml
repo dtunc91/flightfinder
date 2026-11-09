@@ -1,0 +1,39 @@
+name: Seasonal pages reminder
+
+# On the 1st of every month, opens a GitHub issue listing the seasonal pages to
+# refresh before their searches peak (from data/seasonal_calendar.json).
+# GitHub emails the repository owner about new issues. Free: no AI calls.
+on:
+  schedule:
+    - cron: '17 7 1 * *'   # 1st of each month, 07:17 UTC
+  workflow_dispatch:       # "Run workflow" button to create this month's reminder now
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  remind:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Build this month's reminder
+        id: build
+        run: python scripts/seasonal_reminder.py
+
+      - name: Open the reminder issue (once per month)
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TITLE: ${{ steps.build.outputs.title }}
+        run: |
+          if gh issue list --state all --search "\"$TITLE\" in:title" --json title --jq '.[].title' | grep -Fxq "$TITLE"; then
+            echo "Reminder already exists: $TITLE"
+            exit 0
+          fi
+          gh issue create --title "$TITLE" --body-file reminder.md

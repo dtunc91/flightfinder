@@ -6,3 +6,4 @@ __pycache__/
 data/subscribers.csv
 venv/
 data/ourairports_cache.csv
+reminder.md
