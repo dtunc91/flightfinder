@@ -11,6 +11,7 @@
   <link rel="preconnect" href="https://plausible.io" crossorigin>
   <link rel="dns-prefetch" href="https://flagcdn.com">
   <title>{% block title %}GetMeOutOfHere.Live{% endblock %}</title>
+  {% block robots %}{% endblock %}
   <meta name="description" content="{% block meta_description %}Find the cheapest places to fly from your airport — no destination needed.{% endblock %}">
   <meta name="google-site-verification" content="D7SPk9eeETSx8-YyaDxrnSkVB7tn6kpBQffDLpUrR0s" />
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2050826457723021" crossorigin="anonymous"></script>
@@ -174,6 +175,8 @@
     /* Footer */
     .site-footer { color: var(--c-muted-2); font-size: 0.85rem; border-top: 1px solid var(--c-line); margin-top: 2rem; }
     .site-footer a { color: var(--c-link); display: inline-block; padding: 10px 8px; min-height: 44px; }
+    .footer-disclosure { max-width: 560px; margin: 0 auto 6px; font-size: .8rem; }
+    .footer-disclosure a { padding: 0; min-height: 0; }
   </style>
 </head>
 <body>
@@ -209,7 +212,8 @@
       <a href="{{ url_for('terms') }}">Terms</a>
       <a href="{{ url_for('contact') }}">Contact</a>
     </div>
-    © {{ current_year if current_year else 2026 }} GetMeOutOfHere.Live &nbsp;·&nbsp;
+    <p class="footer-disclosure">We may earn a commission when you book through links on this site. It never changes the price you pay. <a href="{{ url_for('about') }}#affiliate">How we make money</a></p>
+    © {{ current_year if current_year else 2026 }} GetMeOutOfHere.Live &nbsp;·&nbsp; Independent, run from the UK &nbsp;·&nbsp;
     Prices sourced from <a href="https://www.aviasales.com" target="_blank" rel="noopener">Aviasales</a>
   </footer>
 

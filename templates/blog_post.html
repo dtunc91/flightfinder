@@ -96,6 +96,8 @@
   }
   .disclaimer i { color: var(--c-link); margin-right: 5px; }
 
+  .post-updated { font-size: .85rem; color: var(--c-muted-2); margin: 8px 0 0; }
+  .post-updated i { margin-right: 5px; }
   .related-section { margin-top: 36px; }
   .related-section h3 {
     font-size: 0.75rem; font-weight: 700; color: var(--c-muted);
@@ -145,12 +147,17 @@
   </div>
   <h1>{{ post.title }}</h1>
   <p class="subtitle">{{ post.subtitle }}</p>
+  {% set d = (post.updated_at or post.published_at or '')[:10] %}
+  {% if d %}
+  <p class="post-updated"><i class="fa fa-clock-rotate-left" aria-hidden="true"></i>
+    Last updated <time datetime="{{ d }}">{{ d[8:10]|int }} {{ ['January','February','March','April','May','June','July','August','September','October','November','December'][d[5:7]|int - 1] }} {{ d[:4] }}</time></p>
+  {% endif %}
 </div>
 
 <!-- Disclaimer -->
 <div class="disclaimer">
   <i class="fa fa-circle-info"></i>
-  <strong>About these prices:</strong> All price ranges shown are indicative, based on typical fares seen on Aviasales for each route. Actual prices change daily depending on date, availability and how far ahead you book. Always search for live prices using the tool below — it pulls real-time data directly from Aviasales.
+  <strong>About these prices:</strong> Any fares mentioned are examples of prices seen on Aviasales when this guide was written or last updated. Fares change every day with dates, availability and how far ahead you book, so use the search below for today's prices.
 </div>
 
 <!-- Content sections -->
@@ -161,7 +168,7 @@
 </div>
 {% if loop.index == 2 %}
 <div class="mid-cta">
-  <p><strong><i class="fa fa-magnifying-glass me-2" style="color:var(--c-link)"></i>See live prices now —</strong> fares change daily. Search real-time results from Aviasales.</p>
+  <p><strong><i class="fa fa-magnifying-glass me-2" style="color:var(--c-link)"></i>See live prices now —</strong> fares change daily. Search the latest fares from Aviasales.</p>
   <a href="{{ url_for('seo_airport', code=post.cta_airport) if post.cta_airport else url_for('index') }}" class="btn-cta" style="white-space:nowrap; font-size:0.88rem; padding:10px 20px;">
     Search flights <i class="fa fa-arrow-right ms-1"></i>
   </a>
@@ -172,7 +179,7 @@
 <!-- CTA -->
 <div class="cta-box">
   <h3><i class="fa fa-magnifying-glass me-2" style="color:var(--c-link)"></i>Search live prices now</h3>
-  <p>The prices above are typical ranges — actual fares change every day. Search below for real-time prices and book securely through Aviasales, one of Europe's largest flight search engines.</p>
+  <p>The prices above are typical ranges — actual fares change every day. Search below for the latest prices and book securely through Aviasales, one of Europe's largest flight search engines.</p>
   <a href="{{ url_for('seo_airport', code=post.cta_airport) if post.cta_airport else url_for('index') }}" class="btn-cta">
     Search cheap flights{% if post.airport_names %} from {{ post.airport_names.split(',')[0] }}{% endif %} <i class="fa fa-arrow-right ms-2"></i>
   </a>
