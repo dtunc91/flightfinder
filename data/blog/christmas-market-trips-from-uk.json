@@ -1,11 +1,15 @@
 {
   "slug": "christmas-market-trips-from-uk",
   "emoji": "🎄",
-  "title": "Christmas Market Flights from the UK 2026: Where to Go and When",
-  "subtitle": "Kraków, Prague and Vienna are often the cheapest to reach. Go in early December and skip the crowds.",
+  "title": "Christmas Flights from the UK 2026: Markets, Cheapest Days and When to Book",
+  "subtitle": "The cheapest days to fly over Christmas and New Year, plus the best-value Christmas market cities and their 2026 dates.",
   "airport_names": "Stansted, Gatwick, Luton, Manchester, Birmingham, Newcastle",
-  "meta": "Christmas market flights from the UK for 2026: Kraków, Prague, Vienna, Cologne and Strasbourg, with 2026 market dates and tips for finding the cheapest fares.",
+  "meta": "Christmas flights from the UK for 2026: the cheapest days to fly over Christmas and New Year, when to book, and the best Christmas market cities with 2026 dates.",
   "sections": [
+    {
+      "heading": "Flying over Christmas and New Year: the cheapest days",
+      "body": "<strong>Christmas Day 2026 is a Friday</strong>, and most schools in England and Wales break up around Friday 18 December. That makes the days from Friday 18 to Wednesday 23 December the most expensive time to fly out, and the first weekend of January the priciest time to come home before term starts again.<br><br><strong>The cheapest days are the ones nobody wants.</strong> Christmas Eve evening, Christmas Day and Boxing Day flights are often far cheaper than the days before them, and so are New Year's Day and the first Tuesday and Wednesday of January. Not every airline flies on 25 December (Ryanair doesn't), so check the schedule for your route.<br><br><strong>Book now rather than later.</strong> Christmas fares rarely fall in December: as the cheap seats sell, prices climb. If you're flying home for Christmas or chasing winter sun, book in November and pick a fare you can change if your plans might move.<br><br>Flexible about where you go? The table below shows the cheapest places to fly from London over the Christmas holidays."
+    },
     {
       "heading": "Christmas market dates for 2026",
       "body": "Vienna gets going first. The Schönbrunn Palace market opens around <strong>6 November</strong> and runs into January, with the big Rathausplatz market following a week later. Cologne's main Roncalliplatz market opens around <strong>16 November</strong> and closes on 23 December, so don't leave that one too late.<br><br>Prague and Kraków both open at the end of November and stay open past New Year, into early January. Strasbourg, the one everyone calls the original, starts around <strong>26 November</strong> and finishes on Christmas Eve.<br><br>A few cities haven't confirmed exact dates yet, and some guides disagree by a day or two. Check the official city website before you book anything non-refundable. Flights are the bit you want to lock in now, since prices for early December weekends start climbing from late October."
@@ -26,8 +30,12 @@
   "cta_airport": "STN",
   "market": "uk",
   "published_at": "2026-10-11T10:00:00.000000",
-  "updated_at": "2026-11-09T09:00:00",
+  "updated_at": "2026-11-09T12:00:00",
   "related": [
+    [
+      "cheapest-month-to-fly-from-uk",
+      "Cheapest Months to Fly from the UK: A Month-by-Month Guide"
+    ],
     [
       "where-can-i-fly-cheaply-from-london",
       "Where Can I Fly Cheaply from London Right Now?"
@@ -35,10 +43,21 @@
     [
       "cheap-flights-from-birmingham-airport-2026",
       "Cheap Flights from Birmingham Airport 2026"
-    ],
-    [
-      "best-european-city-breaks-summer-2026",
-      "Best European City Breaks Summer 2026"
     ]
+  ],
+  "fare_tables": [
+    {
+      "title": "Cheapest flights from London over Christmas and New Year",
+      "intro": "Departures between 15 December 2026 and 4 January 2027.",
+      "origins": [
+        "LON"
+      ],
+      "group": "destination",
+      "from": "2026-12-15",
+      "to": "2027-01-04",
+      "currency": "gbp",
+      "limit": 10,
+      "after_section": 1
+    }
   ]
 }

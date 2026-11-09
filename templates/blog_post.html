@@ -96,6 +96,21 @@
   }
   .disclaimer i { color: var(--c-link); margin-right: 5px; }
 
+  .fare-table-box { margin: 8px 0 32px; }
+  .fare-table-box h3 { font-size: 1.1rem; font-weight: 800; color: var(--c-ink); margin: 0 0 6px; }
+  .ft-sub, .ft-note { font-size: .82rem; color: var(--c-muted); margin: 0 0 10px; }
+  .ft-note { margin: 8px 0 0; }
+  .ft-wrap { overflow-x: auto; border: 1px solid var(--c-line); border-radius: 14px; background: var(--c-paper); }
+  .ft-table { width: 100%; border-collapse: collapse; font-size: .9rem; }
+  .ft-table th { text-align: left; font-size: .7rem; text-transform: uppercase; letter-spacing: .06em; color: var(--c-muted); padding: 9px 12px; background: var(--c-mist); border-bottom: 1px solid var(--c-line); }
+  .ft-table td { padding: 9px 12px; border-bottom: 1px solid var(--c-line); color: var(--c-ink); vertical-align: top; }
+  .ft-table tr:last-child td { border-bottom: 0; }
+  .ft-table .num { text-align: right; }
+  .ft-table small { color: var(--c-muted-2); }
+  .ft-direct { color: #0F7B4F !important; font-weight: 600; }
+  .ft-price { font-family: var(--f-mono); font-weight: 700; }
+  .ft-table a { color: var(--c-link); font-weight: 600; white-space: nowrap; }
+  @media (max-width: 576px) { .ft-table th, .ft-table td { padding: 8px; font-size: .82rem; } }
   .post-updated { font-size: .85rem; color: var(--c-muted-2); margin: 8px 0 0; }
   .post-updated i { margin-right: 5px; }
   .related-section { margin-top: 36px; }
@@ -166,6 +181,33 @@
   <h2>{{ section.heading }}</h2>
   <div class="body-text">{{ section.body | safe }}</div>
 </div>
+{% for t in (post._tables or {}).get(loop.index, []) %}
+<div class="fare-table-box">
+  <h3>{{ t.title }}</h3>
+  <p class="ft-sub">{{ t.intro }} {{ 'One-way' if t.rows[0].one_way else 'Return' }} fares per person, the cheapest Aviasales travellers have found recently. Checked {{ t.checked }}.</p>
+  <div class="ft-wrap">
+    <table class="ft-table">
+      <thead><tr>
+        {% if t.group == 'origin' %}<th scope="col">From</th>{% elif t.group == 'month' %}<th scope="col">Month</th><th scope="col">Cheapest to</th>{% else %}<th scope="col">To</th>{% endif %}
+        <th scope="col">Departs</th><th scope="col" class="num">Price</th><th scope="col"><span class="visually-hidden">Book</span></th>
+      </tr></thead>
+      <tbody>
+      {% for r in t.rows %}
+        <tr>
+          {% if t.group == 'origin' %}<td><strong>{{ r.from_name }}</strong></td>
+          {% elif t.group == 'month' %}<td><strong>{{ r.month }}</strong></td><td>{{ r.name }}</td>
+          {% else %}<td><strong>{{ r.name }}</strong>{% if r.origin != t.rows[0].origin or t.group == 'destination' %}<br><small>from {{ r.from_name }}</small>{% endif %}</td>{% endif %}
+          <td>{{ r.date }}{% if r.ret %}<br><small>back {{ r.ret }}</small>{% endif %}{% if r.stops == 0 %}<br><small class="ft-direct">Direct</small>{% endif %}</td>
+          <td class="num ft-price">{{ t.symbol }}{{ r.price }}</td>
+          <td><a href="{{ r.url }}" target="_blank" rel="noopener sponsored">See flight</a></td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  <p class="ft-note">Fares change through the day. Tap "See flight" for the current price.</p>
+</div>
+{% endfor %}
 {% if loop.index == 2 %}
 <div class="mid-cta">
   <p><strong><i class="fa fa-magnifying-glass me-2" style="color:var(--c-link)"></i>See live prices now —</strong> fares change daily. Search the latest fares from Aviasales.</p>

@@ -1178,7 +1178,7 @@
 {% if seo_page and live_fares %}
 <section class="live-fares" aria-labelledby="liveFaresTitle">
   <h2 id="liveFaresTitle">Cheapest flights from {{ seo_page.city }} right now</h2>
-  <p class="live-fares-sub">The lowest one-way fare to each destination that Aviasales travellers have found recently, per person.{% if fares_checked %} Checked {{ fares_checked }}.{% endif %}</p>
+  <p class="live-fares-sub">The lowest {{ 'one-way' if live_fares[0].one_way else 'return' }} fare to each destination that Aviasales travellers have found recently, per person.{% if fares_checked %} Checked {{ fares_checked }}.{% endif %}</p>
   <div class="live-fares-wrap">
     <table class="live-fares-table">
       <thead><tr><th scope="col">Destination</th><th scope="col">Departs</th><th scope="col" class="lf-stops">Stops</th><th scope="col" class="num">From</th><th scope="col"><span class="visually-hidden">Book</span></th></tr></thead>
@@ -1186,7 +1186,7 @@
       {% for f in live_fares %}
         <tr>
           <td><strong>{{ f.name }}</strong> <span class="lf-code">{{ f.code }}</span></td>
-          <td>{{ f.date }}</td>
+          <td>{{ f.date }}{% if f.ret %}<br><small>back {{ f.ret }}</small>{% endif %}</td>
           <td class="lf-stops">{% if f.stops == 0 %}<span class="lf-direct">Direct</span>{% else %}{{ f.stops }} stop{{ 's' if f.stops != 1 }}{% endif %}</td>
           <td class="num lf-price">{{ fares_symbol }}{{ f.price }}</td>
           <td><a href="{{ f.url }}" target="_blank" rel="noopener sponsored">See flight</a></td>
@@ -1351,7 +1351,7 @@
     <p>Prices come from Aviasales: the cheapest fares travellers found recently for the exact date you pick. Fares move during the day, so the final price on Aviasales can differ a little. Every result links straight through to book, and searching costs nothing. No sign-up, no fees, no catch.</p>
   </details>
 
-  <a class="home-guides-link" href="{{ url_for('blog_index') }}">Not sure when to go? Read our flight deal guides <i class="fa fa-arrow-right" aria-hidden="true"></i></a>
+  <a class="home-guides-link" href="{{ url_for('blog_post', slug='cheapest-month-to-fly-from-uk') }}">Not sure when to go? See the cheapest months to fly <i class="fa fa-arrow-right" aria-hidden="true"></i></a>
 
   <h2>Cheap flights from popular airports</h2>
   <div class="home-airports">

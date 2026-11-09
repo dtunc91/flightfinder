@@ -1293,54 +1293,129 @@ _LIVE_FARES_CACHE = {}
 LIVE_FARES_TTL = 6 * 3600
 
 
-def _cheapest_fares_from(code: str, currency: str, limit: int = 12) -> list:
-    """
-    Cheapest upcoming one-way fare to each destination from an airport, using the
-    same price request as the search. Cached for 6 hours. Returns [] on any problem.
-    """
-    key = (code, currency)
-    cached = _LIVE_FARES_CACHE.get(key)
-    if cached and time.time() - cached['at'] < LIVE_FARES_TTL:
-        return cached['rows']
-    rows = []
+_RAW_FARES_CACHE = {}
+
+
+def _raw_fares(origin: str, destination: str, currency: str) -> list:
+    """Recent fares from the price service (the request the site always used), cached 6h."""
+    key = (origin, destination or '', currency)
+    hit = _RAW_FARES_CACHE.get(key)
+    if hit and time.time() - hit['at'] < LIVE_FARES_TTL:
+        return hit['rows']
+    params = {'origin': origin, 'currency': currency, 'token': API_TOKEN, 'limit': 1000}
+    if destination:
+        params['destination'] = destination
     try:
-        r = requests.get("https://api.travelpayouts.com/v2/prices/latest",
-                         params={'origin': code, 'currency': currency, 'token': API_TOKEN, 'limit': 1000},
-                         timeout=10)
-        data = (r.json().get('data') or []) if r.status_code == 200 else []
-        today = datetime.utcnow().date()
-        index = _get_airport_index()
-        best = {}
-        for f in data:
-            dest = (f.get('destination') or '').upper()
-            price = _num(f.get('value'))
-            dep = (f.get('depart_date') or '')[:10]
-            if not dest or price is None or price <= 0 or f.get('return_date'):
-                continue
-            try:
-                dep_d = datetime.strptime(dep, '%Y-%m-%d').date()
-            except ValueError:
-                continue
-            if dep_d < today:
-                continue
-            if dest not in best or price < best[dest]['price']:
-                stops = f.get('number_of_changes')
-                best[dest] = {
-                    'code': dest,
-                    'name': _place_name(dest, index.get(dest)),
-                    'price': int(price) if price.is_integer() else price,
-                    'stops': int(stops) if isinstance(stops, (int, float)) else 0,
-                    'date': dep_d.strftime('%a ') + str(dep_d.day) + dep_d.strftime(' %b'),
-                    'url': f"https://www.aviasales.com/search/{code}{dep_d.strftime('%d%m')}{dest}1?adults=1&marker=617752&currency={currency}",
-                }
-        rows = sorted(best.values(), key=lambda x: x['price'])[:limit]
+        r = requests.get("https://api.travelpayouts.com/v2/prices/latest", params=params, timeout=10)
+        rows = (r.json().get('data') or []) if r.status_code == 200 else []
     except Exception as e:
-        app.logger.warning("live fares for %s failed: %s", code, e)
+        app.logger.warning("fares %s->%s failed: %s", origin, destination, e)
         rows = []
     if rows:
-        _LIVE_FARES_CACHE[key] = {'rows': rows, 'at': time.time(),
-                                  'checked': datetime.utcnow().strftime('%d %b %Y, %H:%M UTC')}
+        _RAW_FARES_CACHE[key] = {'rows': rows, 'at': time.time()}
     return rows
+
+
+def _fare_row(origin: str, f: dict, currency: str):
+    """Turn one price-service row into a display row, or None if unusable or in the past."""
+    dest = (f.get('destination') or '').upper()
+    price = _num(f.get('value'))
+    try:
+        dep_d = datetime.strptime((f.get('depart_date') or '')[:10], '%Y-%m-%d').date()
+    except ValueError:
+        return None
+    if not dest or price is None or price <= 0 or dep_d < datetime.utcnow().date():
+        return None
+    ret_d = None
+    try:
+        ret_d = datetime.strptime((f.get('return_date') or '')[:10], '%Y-%m-%d').date()
+    except ValueError:
+        pass
+    stops = f.get('number_of_changes')
+    def nice(d):
+        return d.strftime('%a ') + str(d.day) + d.strftime(' %b')
+    tail = f"{dest}{ret_d.strftime('%d%m')}" if ret_d else f"{dest}1"
+    return {
+        'origin': origin, 'code': dest, 'price': int(price) if price.is_integer() else price,
+        'stops': int(stops) if isinstance(stops, (int, float)) else 0,
+        'dep': dep_d, 'date': nice(dep_d), 'month': dep_d.strftime('%B %Y'),
+        'ret': nice(ret_d) if ret_d else '', 'one_way': ret_d is None,
+        'url': f"https://www.aviasales.com/search/{origin}{dep_d.strftime('%d%m')}{tail}?adults=1&marker=617752&currency={currency}",
+    }
+
+
+def _prefer_one_way(rows: list) -> list:
+    """Use one-way fares when there are any; otherwise fall back to return fares (labelled)."""
+    one_way = [r for r in rows if r['one_way']]
+    return one_way or rows
+
+
+def _cheapest_fares_from(code: str, currency: str, limit: int = 12) -> list:
+    """Cheapest upcoming fare to each destination from an airport, for its landing page."""
+    index = _get_airport_index()
+    rows = [x for x in (_fare_row(code, f, currency) for f in _raw_fares(code, '', currency)) if x]
+    best = {}
+    for r in _prefer_one_way(rows):
+        if r['code'] not in best or r['price'] < best[r['code']]['price']:
+            best[r['code']] = r
+    out = sorted(best.values(), key=lambda x: x['price'])[:limit]
+    for r in out:
+        r['name'] = _place_name(r['code'], index.get(r['code']))
+    if out:
+        _LIVE_FARES_CACHE[(code, currency)] = {'checked': datetime.utcnow().strftime('%d %b %Y, %H:%M UTC')}
+    return out
+
+
+def _fare_table(cfg: dict) -> dict:
+    """
+    Live price table for a blog post, from its "fare_tables" config:
+      origins      list of airport/city codes to search from
+      destination  optional code to search to (e.g. "REK")
+      group        "origin" (cheapest per origin), "destination" or "month"
+      from / to    optional YYYY-MM-DD departure window
+      currency     e.g. "gbp" (default) or "usd"
+      limit        max rows (default 10)
+    Returns {'rows': [...], 'checked': ..., 'symbol': ...} or {} when there's nothing to show.
+    """
+    currency = cfg.get('currency', 'gbp')
+    symbol = {'gbp': '£', 'usd': '$', 'eur': '€'}.get(currency, '')
+    group = cfg.get('group', 'destination')
+    lo, hi = cfg.get('from') or '', cfg.get('to') or ''
+    index = _get_airport_index()
+    rows = []
+    dests = cfg.get('destinations') or [cfg.get('destination', '')]
+    for origin in cfg.get('origins') or []:
+        found = []
+        for d in dests:                       # e.g. ["REK", "KEF"]: city code first, airport as backup
+            found = _raw_fares(origin, d, currency)
+            if found:
+                break
+        for f in found:
+            r = _fare_row(origin, f, currency)
+            if not r:
+                continue
+            d = r['dep'].isoformat()
+            if (lo and d < lo) or (hi and d > hi):
+                continue
+            rows.append(r)
+    rows = _prefer_one_way(rows)
+    key = {'origin': lambda r: r['origin'], 'month': lambda r: r['month']}.get(group, lambda r: r['code'])
+    best = {}
+    for r in rows:
+        k = key(r)
+        if k not in best or r['price'] < best[k]['price']:
+            best[k] = r
+    out = list(best.values())
+    out.sort(key=(lambda r: r['dep']) if group == 'month' else (lambda r: r['price']))
+    out = out[:int(cfg.get('limit', 10))]
+    for r in out:
+        r['name'] = _place_name(r['code'], index.get(r['code']))
+        r['from_name'] = (CITY_CODES[r['origin']][0] + ' (all airports)') if r['origin'] in CITY_CODES \
+            else _place_name(r['origin'], index.get(r['origin']))
+    if not out:
+        return {}
+    return {'rows': out, 'symbol': symbol, 'group': group,
+            'checked': datetime.utcnow().strftime('%d %b %Y, %H:%M UTC')}
 
 
 @app.route('/cheap-flights-from/<string:code>')
@@ -1356,6 +1431,8 @@ def seo_airport(code):
     currency, symbol = COUNTRY_CURRENCY.get(info.get('country', ''), ('eur', '€'))
     live_fares = _cheapest_fares_from(code, currency)
     fares_checked = (_LIVE_FARES_CACHE.get((code, currency)) or {}).get('checked', '')
+    if live_fares and not live_fares[0]['one_way']:
+        fares_checked = (fares_checked + ' · ' if fares_checked else '') + 'return fares'
     all_posts = _get_all_blog_posts()
     seo_blog_cards = list(all_posts.values())[:4]
     return render_template(
@@ -1662,6 +1739,14 @@ def blog_post(slug):
         abort(404)
     post = dict(post)
     post['related'] = [r for r in (post.get('related') or []) if r and r[0] in all_posts]
+    # Live price tables, keyed by the section they follow
+    tables = {}
+    for cfg in post.get('fare_tables') or []:
+        t = _fare_table(cfg)
+        if t:
+            t.update({'title': cfg.get('title', ''), 'intro': cfg.get('intro', '')})
+            tables.setdefault(int(cfg.get('after_section', 1)), []).append(t)
+    post['_tables'] = tables
     return render_template('blog_post.html', post=post)
 
 
