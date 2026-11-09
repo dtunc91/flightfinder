@@ -1,0 +1,65 @@
+{
+  "slug": "cheapest-month-to-fly-from-uk",
+  "emoji": "📅",
+  "title": "Cheapest Months to Fly from the UK: A Month-by-Month Guide",
+  "subtitle": "When fares from UK airports are lowest, when they spike, and where's worth going in every month of the year.",
+  "airport_names": "All UK airports",
+  "meta": "The cheapest months to fly from the UK, month by month: when fares drop, which school holidays and bank holidays push them up, where to go each month, and live fares from London.",
+  "sections": [
+    {
+      "heading": "The short answer: cheapest and most expensive months",
+      "body": "<strong>The cheapest times to fly from the UK</strong> are January after the first week, February outside half-term, early March, May outside the bank holiday weekends and half-term, September once schools are back, October outside half-term, November, and the first two weeks of December.<br><br><strong>The most expensive times</strong> are the school holidays: Easter, late July and August, Christmas and New Year, and the half-term weeks in February, late May and October. Bank holiday weekends push up Friday and Monday fares too, even outside school holidays.<br><br>The pattern is simple: fares follow families. If you can travel when schools are open, you'll usually pay a fraction of the peak price for the same seat. The table below shows the cheapest fare from London we can find in each of the coming months."
+    },
+    {
+      "heading": "January to March",
+      "body": "<strong>January</strong> is one of the cheapest months of the year once the New Year rush is over, usually from the first full week. It's also when airlines run their big sales on summer flights, so it's a good month to book as well as to fly. More in our <a href=\"/blog/january-new-year-flight-deals-uk\">guide to the January flight sales</a>.<br><br><strong>February</strong> stays cheap apart from half-term week, which falls in mid-February for most schools in England. Valentine's Day 2027 is a Sunday, so that weekend's city-break fares rise; see <a href=\"/blog/valentines-weekend-breaks-uk\">Valentine’s city breaks</a>.<br><br><strong>March</strong> is good value for city breaks until Easter. In 2027 Good Friday is 26 March and Easter Sunday is 28 March, so the last week of March is when prices jump. Our <a href=\"/blog/march-flight-deals-uk\">March guide</a> covers where to go, and <a href=\"/blog/easter-flight-deals-uk-2027\">Easter 2027</a> explains how to make the most of the long weekend."
+    },
+    {
+      "heading": "April to June",
+      "body": "<strong>April</strong> starts expensive while the Easter school holidays run, which in 2027 cover late March into mid-April for most schools. Once they end, prices fall back and the Mediterranean starts warming up.<br><br><strong>May</strong> is one of the best months to fly: warm in southern Europe and much cheaper than summer. Watch the two bank holidays (Monday 3 May and Monday 31 May 2027) and the late-May half-term week, when family routes spike. <a href=\"/blog/uk-bank-holiday-flight-deals\">Our bank holiday guide</a> lists every long weekend.<br><br><strong>June</strong> is good value until the schools break up. Scottish schools finish in late June, so fares from Scottish airports rise earlier than from English ones."
+    },
+    {
+      "heading": "July to September",
+      "body": "<strong>July</strong> is cheap only in its first half. Most schools in England and Wales break up in the third week of July, and from then fares on family routes to Spain, Portugal, Greece and Turkey climb to their highest of the year.<br><br><strong>August</strong> is the most expensive month to fly. If you have to travel then, book early and fly midweek; <a href=\"/blog/school-break-flights-uk-guide\">our school holiday guide</a> covers when to book each break.<br><br><strong>September</strong> is the big drop. Once schools go back in the first week, the same routes often cost half the August price, and the sea is still warm. See <a href=\"/blog/september-october-best-time-fly-uk\">cheap autumn flights</a>."
+    },
+    {
+      "heading": "October to December",
+      "body": "<strong>October</strong> is cheap apart from half-term, which falls in the last week of October for most schools in England. It's the last good month for warm beaches in the Mediterranean.<br><br><strong>November</strong> is one of the cheapest months of the year. Christmas markets open late in the month, winter sun in the Canaries and North Africa is at its best value, and it's the start of Northern Lights season. See <a href=\"/blog/winter-sun-from-uk\">winter sun from the UK</a> and <a href=\"/blog/iceland-reykjavik-from-uk\">flights to Iceland</a>.<br><br><strong>December</strong> is cheap for the first two weeks, which is the best time for a Christmas market trip, and then peaks from the weekend schools break up until early January. Our <a href=\"/blog/christmas-market-trips-from-uk\">Christmas flights guide</a> covers the cheapest days to fly over Christmas."
+    },
+    {
+      "heading": "Rules that hold in every month",
+      "body": "<strong>Fly midweek.</strong> Tuesday and Wednesday departures are usually the cheapest of the week, and Friday and Sunday the dearest.<br><br><strong>Check every airport near you.</strong> London has six airports, and a cheap fare from Stansted or Luton can beat Heathrow even after the train. Searching \"London - all airports\" covers them all at once.<br><br><strong>Book school holidays early, everything else later.</strong> Peak-time fares only rise as seats sell, so book school holiday trips several months ahead. Off-peak, there's less pressure, and good fares often appear a few weeks out.<br><br><strong>Let the price choose the place.</strong> If your dates are fixed, being flexible about where you go is the biggest saving of all. That's exactly what our search does: pick your airport and date, and it shows the cheapest places you can fly."
+    }
+  ],
+  "fare_tables": [
+    {
+      "title": "Cheapest flight from London in each of the coming months",
+      "intro": "For each month, the single cheapest fare from any London airport that we can find.",
+      "origins": [
+        "LON"
+      ],
+      "group": "month",
+      "currency": "gbp",
+      "limit": 6,
+      "after_section": 1
+    }
+  ],
+  "cta_airport": "STN",
+  "market": "uk",
+  "published_at": "2026-11-09T12:00:00",
+  "updated_at": "2026-11-09T12:00:00",
+  "related": [
+    [
+      "christmas-market-trips-from-uk",
+      "Christmas Flights from the UK 2026: Markets, Cheapest Days and When to Book"
+    ],
+    [
+      "september-october-best-time-fly-uk",
+      "Cheap Autumn Flights from the UK: When and Where to Go"
+    ],
+    [
+      "iceland-reykjavik-from-uk",
+      "Flights from the UK to Reykjavik, Iceland: Costs and When to Go"
+    ]
+  ]
+}

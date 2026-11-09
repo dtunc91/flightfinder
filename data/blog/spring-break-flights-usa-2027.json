@@ -4,11 +4,11 @@
   "title": "Cheap Spring Break Flights 2027: When to Book and Where to Go",
   "subtitle": "Florida and Cancun are the classics. Book Mexico and Europe by Christmas, domestic by early February.",
   "airport_names": "JFK, Newark, O'Hare, Atlanta, Dallas-Fort Worth, Denver, LAX, Boston",
-  "meta": "Spring break 2027 flight guide: when to book (domestic about 5 weeks out, Europe 3 months), and which destinations tend to be cheapest.",
+  "meta": "Cheap spring break 2027 flights: when spring break falls, when to book (Mexico, the Caribbean and Europe by Christmas, domestic by early February), and today's cheapest fares to Cancun.",
   "sections": [
     {
       "heading": "When spring break 2027 falls, and when to book",
-      "body": "Most college and school spring breaks in 2027 land in March, spread across the weeks from early March through Easter, which is March 28. A lot of districts tie their break to Easter, so the last two weeks of March will be the most crowded and the most expensive.<br><br>The booking window depends on where you're going. Fare data from past seasons shows <strong>domestic flights bottom out around 5 to 6 weeks before departure</strong>, so late January to early February for a mid-March trip. International is different. <strong>Europe tends to be cheapest about three months out</strong>, which means booking around Christmas. Mexico and the Caribbean sit in between, but the beach resorts fill up early, so book those by the holidays too.<br><br>One rule holds every year. <strong>Midweek departures run 15 to 25% cheaper</strong> than Saturday flights during peak spring break weeks. Leave on a Tuesday or Wednesday if your schedule allows it."
+      "body": "<strong>If you're reading this in November or December, now is the time to book Mexico, the Caribbean and Europe.</strong> Those fares climb steadily from January as the beach resorts fill, while domestic flights can wait until late January or early February.<br><br>Most college and school spring breaks in 2027 land in March, spread across the weeks from early March through Easter, which is March 28. A lot of districts tie their break to Easter, so the last two weeks of March will be the most crowded and the most expensive.<br><br>The booking window depends on where you're going. Fare data from past seasons shows <strong>domestic flights bottom out around 5 to 6 weeks before departure</strong>, so late January to early February for a mid-March trip. International is different. <strong>Europe tends to be cheapest about three months out</strong>, which means booking around Christmas. Mexico and the Caribbean sit in between, but the beach resorts fill up early, so book those by the holidays too.<br><br>One rule holds every year. <strong>Midweek departures run 15 to 25% cheaper</strong> than Saturday flights during peak spring break weeks. Leave on a Tuesday or Wednesday if your schedule allows it."
     },
     {
       "heading": "The cheapest spring break destinations",
@@ -26,7 +26,7 @@
   "cta_airport": "JFK",
   "market": "us",
   "published_at": "2026-10-11T12:30:00.000000",
-  "updated_at": "2026-11-09T09:00:00",
+  "updated_at": "2026-11-09T12:00:00",
   "related": [
     [
       "thanksgiving-flights-cheap-us",
@@ -40,5 +40,27 @@
       "cheap-flights-from-chicago-ohare-2026",
       "Cheap Flights from Chicago O'Hare 2026"
     ]
+  ],
+  "fare_tables": [
+    {
+      "title": "Cheapest flights to Cancun for spring break 2027",
+      "intro": "Departures between 27 February and 4 April 2027 from major US cities.",
+      "origins": [
+        "NYC",
+        "CHI",
+        "ATL",
+        "DFW",
+        "LAX",
+        "BOS"
+      ],
+      "destinations": [
+        "CUN"
+      ],
+      "group": "origin",
+      "from": "2027-02-27",
+      "to": "2027-04-04",
+      "currency": "usd",
+      "after_section": 2
+    }
   ]
 }
