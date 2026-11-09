@@ -33,6 +33,18 @@ TRAVEL_WORDS = re.compile(
     r"stansted|luton|manchester airport|delta|united airlines|american airlines|southwest|"
     r"spirit airlines|jetblue|frontier|tsa|faa)\b", re.I)
 
+# Aviasales has a large Russian-speaking audience, so routes to these countries top its
+# "most searched" lists without reflecting what UK/US Google users look for.
+SKIP_COUNTRIES = {"RU", "BY", "KZ", "KG", "UZ", "TJ", "TM"}
+# Only suggest new pages for routes that are actually cheap
+IDEA_MAX_PRICE = {"gbp": 150, "usd": 300}
+
+# Islands people search by island name, not by the town the airport is in
+ISLAND_NAMES = {"ACE": "Lanzarote", "FUE": "Fuerteventura", "LPA": "Gran Canaria", "TCI": "Tenerife",
+                "TFS": "Tenerife", "TFN": "Tenerife", "PMI": "Mallorca", "IBZ": "Ibiza", "MAH": "Menorca",
+                "CFU": "Corfu", "JTR": "Santorini", "JMK": "Mykonos", "HER": "Crete", "CHQ": "Crete",
+                "RHO": "Rhodes", "ZTH": "Zante", "KGS": "Kos", "FNC": "Madeira", "MLA": "Malta"}
+
 # City codes the price service uses that aren't single airports
 CITY_NAMES = {
     "LON": "London", "PAR": "Paris", "ROM": "Rome", "MIL": "Milan", "NYC": "New York",
@@ -45,17 +57,23 @@ CITY_NAMES = {
 
 # ── helpers ──────────────────────────────────────────────────────────────────
 
+COUNTRY_OF = {}  # code -> country code, filled by _airport_names()
+
+
 def _airport_names() -> dict:
     """Code -> city name. Uses the price service's free city/airport lists, then local data."""
     names = {}
     try:
         cities = requests.get("https://api.travelpayouts.com/data/en/cities.json", timeout=30).json()
         city_name = {c["code"]: c.get("name") for c in cities if c.get("code") and c.get("name")}
+        COUNTRY_OF.update({c["code"]: c.get("country_code", "") for c in cities if c.get("code")})
         airports = requests.get("https://api.travelpayouts.com/data/en/airports.json", timeout=30).json()
         for a in airports:
             if a.get("code") and city_name.get(a.get("city_code")):
                 names[a["code"]] = city_name[a["city_code"]]
+                COUNTRY_OF.setdefault(a["code"], a.get("country_code", ""))
         names.update(city_name)
+        names.update(ISLAND_NAMES)
         return names
     except Exception:
         pass  # offline or list unavailable: fall back to local airport names
@@ -86,17 +104,27 @@ def _posts() -> dict:
     return out
 
 
+BRAND = re.compile(r"get\s*me\s*out\s*of\s*here|getmeoutofhere", re.I)
+
+
 def _covered_by(term: str, posts: dict) -> str:
-    """Slug of the post that best covers a destination name or search phrase, or ''."""
+    """Slug of the post that best covers a destination name or search phrase, or ''.
+
+    A post counts when most (60%+) of the search's meaningful words appear in its title,
+    summary or address, e.g. "how to get to iceland from uk" -> the Iceland guide.
+    """
     stop = {"flights", "flight", "cheap", "cheapest", "from", "the", "and", "uk", "usa", "for", "to",
-            "best", "deals", "deal", "airport", "airports", "fly", "flying", "tickets", "ticket"}
+            "best", "deals", "deal", "airport", "airports", "fly", "flying", "tickets", "ticket",
+            "how", "get", "what", "when", "where", "can", "with", "book", "booking", "holidays", "holiday"}
     words = [w for w in re.findall(r"[a-zà-ÿ]{3,}", term.lower()) if w not in stop]
     if not words:
         return ""
-    best, score = "", 0
+    best, score = "", 0.0
     for slug, text in posts.items():
-        s = sum(text.count(w) for w in words) + 5 * sum(w in slug for w in words)
-        if s > score and all(w in text for w in words):
+        hits = sum(1 for w in words if w in text)
+        frac = hits / len(words)
+        s = frac + 0.01 * sum(w in slug for w in words)
+        if frac >= 0.6 and s > score:
             best, score = slug, s
     return best
 
@@ -169,7 +197,7 @@ def popular_destinations(origins: list, currency: str) -> dict:
         items = rows.values() if isinstance(rows, dict) else rows
         for rank, item in enumerate(items, start=1):
             dest = (item.get("destination") or "").upper()
-            if not dest or dest == origin:
+            if not dest or dest == origin or dest in origins or COUNTRY_OF.get(dest) in SKIP_COUNTRIES:
                 continue
             t = tally.setdefault(dest, {"code": dest, "cities": [], "best_rank": rank, "price": None})
             t["cities"].append(origin)
@@ -198,9 +226,7 @@ def trending(geo: str) -> dict:
     out = []
     for item in root.iter("item"):
         title = (item.findtext("title") or "").strip()
-        news = " ".join(n.findtext("ht:news_item_title", default="", namespaces=ns)
-                        for n in item.findall("ht:news_item", ns))
-        if TRAVEL_WORDS.search(title + " " + news):
+        if TRAVEL_WORDS.search(title):
             out.append({"term": title,
                         "traffic": (item.findtext("ht:approx_traffic", default="", namespaces=ns) or "").strip()})
     return {"items": out[:10]}
@@ -231,6 +257,8 @@ def build(today: date):
         if gsc["rising"]:
             md.append("**Rising searches**\n\n| Search | Impressions | Before | Position | Our page |\n|---|---:|---:|---:|---|")
             for q in gsc["rising"]:
+                if BRAND.search(q["query"]):
+                    continue  # people searching for the site by name
                 page = _covered_by(q["query"], posts)
                 md.append(f"| {q['query']} | {q['impressions']} | {q['before']} | {q['position']} | "
                           f"{'`' + page + '`' if page else '**none**'} |")
@@ -252,6 +280,8 @@ def build(today: date):
         if "skipped" in res:
             md.append(f"_{res['skipped']}_\n")
             continue
+        md.append("_Excludes routes to Russia and Central Asia, which top Aviasales' lists because of its "
+                  "Russian-speaking audience but aren't what UK/US Google users search for._\n")
         md.append("| Destination | Popular from | Cheapest seen | Our page |\n|---|---|---:|---|")
         for d in res["top"]:
             name = names.get(d["code"], d["code"])
@@ -259,7 +289,8 @@ def build(today: date):
             price = f"{sym}{int(d['price'])}" if d["price"] else ""
             md.append(f"| {name} ({d['code']}) | {', '.join(d['cities'])} | {price} | "
                       f"{'`' + page + '`' if page else '**none**'} |")
-            if not page and len(d["cities"]) >= 2:
+            cheap = d["price"] and d["price"] <= IDEA_MAX_PRICE["gbp" if label == "UK" else "usd"]
+            if not page and len(d["cities"]) >= 2 and cheap:
                 ideas.append(f"Write \"Cheap flights to {name} from the {label}\" "
                              f"(popular from {', '.join(d['cities'])})")
         md.append("")
