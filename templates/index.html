@@ -36,6 +36,73 @@
 {% block main_class %}{% endblock %}
 
 {% block content %}
+{% macro flight_card(flight, loop) %}
+      <div class="flight-card" data-price="{{ flight.price }}" data-country="{{ flight.destination_country }}" data-stops="{{ flight.num_stops }}">
+        <div class="flight-main">
+        <div class="dest-tile tile-{{ flight.tile if flight.tile is defined else loop.index0 % 8 }}" aria-hidden="true">
+          <span class="dest-tile-code">{{ flight.destination_code }}</span>
+          {% if flight.destination_country %}
+          <img class="dest-tile-flag" src="https://flagcdn.com/w40/{{ flight.destination_country|lower }}.png"
+               alt="" loading="lazy" onerror="this.remove()">
+          {% endif %}
+        </div>
+        <div class="flight-dest">
+          <div class="flight-dest-top">
+            <span class="flight-city">
+              {{ flight.destination_city if flight.destination_city else flight.destination_code }}
+            </span>
+          </div>
+          <div class="flight-airport-name">{{ flight.destination_label }}</div>
+          {% if flight.date_label %}
+          <div class="flight-date">
+            <i class="fa fa-calendar" aria-hidden="true"></i> {{ flight.date_label }}
+            {%- if flight.days_off and flight.days_off|abs <= 2 %}
+              <span class="flight-date-near">· {{ flight.days_off|abs }} day{{ 's' if flight.days_off|abs != 1 }} {{ 'after' if flight.days_off > 0 else 'before' }} your date</span>
+            {%- elif not flight.on_date and flight.days_off == 0 %}
+              <span class="flight-date-near">· different return day</span>
+            {%- endif %}
+          </div>
+          {% endif %}
+          <details class="plan-trip">
+            <summary>Plan the trip <i class="fa fa-chevron-down"></i></summary>
+            <div class="plan-trip-links">
+              {% if flight.destination_country and origin_country and flight.destination_country|lower != origin_country|lower %}
+              <a href="https://yesim.tpm.li/ZpiVkrqG" target="_blank" rel="noopener">
+                <i class="fa fa-signal"></i> eSIM (code FALLY20)
+              </a>
+              {% endif %}
+              <a href="https://localrent.tpm.li/mXHNfspd" target="_blank" rel="noopener">
+                <i class="fa fa-car"></i> Rent a car
+              </a>
+              <a href="https://klook.tpm.li/17VmdJ38" target="_blank" rel="noopener">
+                <i class="fa fa-map-marker"></i> Things to do
+              </a>
+            </div>
+          </details>
+        </div>
+        </div><!-- /flight-main -->
+
+        <div class="flight-right">
+          <div class="flight-price-block">
+            <div class="flight-price">{{ form_data.currency_symbol or '£' }}{{ flight.price }}</div>
+            <div class="flight-price-label">{{ 'return, ' if flight.round_trip }}per person · Aviasales</div>
+          </div>
+
+          {% if flight.num_stops == 0 %}
+            <span class="stops-badge stops-direct">Direct</span>
+          {% elif flight.num_stops == 1 %}
+            <span class="stops-badge stops-1">1 stop</span>
+          {% else %}
+            <span class="stops-badge stops-2plus">{{ flight.num_stops }} stops</span>
+          {% endif %}
+
+          <a href="{{ flight.booking_url }}" target="_blank" rel="noopener" class="btn-book"
+             aria-label="See flight to {{ flight.destination_city or flight.destination_code }} for {{ form_data.currency_symbol or '£' }}{{ flight.price }} on Aviasales">
+            See flight <i class="fa fa-arrow-right ms-1"></i>
+          </a>
+        </div>
+      </div>
+{% endmacro %}
 <style>
   /* ── FORM ─────────────────────────────────────────── */
   .form-container {
@@ -785,7 +852,9 @@
   /* ── DATE LINE + PRICE FILTER ── */
   .flight-date { font-size: 0.78rem; color: var(--c-muted); margin-top: 3px; }
   .flight-date i { margin-right: 3px; opacity: .7; }
-  .flight-date-other { color: #9A5B00; font-weight: 600; }
+  .flight-date-near { color: #9A5B00; font-weight: 600; }
+  .other-dates { grid-area: other; margin-top: 18px; min-width: 0; }
+  .other-dates-title { font-size: 1.05rem; font-weight: 800; color: var(--c-ink); margin: 6px 0 2px; }
   .price-filter { display: flex; gap: 6px; overflow-x: auto; padding: 2px 0 4px; scrollbar-width: none; }
   .price-filter::-webkit-scrollbar { display: none; }
   .pf-chip {
@@ -805,14 +874,14 @@
   .price-band:first-child { margin-top: 4px; }
 
   /* ── RESULTS LAYOUT: controls beside the count; on phones, a bar stuck to the bottom ── */
-  #resultsContainer { display: grid; grid-template-columns: 1fr auto; grid-template-areas: "head controls" "filter filter" "note note" "list list"; column-gap: 12px; align-items: center; }
+  #resultsContainer { display: grid; grid-template-columns: 1fr auto; grid-template-areas: "head controls" "filter filter" "note note" "list list" "other other"; column-gap: 12px; align-items: center; }
   #resultsContainer > .results-header { grid-area: head; margin-bottom: 0; }
   #resultsContainer > .sort-controls { grid-area: controls; }
   #resultsContainer > #flightsList { grid-area: list; margin-top: 8px; min-width: 0; }
   #resultsContainer > .price-filter { grid-area: filter; margin-top: 10px; min-width: 0; }
   #resultsContainer > .results-note { grid-area: note; }
   @media (max-width: 576px) {
-    #resultsContainer { grid-template-columns: 1fr; grid-template-areas: "head" "filter" "note" "list" "controls"; }
+    #resultsContainer { grid-template-columns: 1fr; grid-template-areas: "head" "filter" "note" "list" "other" "controls"; }
     #resultsContainer > .sort-controls {
       position: sticky; bottom: 0; z-index: 20;
       background: var(--c-paper); border-top: 1px solid var(--c-line);
@@ -1054,80 +1123,31 @@
       <button type="button" class="pf-chip" data-max="{{ amt }}">Under {{ sym }}{{ amt }}</button>
       {% endfor %}
     </div>
-    {% if prices_dated is not defined or prices_dated %}
-    <p class="results-note">Cheapest fares for your date. Where a place has no fare that day, we show its nearest date instead.</p>
+    {% if prices_dated is defined and not prices_dated %}
+    <p class="results-note">We couldn't find dated fares for this search, so these are the latest prices seen from this airport. Tap "See flight" for the price on your date.</p>
+    {% elif other_only %}
+    <p class="results-note">No fares found within 2 days of your date, so here are the cheapest fares on other days in {{ search_month }}. Each card shows its date.</p>
     {% else %}
-    <p class="results-note">Latest prices we've seen from this airport. Tap "See flight" for the exact price on your date.</p>
+    <p class="results-note">Fares departing on your date, or up to 2 days either side. One per destination, cheapest first.</p>
     {% endif %}
 
     <div id="flightsList">
       {% for flight in flights %}
-      <div class="flight-card" data-price="{{ flight.price }}" data-country="{{ flight.destination_country }}" data-stops="{{ flight.num_stops }}">
-        <div class="flight-main">
-        <div class="dest-tile tile-{{ flight.tile if flight.tile is defined else loop.index0 % 8 }}" aria-hidden="true">
-          <span class="dest-tile-code">{{ flight.destination_code }}</span>
-          {% if flight.destination_country %}
-          <img class="dest-tile-flag" src="https://flagcdn.com/w40/{{ flight.destination_country|lower }}.png"
-               alt="" loading="lazy" onerror="this.remove()">
-          {% endif %}
-        </div>
-        <div class="flight-dest">
-          <div class="flight-dest-top">
-            <span class="flight-city">
-              {{ flight.destination_city if flight.destination_city else flight.destination_code }}
-            </span>
-          </div>
-          <div class="flight-airport-name">{{ flight.destination_label }}</div>
-          {% if flight.date_label %}
-          <div class="flight-date{% if not flight.on_date %} flight-date-other{% endif %}">
-            <i class="fa fa-calendar" aria-hidden="true"></i> {{ flight.date_label }}
-            {%- if not flight.on_date %}
-              {%- if flight.days_off == 0 %} · different return day
-              {%- else %} · {{ flight.days_off|abs }} day{{ 's' if flight.days_off|abs != 1 }} {{ 'later' if flight.days_off > 0 else 'earlier' }}{% endif %}
-            {%- endif %}
-          </div>
-          {% endif %}
-          <details class="plan-trip">
-            <summary>Plan the trip <i class="fa fa-chevron-down"></i></summary>
-            <div class="plan-trip-links">
-              {% if flight.destination_country and origin_country and flight.destination_country|lower != origin_country|lower %}
-              <a href="https://yesim.tpm.li/ZpiVkrqG" target="_blank" rel="noopener">
-                <i class="fa fa-signal"></i> eSIM (code FALLY20)
-              </a>
-              {% endif %}
-              <a href="https://localrent.tpm.li/mXHNfspd" target="_blank" rel="noopener">
-                <i class="fa fa-car"></i> Rent a car
-              </a>
-              <a href="https://klook.tpm.li/17VmdJ38" target="_blank" rel="noopener">
-                <i class="fa fa-map-marker"></i> Things to do
-              </a>
-            </div>
-          </details>
-        </div>
-        </div><!-- /flight-main -->
-
-        <div class="flight-right">
-          <div class="flight-price-block">
-            <div class="flight-price">{{ form_data.currency_symbol or '£' }}{{ flight.price }}</div>
-            <div class="flight-price-label">per person · Aviasales</div>
-          </div>
-
-          {% if flight.num_stops == 0 %}
-            <span class="stops-badge stops-direct">Direct</span>
-          {% elif flight.num_stops == 1 %}
-            <span class="stops-badge stops-1">1 stop</span>
-          {% else %}
-            <span class="stops-badge stops-2plus">{{ flight.num_stops }} stops</span>
-          {% endif %}
-
-          <a href="{{ flight.booking_url }}" target="_blank" rel="noopener" class="btn-book"
-             aria-label="See flight to {{ flight.destination_city or flight.destination_code }} for {{ form_data.currency_symbol or '£' }}{{ flight.price }} on Aviasales">
-            See flight <i class="fa fa-arrow-right ms-1"></i>
-          </a>
-        </div>
-      </div>
+{{ flight_card(flight, loop) }}
       {% endfor %}
     </div>
+
+    {% if other_flights %}
+    <div id="otherDates" class="other-dates">
+      <h3 class="other-dates-title">Other dates in {{ search_month }}</h3>
+      <p class="results-note">Only a few places had fares near your date. These are the cheapest fares on other days that month, and each card shows its date.</p>
+      <div id="flightsListOther">
+      {% for flight in other_flights %}
+{{ flight_card(flight, loop) }}
+      {% endfor %}
+      </div>
+    </div>
+    {% endif %}
   </div>
 
   {% elif form_data.origin_code and request.method == 'POST' %}
@@ -1839,7 +1859,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const container = document.getElementById('flightsList');
     if (!container) return;
     let visibleCount = 0;
-    container.querySelectorAll('.flight-card').forEach(card => {
+    document.querySelectorAll('#flightsList .flight-card, #flightsListOther .flight-card').forEach(card => {
       const destCountry = card.dataset.country || '';
       const stops = parseInt(card.dataset.stops ?? '0', 10);
       let show = true;

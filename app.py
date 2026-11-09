@@ -618,6 +618,7 @@ PLACE_NAME_OVERRIDES = {
     'DUS': 'Düsseldorf', 'CGN': 'Cologne', 'TFS': 'Tenerife South',
     'TFN': 'Tenerife North', 'ACE': 'Lanzarote', 'FUE': 'Fuerteventura',
     'LPA': 'Gran Canaria', 'PMI': 'Palma de Mallorca', 'IBZ': 'Ibiza',
+    'TCI': 'Tenerife', 'BUH': 'Bucharest', 'REK': 'Reykjavik', 'BER': 'Berlin',
 }
 
 
@@ -709,118 +710,139 @@ def _num(v):
         return None
 
 
+NEAR_DAYS = 2        # a fare up to this many days from the visitor's date counts as "around your date"
+MIN_NEAR_RESULTS = 6  # below this, also show a separate "other dates this month" section
+
+
 def _fetch_prices(origin_code, depart_date, return_date, currency):
     """
-    One fare per destination, as close as possible to the visitor's dates.
+    Fares for the visitor's dates, one per destination.
 
-    For each destination we keep the cheapest fare on the exact departure date
-    (and return date, for return trips). If there is none, we keep the fare on
-    the nearest date instead and say which date it is, so the page is never
-    empty and the price always matches the date in the booking link.
+    Tested against the live price service (Nov 2026): the plain "latest prices" request only
+    returns return-trip fares on random dates, while asking for one month at a time with
+    one_way set returns hundreds of fares spread across that month (e.g. London, January:
+    297 destinations, 11 on a given day, 39 within two days of it).
 
-    Returns dicts: destination, price, stops, depart, ret, on_date, days_off.
+    Returns rows with:
+      group    "near"    - departs on the chosen day or within NEAR_DAYS of it (main list)
+               "other"   - another day in the same month (separate, clearly titled section,
+                           only used when the near list is short)
+               "undated" - last resort when nothing is dated: recent fares, no date shown
+      destination, price, stops, depart, ret, on_date, days_off
     """
     today = datetime.utcnow().date()
-    latest_raw = []
     try:
         wanted = datetime.strptime(depart_date, '%Y-%m-%d').date()
     except (TypeError, ValueError):
         wanted = today
+    try:
+        wanted_ret = datetime.strptime(return_date, '%Y-%m-%d').date() if return_date else None
+    except ValueError:
+        wanted_ret = None
+    one_way = 'false' if wanted_ret else 'true'
     rows = []
 
     def add(dest, price, stops, dep, ret):
         dest = (dest or '').upper()
         price = _num(price)
-        if not dest or price is None or price <= 0:
+        if not dest or dest == origin_code or price is None or price <= 0:
             return
-        dep = (dep or '')[:10]
-        ret = (ret or '')[:10]
         try:
-            dep_d = datetime.strptime(dep, '%Y-%m-%d').date()
+            dep_d = datetime.strptime((dep or '')[:10], '%Y-%m-%d').date()
         except ValueError:
             return
-        if dep_d < today:
-            return
-        rows.append({
-            'destination': dest,
-            'price': int(price) if price.is_integer() else price,
-            'stops': int(stops) if isinstance(stops, (int, float)) else 0,
-            'depart': dep,
-            'ret': ret,
-        })
+        ret_d = None
+        if ret:
+            try:
+                ret_d = datetime.strptime(ret[:10], '%Y-%m-%d').date()
+            except ValueError:
+                ret_d = None
+        if dep_d < today or bool(ret_d) != bool(wanted_ret):
+            return  # past fare, or one-way vs return mismatch
+        rows.append({'destination': dest, 'price': int(price) if price.is_integer() else price,
+                     'stops': int(stops) if isinstance(stops, (int, float)) else 0,
+                     'depart': dep_d.isoformat(), 'ret': ret_d.isoformat() if ret_d else '',
+                     'dep_d': dep_d, 'ret_d': ret_d})
 
-    # 1) Prices for the exact day (best effort)
-    try:
-        params = {
-            'origin': origin_code, 'departure_at': depart_date,
-            'one_way': 'false' if return_date else 'true',
-            'unique': 'true', 'sorting': 'price', 'currency': currency,
-            'limit': 200, 'token': API_TOKEN,
-        }
-        if return_date:
-            params['return_at'] = return_date
-        r = requests.get("https://api.travelpayouts.com/aviasales/v3/prices_for_dates", params=params, timeout=12)
-        if r.status_code == 200:
-            body = r.json()
-            if (body.get('currency') or currency).lower() == currency.lower():
-                for f in body.get('data') or []:
-                    add(f.get('destination'), f.get('price'), f.get('transfers'), f.get('departure_at'), f.get('return_at'))
-        else:
-            app.logger.warning("prices_for_dates returned %s: %s", r.status_code, r.text[:200])
-    except Exception as e:
-        app.logger.warning("prices_for_dates failed: %s", e)
+    def get(url, params, timeout=15):
+        params = dict(params, token=API_TOKEN)
+        try:
+            r = requests.get(url, params=params, timeout=timeout)
+            if r.status_code == 200:
+                return r.json()
+            app.logger.warning("%s returned %s: %s", url.rsplit('/', 1)[-1], r.status_code, r.text[:200])
+        except Exception as e:
+            app.logger.warning("%s failed: %s", url.rsplit('/', 1)[-1], e)
+        return {}
 
-    # 2) Recent prices for every destination (the request the site always used)
-    try:
-        # Same request as the original site, just asking for more rows
-        params = {'origin': origin_code, 'currency': currency, 'token': API_TOKEN, 'limit': 1000}
-        r = requests.get("https://api.travelpayouts.com/v2/prices/latest", params=params, timeout=15)
-        data = (r.json().get('data') or []) if r.status_code == 200 else []
-        if not data:
-            params['limit'] = 100
-            r = requests.get("https://api.travelpayouts.com/v2/prices/latest", params=params, timeout=15)
-            data = (r.json().get('data') or []) if r.status_code == 200 else []
-        latest_raw = data
-        for f in data:
-            add(f.get('destination'), f.get('value'), f.get('number_of_changes'), f.get('depart_date'), f.get('return_date'))
-    except Exception as e:
-        app.logger.warning("prices/latest failed: %s", e)
+    # 1) Every fare cached for the month(s) around the chosen date
+    months = sorted({(wanted + timedelta(days=d)).replace(day=1) for d in (-NEAR_DAYS, 0, NEAR_DAYS)})
+    for m in months:
+        if m < today.replace(day=1):
+            continue
+        body = get("https://api.travelpayouts.com/v2/prices/latest",
+                   {'origin': origin_code, 'currency': currency, 'limit': 1000, 'one_way': one_way,
+                    'period_type': 'month', 'beginning_of_period': m.isoformat()})
+        for f in body.get('data') or []:
+            add(f.get('destination'), f.get('value'), f.get('number_of_changes'),
+                f.get('depart_date'), f.get('return_date'))
 
-    best = {}
-    for row in rows:
-        dep_d = datetime.strptime(row['depart'], '%Y-%m-%d').date()
-        row['days_off'] = (dep_d - wanted).days
-        row['on_date'] = row['days_off'] == 0 and (not return_date or row['ret'] == return_date)
-        # Rank: exact dates first, then nearest date, then cheapest
-        rank = (0 if row['on_date'] else 1, abs(row['days_off']), row['price'])
-        cur = best.get(row['destination'])
-        if cur is None or rank < cur[0]:
-            best[row['destination']] = (rank, row)
-    if best:
-        return sorted((r for _, r in best.values()), key=lambda x: x['price'])
+    # 2) Exact-day search, which sometimes adds fares the monthly list doesn't have
+    params = {'origin': origin_code, 'departure_at': wanted.isoformat(), 'one_way': one_way,
+              'unique': 'false', 'sorting': 'price', 'currency': currency, 'limit': 1000}
+    if wanted_ret:
+        params['return_at'] = wanted_ret.isoformat()
+    body = get("https://api.travelpayouts.com/aviasales/v3/prices_for_dates", params, timeout=12)
+    if (body.get('currency') or currency).lower() == currency.lower():
+        for f in body.get('data') or []:
+            add(f.get('destination'), f.get('price'), f.get('transfers'),
+                f.get('departure_at'), f.get('return_at'))
 
-    # Last resort: show the prices exactly as the site always did (no date filter),
-    # so a search never comes back empty when the price service has any data.
+    near, other = {}, {}
+    for r in rows:
+        r['days_off'] = (r['dep_d'] - wanted).days
+        ret_ok = (not wanted_ret) or abs((r['ret_d'] - wanted_ret).days) <= NEAR_DAYS
+        r['on_date'] = r['days_off'] == 0 and (not wanted_ret or r['ret_d'] == wanted_ret)
+        if abs(r['days_off']) <= NEAR_DAYS and ret_ok:
+            rank = (abs(r['days_off']), 0 if r['on_date'] else 1, r['price'])
+            if r['destination'] not in near or rank < near[r['destination']][0]:
+                near[r['destination']] = (rank, dict(r, group='near'))
+        elif r['dep_d'].month == wanted.month and r['dep_d'].year == wanted.year:
+            if r['destination'] not in other or r['price'] < other[r['destination']]['price']:
+                other[r['destination']] = dict(r, group='other')
+
+    result = sorted((v for _, v in near.values()), key=lambda x: x['price'])
+    if len(result) < MIN_NEAR_RESULTS:
+        result += sorted((v for k, v in other.items() if k not in near), key=lambda x: x['price'])
+    if result:
+        return result
+
+    # 3) Last resort: recent fares on any date, shown without dates
+    body = get("https://api.travelpayouts.com/v2/prices/latest",
+               {'origin': origin_code, 'currency': currency, 'limit': 1000, 'one_way': one_way})
+    data = body.get('data') or []
+    if not data:  # older behaviour: no one_way filter
+        data = get("https://api.travelpayouts.com/v2/prices/latest",
+                   {'origin': origin_code, 'currency': currency, 'limit': 100}).get('data') or []
     fallback = {}
-    for f in latest_raw:
+    for f in data:
         dest = (f.get('destination') or '').upper()
         price = _num(f.get('value'))
         if not dest or price is None or price <= 0:
             continue
         if dest not in fallback or price < fallback[dest]['price']:
             stops = f.get('number_of_changes')
-            fallback[dest] = {
-                'destination': dest,
-                'price': int(price) if price.is_integer() else price,
-                'stops': int(stops) if isinstance(stops, (int, float)) else 0,
-                'depart': '', 'ret': '', 'on_date': True, 'days_off': 0,
-            }
+            fallback[dest] = {'destination': dest, 'price': int(price) if price.is_integer() else price,
+                              'stops': int(stops) if isinstance(stops, (int, float)) else 0,
+                              'depart': '', 'ret': '', 'on_date': True, 'days_off': 0, 'group': 'undated'}
     return sorted(fallback.values(), key=lambda x: x['price'])
 
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
     flights = []
+    other_flights = []
+    other_only = False
     prices_dated = True
     origin_label = ""
     date = ""
@@ -937,15 +959,22 @@ def index():
                         'on_date': flight['on_date'],
                         'days_off': flight['days_off'],
                         'date_label': (nice(dep) + (f" – {nice(ret)}" if ret else '')) if flight['depart'] else '',
+                        'round_trip': bool(ret),
                     }
 
-                    if origin_country and dest_country == origin_country:
+                    if flight.get('group') == 'other':
+                        other_flights.append(entry)
+                    elif origin_country and dest_country == origin_country:
                         domestic_flights.append(entry)
                     else:
                         international_flights.append(entry)
 
                 # Show everything we found (capped to keep the page quick)
                 flights = domestic_flights[:25] + international_flights[:40]
+                other_flights = other_flights[:30]
+                if not flights and other_flights:
+                    flights, other_flights = other_flights, []   # whole list is "other dates"
+                    other_only = True
                 # Cheapest first, whatever the page script does
                 flights.sort(key=lambda f: f['price'] if isinstance(f['price'], (int, float)) else float('inf'))
         except Exception as e:
@@ -976,6 +1005,10 @@ def index():
         form_data=form_data,
         blog_cards=blog_cards,
         prices_dated=prices_dated,
+        other_flights=other_flights,
+        other_only=other_only,
+        search_month=(datetime.strptime(form_data['departure_date'], '%Y-%m-%d').strftime('%B')
+                      if form_data.get('departure_date') else ''),
     )
 
 # ---- Content pages ----
@@ -1302,12 +1335,16 @@ def _raw_fares(origin: str, destination: str, currency: str) -> list:
     hit = _RAW_FARES_CACHE.get(key)
     if hit and time.time() - hit['at'] < LIVE_FARES_TTL:
         return hit['rows']
-    params = {'origin': origin, 'currency': currency, 'token': API_TOKEN, 'limit': 1000}
+    params = {'origin': origin, 'currency': currency, 'token': API_TOKEN, 'limit': 1000, 'one_way': 'true'}
     if destination:
         params['destination'] = destination
     try:
         r = requests.get("https://api.travelpayouts.com/v2/prices/latest", params=params, timeout=10)
         rows = (r.json().get('data') or []) if r.status_code == 200 else []
+        if not rows:  # fall back to whatever fares exist (usually returns, labelled as such)
+            params.pop('one_way')
+            r = requests.get("https://api.travelpayouts.com/v2/prices/latest", params=params, timeout=10)
+            rows = (r.json().get('data') or []) if r.status_code == 200 else []
     except Exception as e:
         app.logger.warning("fares %s->%s failed: %s", origin, destination, e)
         rows = []
@@ -1593,6 +1630,7 @@ def api_live_deals():
                 'token': API_TOKEN,
                 'limit': 30,
                 'sorting': 'price',
+                'one_way': 'true',
             }
             r = requests.get(
                 "https://api.travelpayouts.com/v2/prices/latest",
