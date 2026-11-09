@@ -1624,6 +1624,9 @@ BLOG_REDIRECTS = {
     'easter-weekend-breaks-from-uk':                'easter-flight-deals-uk-2027',
     'cheap-flights-after-easter-bank-holiday-2026': 'easter-flight-deals-uk-2027',
     'spring-break-flights-usa-2026':                'spring-break-flights-usa-2027',
+    # Old addresses Google still requests (Search Console "Not found (404)")
+    'fourth-of-july-flights-us':                    '/blog',
+    'september-christmas-flight-deals-uk':          'christmas-market-trips-from-uk',
     # Nov 2026 quality clean-up: expired seasonal posts and duplicates
     # (files kept in data/blog/retired/). A value starting with "/" is a site path.
     'best-european-city-breaks-summer-2026':        '/blog',

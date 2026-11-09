@@ -1634,7 +1634,7 @@ def run_bulk(n: int = 5, force: bool = False) -> int:
     for topic in TOPIC_PIPELINE:
         if generated >= n:
             break
-        if topic['slug'] in SKIP_DUPLICATE_TOPICS:
+        if topic['slug'] in SKIP_DUPLICATE_TOPICS or topic['slug'] in _retired_slugs():
             continue
         if topic['slug'] in published and not force:
             continue
