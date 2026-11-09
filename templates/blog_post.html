@@ -46,6 +46,19 @@
   ]
 }
 </script>
+{% if post.faq %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {% for f in post.faq %}{"@type": "Question", "name": {{ f.q | tojson }},
+     "acceptedAnswer": {"@type": "Answer", "text": {{ f.a | striptags | tojson }}}}{{ "," if not loop.last }}
+    {% endfor %}
+  ]
+}
+</script>
+{% endif %}
 {% endblock %}
 
 {% block content %}
@@ -96,6 +109,12 @@
   }
   .disclaimer i { color: var(--c-link); margin-right: 5px; }
 
+  .faq-item { border-bottom: 1px solid var(--c-line); padding: 4px 0; }
+  .faq-item summary { cursor: pointer; font-weight: 700; color: var(--c-ink); padding: 10px 0; list-style: none; display: flex; justify-content: space-between; gap: 12px; }
+  .faq-item summary::-webkit-details-marker { display: none; }
+  .faq-item summary::after { content: "+"; font-weight: 400; color: var(--c-muted); }
+  .faq-item[open] summary::after { content: "–"; }
+  .faq-item .body-text { padding-bottom: 12px; }
   .fare-table-box { margin: 8px 0 32px; }
   .fare-table-box h3 { font-size: 1.1rem; font-weight: 800; color: var(--c-ink); margin: 0 0 6px; }
   .ft-sub, .ft-note { font-size: .82rem; color: var(--c-muted); margin: 0 0 10px; }
@@ -226,6 +245,18 @@
 </div>
 {% endif %}
 {% endfor %}
+
+{% if post.faq %}
+<div class="blog-section faq-section">
+  <h2>Questions people ask</h2>
+  {% for f in post.faq %}
+  <details class="faq-item"{% if loop.first %} open{% endif %}>
+    <summary>{{ f.q }}</summary>
+    <div class="body-text">{{ f.a | safe }}</div>
+  </details>
+  {% endfor %}
+</div>
+{% endif %}
 
 <!-- CTA -->
 <div class="cta-box">

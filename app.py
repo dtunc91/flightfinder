@@ -619,6 +619,7 @@ PLACE_NAME_OVERRIDES = {
     'TFN': 'Tenerife North', 'ACE': 'Lanzarote', 'FUE': 'Fuerteventura',
     'LPA': 'Gran Canaria', 'PMI': 'Palma de Mallorca', 'IBZ': 'Ibiza',
     'TCI': 'Tenerife', 'BUH': 'Bucharest', 'REK': 'Reykjavik', 'BER': 'Berlin',
+    'ORL': 'Orlando', 'MCO': 'Orlando', 'FLL': 'Fort Lauderdale', 'CUN': 'Cancun',
 }
 
 

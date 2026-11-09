@@ -1,10 +1,10 @@
 {
   "slug": "spring-break-flights-usa-2027",
   "emoji": "🌴",
-  "title": "Cheap Spring Break Flights 2027: When to Book and Where to Go",
+  "title": "Cheap Flights for Spring Break 2027: When to Book and Where to Go",
   "subtitle": "Florida and Cancun are the classics. Book Mexico and Europe by Christmas, domestic by early February.",
   "airport_names": "JFK, Newark, O'Hare, Atlanta, Dallas-Fort Worth, Denver, LAX, Boston",
-  "meta": "Cheap spring break 2027 flights: when spring break falls, when to book (Mexico, the Caribbean and Europe by Christmas, domestic by early February), and today's cheapest fares to Cancun.",
+  "meta": "Cheap flights for spring break 2027: today's lowest fares to Cancun, Orlando and Miami from major US cities, when spring break 2027 falls, and when to book for the best price.",
   "sections": [
     {
       "heading": "When spring break 2027 falls, and when to book",
@@ -12,7 +12,7 @@
     },
     {
       "heading": "The cheapest spring break destinations",
-      "body": "<strong>Orlando from $89 round-trip on Spirit or Frontier from Chicago O'Hare and Atlanta</strong>, with Southwest from most big cities usually under $200. Florida is the cheapest spring break trip in the country almost every year. Tampa and Fort Lauderdale are close behind, and Fort Lauderdale is often cheaper than Miami for the same beaches.<br><br><strong>San Juan from around $260 round-trip on JetBlue from JFK or Boston.</strong> Puerto Rico is the easy Caribbean option: no passport needed for US citizens, the dollar is the currency, and there are plenty of nonstops. Old San Juan plus a couple of beach days is a great five-night trip.<br><br><strong>Cancun from under $320 round-trip on American from Dallas-Fort Worth</strong>, or United from Houston and Denver. Cancun at spring break means parties in the Hotel Zone. Tulum and Playa del Carmen are calmer and an hour or so down the coast. Punta Cana and Costa Rica, via San José or Liberia, regularly come in under $350 from the East Coast too."
+      "body": "<strong>Orlando on Spirit, Frontier or Southwest</strong> is usually the cheapest spring break trip in the country, with one-way fares from big East Coast and Midwest cities often under $100 (see the table below). Florida is the cheapest spring break trip in the country almost every year. Tampa and Fort Lauderdale are close behind, and Fort Lauderdale is often cheaper than Miami for the same beaches.<br><br><strong>San Juan on JetBlue from JFK or Boston</strong>, often around $250-$350 round-trip. Puerto Rico is the easy Caribbean option: no passport needed for US citizens, the dollar is the currency, and there are plenty of nonstops. Old San Juan plus a couple of beach days is a great five-night trip.<br><br><strong>Cancun on American from Dallas-Fort Worth</strong>, or United from Houston and Denver, often around $250-$350 round-trip. Cancun at spring break means parties in the Hotel Zone. Tulum and Playa del Carmen are calmer and an hour or so down the coast. Punta Cana and Costa Rica, via San José or Liberia, regularly come in under $350 from the East Coast too."
     },
     {
       "heading": "Spring break in Europe for less than you'd think",
@@ -26,7 +26,7 @@
   "cta_airport": "JFK",
   "market": "us",
   "published_at": "2026-10-11T12:30:00.000000",
-  "updated_at": "2026-11-09T12:00:00",
+  "updated_at": "2026-11-10T09:00:00",
   "related": [
     [
       "thanksgiving-flights-cheap-us",
@@ -43,6 +43,56 @@
   ],
   "fare_tables": [
     {
+      "from": "2027-02-27",
+      "to": "2027-04-04",
+      "currency": "usd",
+      "group": "origin",
+      "after_section": 2,
+      "title": "Cheapest flights to Orlando for spring break 2027",
+      "intro": "Departures between 27 February and 4 April 2027 from major US cities.",
+      "origins": [
+        "NYC",
+        "CHI",
+        "ATL",
+        "DFW",
+        "LAX",
+        "BOS",
+        "WAS",
+        "DEN"
+      ],
+      "destinations": [
+        "ORL",
+        "MCO"
+      ]
+    },
+    {
+      "from": "2027-02-27",
+      "to": "2027-04-04",
+      "currency": "usd",
+      "group": "origin",
+      "after_section": 2,
+      "title": "Cheapest flights to Miami for spring break 2027",
+      "intro": "Departures between 27 February and 4 April 2027 from major US cities.",
+      "origins": [
+        "NYC",
+        "CHI",
+        "ATL",
+        "DFW",
+        "LAX",
+        "BOS",
+        "WAS",
+        "DEN"
+      ],
+      "destinations": [
+        "MIA"
+      ]
+    },
+    {
+      "from": "2027-02-27",
+      "to": "2027-04-04",
+      "currency": "usd",
+      "group": "origin",
+      "after_section": 2,
       "title": "Cheapest flights to Cancun for spring break 2027",
       "intro": "Departures between 27 February and 4 April 2027 from major US cities.",
       "origins": [
@@ -51,16 +101,35 @@
         "ATL",
         "DFW",
         "LAX",
-        "BOS"
+        "BOS",
+        "WAS",
+        "DEN"
       ],
       "destinations": [
         "CUN"
-      ],
-      "group": "origin",
-      "from": "2027-02-27",
-      "to": "2027-04-04",
-      "currency": "usd",
-      "after_section": 2
+      ]
+    }
+  ],
+  "faq": [
+    {
+      "q": "When is spring break 2027?",
+      "a": "Most US colleges and many school districts take spring break in March 2027, spread across the weeks starting March 1, 8, 15 and 22. Easter Sunday is March 28, 2027, so districts that tie the break to Easter will mostly be off in late March or early April. Check your own school's calendar before you book."
+    },
+    {
+      "q": "When should I book spring break flights?",
+      "a": "Book Mexico, the Caribbean and Europe by the end of December, because beach resorts fill and fares climb from January. Domestic flights are usually cheapest about five to six weeks out, so late January to early February for a mid-March trip."
+    },
+    {
+      "q": "What is the cheapest spring break destination?",
+      "a": "Florida is usually the cheapest. Orlando, Fort Lauderdale and Tampa often have one-way fares under $100 from big East Coast and Midwest cities. For international trips, Cancun is normally the cheapest beach option, followed by Puerto Rico, which needs no passport for US citizens."
+    },
+    {
+      "q": "What is the cheapest day to fly for spring break?",
+      "a": "Tuesday and Wednesday departures are usually the cheapest. The most expensive days are the Saturdays at the start of the busiest March weeks, especially the last two weeks before Easter."
+    },
+    {
+      "q": "Is it cheaper to fly to Florida or Cancun for spring break?",
+      "a": "Flights to Florida are almost always cheaper. Cancun can still work out similar overall if you book an all-inclusive hotel early, because food and drink are covered once you land."
     }
   ]
 }

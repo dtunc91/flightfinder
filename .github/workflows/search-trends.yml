@@ -35,13 +35,19 @@ jobs:
           TRAVELPAYOUTS_TOKEN: ${{ secrets.TRAVELPAYOUTS_TOKEN }}
         run: python scripts/search_trends.py
 
-      - name: Open the report issue (once per week)
+      - name: Open or refresh this week's report issue
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           TITLE: ${{ steps.build.outputs.title }}
         run: |
-          if gh issue list --state all --search "\"$TITLE\" in:title" --json title --jq '.[].title' | grep -Fxq "$TITLE"; then
-            echo "Report already exists: $TITLE"
-            exit 0
+          # One issue per period: a re-run refreshes it instead of creating a duplicate
+          NUM=$(gh issue list --state all --search "\"$TITLE\" in:title" --json number,title \
+                --jq ".[] | select(.title == \"$TITLE\") | .number" | head -n1)
+          if [ -n "$NUM" ]; then
+            gh issue edit "$NUM" --body-file trends.md
+            gh issue reopen "$NUM" 2>/dev/null || true
+            gh issue comment "$NUM" --body "Report refreshed with the latest data ($(date -u '+%d %b %Y, %H:%M UTC'))."
+            echo "Updated existing issue #$NUM"
+          else
+            gh issue create --title "$TITLE" --body-file trends.md
           fi
-          gh issue create --title "$TITLE" --body-file trends.md

@@ -177,6 +177,8 @@
     .site-footer a { color: var(--c-link); display: inline-block; padding: 10px 8px; min-height: 44px; }
     .footer-disclosure { max-width: 560px; margin: 0 auto 6px; font-size: .8rem; }
     .footer-disclosure a { padding: 0; min-height: 0; }
+    .footer-sister { margin: 0 auto 6px; font-size: .85rem; color: var(--c-muted); }
+    .footer-sister a { padding: 0; min-height: 0; color: var(--c-ink); font-weight: 600; text-decoration: underline; }
   </style>
 </head>
 <body>
@@ -212,6 +214,7 @@
       <a href="{{ url_for('terms') }}">Terms</a>
       <a href="{{ url_for('contact') }}">Contact</a>
     </div>
+    <p class="footer-sister">Also from us: 🌍 <a href="https://capiclue.com" target="_blank" rel="noopener">Capiclue</a>: the capital city guessing game built on fun facts.</p>
     <p class="footer-disclosure">We may earn a commission when you book through links on this site. It never changes the price you pay. <a href="{{ url_for('about') }}#affiliate">How we make money</a></p>
     © {{ current_year if current_year else 2026 }} GetMeOutOfHere.Live &nbsp;·&nbsp; Independent, run from the UK &nbsp;·&nbsp;
     Prices sourced from <a href="https://www.aviasales.com" target="_blank" rel="noopener">Aviasales</a>
