@@ -1,0 +1,25 @@
+{
+  "_about": "Seasonal search calendar. 'peak' = months when people search most (1 = January). 'page' = blog post slug, or null if the page still needs writing. Keep the same page address every year and update the text, so its Google ranking carries over. Used by scripts/seasonal_reminder.py (monthly GitHub reminder).",
+  "topics": [
+    {"name": "Christmas and New Year flights, Christmas markets", "market": "uk", "page": "christmas-market-trips-from-uk", "peak": [10, 11, 12]},
+    {"name": "Winter sun", "market": "uk", "page": "winter-sun-from-uk", "peak": [10, 11, 12, 1, 2]},
+    {"name": "Canary Islands in winter", "market": "uk", "page": "cheapest-canary-islands-flights-uk-2026", "peak": [10, 11, 12, 1, 2]},
+    {"name": "Iceland and the Northern Lights", "market": "uk", "page": "iceland-reykjavik-from-uk", "peak": [10, 11, 12, 1, 2, 3]},
+    {"name": "January flight sales", "market": "uk", "page": "january-new-year-flight-deals-uk", "peak": [12, 1]},
+    {"name": "Valentine's city breaks", "market": "uk", "page": "valentines-weekend-breaks-uk", "peak": [1, 2]},
+    {"name": "March city breaks", "market": "uk", "page": "march-flight-deals-uk", "peak": [2, 3]},
+    {"name": "Easter flights", "market": "uk", "page": "easter-flight-deals-uk-2027", "peak": [2, 3, 4]},
+    {"name": "School holidays and half-terms", "market": "uk", "page": "school-break-flights-uk-guide", "peak": [1, 2, 5, 6, 7, 9, 10]},
+    {"name": "Bank holiday weekends", "market": "uk", "page": "uk-bank-holiday-flight-deals", "peak": [3, 4, 5, 8]},
+    {"name": "Summer sun: Greece", "market": "uk", "page": "cheap-flights-to-greece-from-uk-2026", "peak": [3, 4, 5, 6, 7]},
+    {"name": "Summer sun: Spain", "market": "uk", "page": "cheap-flights-to-spain-from-uk-2026", "peak": [3, 4, 5, 6, 7]},
+    {"name": "Summer sun: Turkey", "market": "uk", "page": "cheap-flights-to-turkey-from-uk-2026", "peak": [3, 4, 5, 6, 7]},
+    {"name": "UK summer holiday flights", "market": "uk", "page": null, "suggested_address": "summer-holiday-flights-uk", "peak": [4, 5, 6, 7]},
+    {"name": "September and October breaks, October half-term", "market": "uk", "page": "september-october-best-time-fly-uk", "peak": [8, 9, 10]},
+    {"name": "US spring break", "market": "us", "page": "spring-break-flights-usa-2027", "peak": [12, 1, 2, 3]},
+    {"name": "US Memorial Day weekend", "market": "us", "page": null, "suggested_address": "memorial-day-weekend-flights", "peak": [4, 5]},
+    {"name": "US Fourth of July", "market": "us", "page": null, "suggested_address": "fourth-of-july-flights", "peak": [5, 6, 7]},
+    {"name": "US summer vacation flights", "market": "us", "page": null, "suggested_address": "summer-vacation-flights-usa", "peak": [4, 5, 6, 7]},
+    {"name": "US Thanksgiving", "market": "us", "page": "thanksgiving-flights-cheap-us", "peak": [9, 10, 11]}
+  ]
+}
