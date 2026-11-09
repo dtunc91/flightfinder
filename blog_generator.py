@@ -1383,6 +1383,14 @@ SKIP_DUPLICATE_TOPICS = {
 }
 
 
+def _retired_slugs() -> set:
+    """Posts moved to data/blog/retired/ (expired or duplicate). Never regenerate them."""
+    d = os.path.join(BLOG_DIR, 'retired')
+    if not os.path.isdir(d):
+        return set()
+    return {fn[:-5] for fn in os.listdir(d) if fn.endswith('.json')}
+
+
 def _seasonal_match(months, current_month: int) -> bool:
     """True if current_month is within 2 months of any month in the list."""
     if not months:
@@ -1419,7 +1427,7 @@ def pick_next_topic(force: bool = False, specific_slug: str = None) -> dict | No
         months  = topic.get('best_months')
         is_seas = _seasonal_match(months, now_month)
 
-        if slug in SKIP_DUPLICATE_TOPICS:
+        if slug in SKIP_DUPLICATE_TOPICS or slug in _retired_slugs():
             continue
         if slug not in published:
             (unpub_seasonal if is_seas else unpub_evergreen).append(topic)
@@ -1626,7 +1634,7 @@ def run_bulk(n: int = 5, force: bool = False) -> int:
     for topic in TOPIC_PIPELINE:
         if generated >= n:
             break
-        if topic['slug'] in SKIP_DUPLICATE_TOPICS:
+        if topic['slug'] in SKIP_DUPLICATE_TOPICS or topic['slug'] in _retired_slugs():
             continue
         if topic['slug'] in published and not force:
             continue

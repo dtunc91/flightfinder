@@ -2,9 +2,9 @@
   "slug": "spring-break-flights-usa-2027",
   "emoji": "🌴",
   "title": "Cheap Spring Break Flights 2027: When to Book and Where to Go",
-  "subtitle": "Florida from $89, Cancun under $320. Book Mexico and Europe by Christmas, domestic by early February.",
+  "subtitle": "Florida and Cancun are the classics. Book Mexico and Europe by Christmas, domestic by early February.",
   "airport_names": "JFK, Newark, O'Hare, Atlanta, Dallas-Fort Worth, Denver, LAX, Boston",
-  "meta": "Spring break 2027 flight guide. When to book (domestic about 5 weeks out, Europe 3 months), the cheapest destinations, and routes from $89 round-trip.",
+  "meta": "Spring break 2027 flight guide: when to book (domestic about 5 weeks out, Europe 3 months), and which destinations tend to be cheapest.",
   "sections": [
     {
       "heading": "When spring break 2027 falls, and when to book",
@@ -26,10 +26,19 @@
   "cta_airport": "JFK",
   "market": "us",
   "published_at": "2026-10-11T12:30:00.000000",
-  "updated_at": "2026-10-11T12:30:00.000000",
+  "updated_at": "2026-11-09T09:00:00",
   "related": [
-    ["thanksgiving-flights-cheap-us", "Cheap Thanksgiving Flights 2026: Book Before Halloween"],
-    ["cheap-flights-from-new-york-usa", "Cheapest Flights from New York City: JFK, LGA & EWR Guide"],
-    ["cheap-flights-from-chicago-ohare-2026", "Cheap Flights from Chicago O'Hare 2026"]
+    [
+      "thanksgiving-flights-cheap-us",
+      "Cheap Thanksgiving Flights 2026: Book Before Halloween"
+    ],
+    [
+      "cheap-flights-from-new-york-usa",
+      "Cheapest Flights from New York City: JFK, LGA & EWR Guide"
+    ],
+    [
+      "cheap-flights-from-chicago-ohare-2026",
+      "Cheap Flights from Chicago O'Hare 2026"
+    ]
   ]
 }

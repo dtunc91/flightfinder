@@ -14,6 +14,8 @@
 {% block twitter_title %}{{ self.og_title() }}{% endblock %}
 {% block twitter_description %}{{ self.og_description() }}{% endblock %}
 
+{% block robots %}{% if noindex %}<meta name="robots" content="noindex, follow">{% endif %}{% endblock %}
+
 {% block extra_head %}
 {{ super() }}
 {% if seo_page %}
@@ -866,7 +868,7 @@
 
       <div class="trust-line">
         <span><i class="fa fa-circle-check"></i>Free, no sign-up</span>
-        <span><i class="fa fa-circle-check"></i>Live prices from Aviasales</span>
+        <span><i class="fa fa-circle-check"></i>Prices from Aviasales</span>
       </div>
     </header>
 
@@ -1173,6 +1175,52 @@
   {% endif %}
 </div>
 
+{% if seo_page and live_fares %}
+<section class="live-fares" aria-labelledby="liveFaresTitle">
+  <h2 id="liveFaresTitle">Cheapest flights from {{ seo_page.city }} right now</h2>
+  <p class="live-fares-sub">The lowest one-way fare to each destination that Aviasales travellers have found recently, per person.{% if fares_checked %} Checked {{ fares_checked }}.{% endif %}</p>
+  <div class="live-fares-wrap">
+    <table class="live-fares-table">
+      <thead><tr><th scope="col">Destination</th><th scope="col">Departs</th><th scope="col" class="lf-stops">Stops</th><th scope="col" class="num">From</th><th scope="col"><span class="visually-hidden">Book</span></th></tr></thead>
+      <tbody>
+      {% for f in live_fares %}
+        <tr>
+          <td><strong>{{ f.name }}</strong> <span class="lf-code">{{ f.code }}</span></td>
+          <td>{{ f.date }}</td>
+          <td class="lf-stops">{% if f.stops == 0 %}<span class="lf-direct">Direct</span>{% else %}{{ f.stops }} stop{{ 's' if f.stops != 1 }}{% endif %}</td>
+          <td class="num lf-price">{{ fares_symbol }}{{ f.price }}</td>
+          <td><a href="{{ f.url }}" target="_blank" rel="noopener sponsored">See flight</a></td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  <p class="live-fares-note">Fares change through the day. Use the search above to compare prices for your own date.</p>
+</section>
+<style>
+  .live-fares { max-width: 700px; margin: 8px auto 40px; padding: 0 16px; }
+  .live-fares h2 { font-size: 1.35rem; font-weight: 800; color: var(--c-ink); margin: 24px 0 6px; }
+  .live-fares-sub, .live-fares-note { font-size: .85rem; color: var(--c-muted); margin: 0 0 12px; }
+  .live-fares-note { margin-top: 10px; }
+  .live-fares-wrap { overflow-x: auto; border: 1px solid var(--c-line); border-radius: 14px; background: var(--c-paper); }
+  .live-fares-table { width: 100%; border-collapse: collapse; font-size: .9rem; }
+  .live-fares-table th { text-align: left; font-size: .72rem; text-transform: uppercase; letter-spacing: .06em; color: var(--c-muted); padding: 10px 14px; border-bottom: 1px solid var(--c-line); background: var(--c-mist); }
+  .live-fares-table td { padding: 10px 14px; border-bottom: 1px solid var(--c-line); color: var(--c-ink); vertical-align: middle; }
+  .live-fares-table tr:last-child td { border-bottom: 0; }
+  .live-fares-table .num { text-align: right; }
+  .lf-price { font-family: var(--f-mono); font-weight: 700; font-size: 1rem; }
+  .lf-code { font-family: var(--f-mono); font-size: .72rem; color: var(--c-muted-2); }
+  .lf-direct { color: #0F7B4F; font-weight: 600; }
+  .live-fares-table a { color: var(--c-link); font-weight: 600; white-space: nowrap; }
+  @media (max-width: 576px) {
+    .live-fares-table th, .live-fares-table td { padding: 9px 8px; font-size: .82rem; }
+    .live-fares-table .lf-stops { display: none; }
+    .live-fares-table td:first-child strong { display: block; }
+    .lf-price { font-size: .92rem; }
+  }
+</style>
+{% endif %}
+
 {% if seo_page and seo_content %}
 <section style="max-width:700px; margin:0 auto 48px; padding:0 16px;">
 
@@ -1201,7 +1249,7 @@
     </div>
     <p style="font-size:0.75rem; color:var(--c-muted-2); margin-top:10px;">
       <i class="fa fa-circle-info" style="margin-right:4px;"></i>
-      Prices shown are typical one-way fares seen on this route. Actual prices vary by date — use the search above for live prices.
+      Prices shown are typical one-way fares seen on this route. Actual prices vary by date — use the search above for current prices.
     </p>
   </div>
 

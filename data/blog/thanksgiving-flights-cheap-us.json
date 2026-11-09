@@ -1,10 +1,10 @@
 {
   "slug": "thanksgiving-flights-cheap-us",
   "emoji": "🦃",
-  "title": "Cheap Thanksgiving Flights 2026: Book Before Halloween",
+  "title": "Cheap Thanksgiving Flights 2026: Cheapest Days to Fly",
   "subtitle": "Fares are at a 10-year high. Fly Monday, come home Tuesday, and skip the Sunday crush.",
   "airport_names": "JFK, Newark, O'Hare, Midway, Atlanta, Dallas-Fort Worth, LAX, Burbank",
-  "meta": "Thanksgiving 2026 flights average $402 round-trip, a 10-year high. The cheapest days to fly, when to book (late October), and airports that save $60-$180.",
+  "meta": "Thanksgiving 2026 flights: the cheapest days to fly, which airports can save you money, and what to do if you haven't booked yet.",
   "sections": [
     {
       "heading": "Thanksgiving 2026 fares are the highest in a decade",
@@ -26,10 +26,19 @@
   "cta_airport": "ATL",
   "market": "us",
   "published_at": "2026-10-11T09:00:00.000000",
-  "updated_at": "2026-10-11T09:00:00.000000",
+  "updated_at": "2026-11-09T09:00:00",
   "related": [
-    ["cheap-flights-from-new-york-usa", "Cheapest Flights from New York City: JFK, LGA & EWR Guide"],
-    ["cheap-flights-from-atlanta-2026", "Cheap Flights from Atlanta Hartsfield 2026"],
-    ["cheap-flights-from-chicago-ohare-2026", "Cheap Flights from Chicago O'Hare 2026"]
+    [
+      "cheap-flights-from-new-york-usa",
+      "Cheapest Flights from New York City: JFK, LGA & EWR Guide"
+    ],
+    [
+      "cheap-flights-from-atlanta-2026",
+      "Cheap Flights from Atlanta Hartsfield 2026"
+    ],
+    [
+      "cheap-flights-from-chicago-ohare-2026",
+      "Cheap Flights from Chicago O'Hare 2026"
+    ]
   ]
 }

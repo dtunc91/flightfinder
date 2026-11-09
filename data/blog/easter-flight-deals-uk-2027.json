@@ -4,7 +4,7 @@
   "title": "Cheap Easter Flights 2027 from the UK: Book Before Christmas",
   "subtitle": "Easter is early in 2027. Use 4 days of leave for 10 days off, and book before fares jump in January.",
   "airport_names": "Stansted, Gatwick, Luton, Manchester, Birmingham, Bristol, Edinburgh",
-  "meta": "Cheap Easter 2027 flights from UK airports. Good Friday is 26 March: how to get 10 days off for 4 days' leave, and routes from £35 one-way if you book early.",
+  "meta": "Easter 2027 flights from UK airports. Good Friday is 26 March: how to get 10 days off for 4 days' leave, and why booking early matters.",
   "sections": [
     {
       "heading": "Easter 2027 dates and the 4-for-10 leave trick",
@@ -26,10 +26,19 @@
   "cta_airport": "STN",
   "market": "uk",
   "published_at": "2026-10-11T12:00:00.000000",
-  "updated_at": "2026-10-11T12:00:00.000000",
+  "updated_at": "2026-11-09T09:00:00",
   "related": [
-    ["uk-bank-holiday-flight-deals", "UK Bank Holiday Flight Deals 2027"],
-    ["school-break-flights-uk-guide", "School Holiday Flights from the UK 2026/27"],
-    ["where-can-i-fly-cheaply-from-london", "Where Can I Fly Cheaply from London Right Now?"]
+    [
+      "uk-bank-holiday-flight-deals",
+      "UK Bank Holiday Flight Deals 2027"
+    ],
+    [
+      "school-break-flights-uk-guide",
+      "School Holiday Flights from the UK 2026/27"
+    ],
+    [
+      "where-can-i-fly-cheaply-from-london",
+      "Where Can I Fly Cheaply from London Right Now?"
+    ]
   ]
 }

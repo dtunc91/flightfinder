@@ -1289,6 +1289,60 @@ _AIRPORT_SEO_CONTENT = {
     },
 }
 
+_LIVE_FARES_CACHE = {}
+LIVE_FARES_TTL = 6 * 3600
+
+
+def _cheapest_fares_from(code: str, currency: str, limit: int = 12) -> list:
+    """
+    Cheapest upcoming one-way fare to each destination from an airport, using the
+    same price request as the search. Cached for 6 hours. Returns [] on any problem.
+    """
+    key = (code, currency)
+    cached = _LIVE_FARES_CACHE.get(key)
+    if cached and time.time() - cached['at'] < LIVE_FARES_TTL:
+        return cached['rows']
+    rows = []
+    try:
+        r = requests.get("https://api.travelpayouts.com/v2/prices/latest",
+                         params={'origin': code, 'currency': currency, 'token': API_TOKEN, 'limit': 1000},
+                         timeout=10)
+        data = (r.json().get('data') or []) if r.status_code == 200 else []
+        today = datetime.utcnow().date()
+        index = _get_airport_index()
+        best = {}
+        for f in data:
+            dest = (f.get('destination') or '').upper()
+            price = _num(f.get('value'))
+            dep = (f.get('depart_date') or '')[:10]
+            if not dest or price is None or price <= 0 or f.get('return_date'):
+                continue
+            try:
+                dep_d = datetime.strptime(dep, '%Y-%m-%d').date()
+            except ValueError:
+                continue
+            if dep_d < today:
+                continue
+            if dest not in best or price < best[dest]['price']:
+                stops = f.get('number_of_changes')
+                best[dest] = {
+                    'code': dest,
+                    'name': _place_name(dest, index.get(dest)),
+                    'price': int(price) if price.is_integer() else price,
+                    'stops': int(stops) if isinstance(stops, (int, float)) else 0,
+                    'date': dep_d.strftime('%a ') + str(dep_d.day) + dep_d.strftime(' %b'),
+                    'url': f"https://www.aviasales.com/search/{code}{dep_d.strftime('%d%m')}{dest}1?adults=1&marker=617752&currency={currency}",
+                }
+        rows = sorted(best.values(), key=lambda x: x['price'])[:limit]
+    except Exception as e:
+        app.logger.warning("live fares for %s failed: %s", code, e)
+        rows = []
+    if rows:
+        _LIVE_FARES_CACHE[key] = {'rows': rows, 'at': time.time(),
+                                  'checked': datetime.utcnow().strftime('%d %b %Y, %H:%M UTC')}
+    return rows
+
+
 @app.route('/cheap-flights-from/<string:code>')
 def seo_airport(code):
     code = code.upper()
@@ -1297,8 +1351,11 @@ def seo_airport(code):
     if not info:
         abort(404)
     label = _display_name(info.get('label') or code, code)
-    city = info.get('city', '') or label
+    city = info.get('city', '') or _place_name(code, info)
     seo_content = _AIRPORT_SEO_CONTENT.get(code)
+    currency, symbol = COUNTRY_CURRENCY.get(info.get('country', ''), ('eur', '€'))
+    live_fares = _cheapest_fares_from(code, currency)
+    fares_checked = (_LIVE_FARES_CACHE.get((code, currency)) or {}).get('checked', '')
     all_posts = _get_all_blog_posts()
     seo_blog_cards = list(all_posts.values())[:4]
     return render_template(
@@ -1318,6 +1375,10 @@ def seo_airport(code):
             'currency_symbol': '£',
         },
         seo_page={'code': code, 'label': label, 'city': city},
+        live_fares=live_fares,
+        fares_checked=fares_checked,
+        fares_symbol=symbol,
+        noindex=not seo_content,
         seo_content=seo_content,
         blog_cards=seo_blog_cards,
     )
@@ -1563,15 +1624,44 @@ BLOG_REDIRECTS = {
     'easter-weekend-breaks-from-uk':                'easter-flight-deals-uk-2027',
     'cheap-flights-after-easter-bank-holiday-2026': 'easter-flight-deals-uk-2027',
     'spring-break-flights-usa-2026':                'spring-break-flights-usa-2027',
+    # Old addresses Google still requests (Search Console "Not found (404)")
+    'fourth-of-july-flights-us':                    '/blog',
+    'september-christmas-flight-deals-uk':          'christmas-market-trips-from-uk',
+    # Nov 2026 quality clean-up: expired seasonal posts and duplicates
+    # (files kept in data/blog/retired/). A value starting with "/" is a site path.
+    'best-european-city-breaks-summer-2026':        '/blog',
+    'cheap-caribbean-flights-summer-2026':          '/blog',
+    'cheap-flights-april-bank-holiday-uk':          'uk-bank-holiday-flight-deals',
+    'cheap-long-haul-flights-uk-summer-2026':       '/blog',
+    'cheap-summer-flights-europe-from-us-2026':     '/blog',
+    'cheapest-flights-from-gatwick-this-weekend':   '/cheap-flights-from/LGW',
+    'fourth-of-july-flights-2026':                  '/blog',
+    'hawaii-vs-caribbean-flights-summer-2026':      '/blog',
+    'july-school-holiday-flights-uk-2026':          'school-break-flights-uk-guide',
+    'las-vegas-summer-flight-deals-2026':           '/blog',
+    'may-day-bank-holiday-flights-2026':            'uk-bank-holiday-flight-deals',
+    'may-half-term-flights-uk':                     'school-break-flights-uk-guide',
+    'memorial-day-flights-book-now-2026':           '/blog',
+    'memorial-day-weekend-flights-2026':            '/blog',
+    'spontaneous-flight-deals-uk':                  'cheap-last-minute-flights-anywhere-uk',
+    'spring-bank-holiday-flights-may-2026':         'uk-bank-holiday-flight-deals',
+    'summer-flights-usa-2026':                      '/blog',
+    'summer-holidays-cheap-flights-uk':             'school-break-flights-uk-guide',
 }
 
 @app.route('/blog/<string:slug>')
 def blog_post(slug):
     if slug in BLOG_REDIRECTS:
-        return redirect(url_for('blog_post', slug=BLOG_REDIRECTS[slug], _external=True, _scheme='https'), code=301)
-    post = _get_all_blog_posts().get(slug)
+        target = BLOG_REDIRECTS[slug]
+        if target.startswith('/'):
+            return redirect('https://getmeoutofhere.live' + target, code=301)
+        return redirect(url_for('blog_post', slug=target, _external=True, _scheme='https'), code=301)
+    all_posts = _get_all_blog_posts()
+    post = all_posts.get(slug)
     if not post:
         abort(404)
+    post = dict(post)
+    post['related'] = [r for r in (post.get('related') or []) if r and r[0] in all_posts]
     return render_template('blog_post.html', post=post)
 
 
@@ -1622,7 +1712,8 @@ def sitemap():
 
     # SEO airport landing pages
     for code in SEO_AIRPORTS:
-        if code in airport_index:
+        # Template-only airport pages are thin, so they're kept out of Google (noindex)
+        if code in airport_index and code in _AIRPORT_SEO_CONTENT:
             pages.append((f'https://getmeoutofhere.live/cheap-flights-from/{code}', '0.7', today, 'weekly'))
 
     lines = [
@@ -1649,6 +1740,13 @@ def serve_verification_file():
 @app.route('/google4a38a2e0e650c32c.html')
 def serve_verification_file2():
     return send_from_directory(app.root_path, 'google4a38a2e0e650c32c.html')
+
+@app.route('/ads.txt')
+def ads_txt():
+    # Authorises Google AdSense (publisher ID from the ad code in base.html) to sell ads here
+    return ('google.com, pub-2050826457723021, DIRECT, f08c47fec0942fa0\n', 200,
+            {'Content-Type': 'text/plain; charset=utf-8'})
+
 
 @app.route('/robots.txt')
 def robots_txt():

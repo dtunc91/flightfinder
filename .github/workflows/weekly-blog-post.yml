@@ -1,7 +1,10 @@
 name: Weekly blog post
 
-# Writes one new blog post with Claude every Monday and commits it to main,
-# so it goes live on the next deploy and is never lost on a redeploy.
+# Writes one new blog post with Claude every Monday and opens a pull request
+# for it. Nothing goes live until you read the post and press "Merge".
+# (Needs Settings > Actions > General > "Allow GitHub Actions to create and
+# approve pull requests". If that is off, the post is still pushed to its own
+# branch and GitHub shows a "Compare & pull request" button.)
 # Needs the ANTHROPIC_API_KEY repository secret. Cost: one API call per week.
 on:
   schedule:
@@ -10,6 +13,7 @@ on:
 
 permissions:
   contents: write
+  pull-requests: write
 
 concurrency:
   group: weekly-blog-post
@@ -45,5 +49,13 @@ jobs:
           fi
           git config user.name "github-actions[bot]"
           git config user.email "41898283+github-actions[bot]@users.noreply.github.com"
-          git commit -m "Auto-generated weekly blog post"
-          git push origin HEAD:main
+          BRANCH="blog/draft-$(date -u +%Y-%m-%d)"
+          git checkout -b "$BRANCH"
+          git commit -m "Draft blog post for review"
+          git push origin "$BRANCH"
+          gh pr create --base main --head "$BRANCH" \
+            --title "Draft blog post for review ($(date -u '+%d %b %Y'))" \
+            --body "A new blog post was drafted automatically. Read it in the Files tab, edit anything that is wrong (especially prices and dates), then merge to publish. Close this pull request to discard it." \
+            || echo "Could not open the pull request automatically. Open one from branch $BRANCH."
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
