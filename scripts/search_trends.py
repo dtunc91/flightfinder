@@ -104,17 +104,27 @@ def _posts() -> dict:
     return out
 
 
+BRAND = re.compile(r"get\s*me\s*out\s*of\s*here|getmeoutofhere", re.I)
+
+
 def _covered_by(term: str, posts: dict) -> str:
-    """Slug of the post that best covers a destination name or search phrase, or ''."""
+    """Slug of the post that best covers a destination name or search phrase, or ''.
+
+    A post counts when most (60%+) of the search's meaningful words appear in its title,
+    summary or address, e.g. "how to get to iceland from uk" -> the Iceland guide.
+    """
     stop = {"flights", "flight", "cheap", "cheapest", "from", "the", "and", "uk", "usa", "for", "to",
-            "best", "deals", "deal", "airport", "airports", "fly", "flying", "tickets", "ticket"}
+            "best", "deals", "deal", "airport", "airports", "fly", "flying", "tickets", "ticket",
+            "how", "get", "what", "when", "where", "can", "with", "book", "booking", "holidays", "holiday"}
     words = [w for w in re.findall(r"[a-zà-ÿ]{3,}", term.lower()) if w not in stop]
     if not words:
         return ""
-    best, score = "", 0
+    best, score = "", 0.0
     for slug, text in posts.items():
-        s = sum(text.count(w) for w in words) + 5 * sum(w in slug for w in words)
-        if s > score and all(w in text for w in words):
+        hits = sum(1 for w in words if w in text)
+        frac = hits / len(words)
+        s = frac + 0.01 * sum(w in slug for w in words)
+        if frac >= 0.6 and s > score:
             best, score = slug, s
     return best
 
@@ -216,9 +226,7 @@ def trending(geo: str) -> dict:
     out = []
     for item in root.iter("item"):
         title = (item.findtext("title") or "").strip()
-        news = " ".join(n.findtext("ht:news_item_title", default="", namespaces=ns)
-                        for n in item.findall("ht:news_item", ns))
-        if TRAVEL_WORDS.search(title + " " + news):
+        if TRAVEL_WORDS.search(title):
             out.append({"term": title,
                         "traffic": (item.findtext("ht:approx_traffic", default="", namespaces=ns) or "").strip()})
     return {"items": out[:10]}
@@ -249,6 +257,8 @@ def build(today: date):
         if gsc["rising"]:
             md.append("**Rising searches**\n\n| Search | Impressions | Before | Position | Our page |\n|---|---:|---:|---:|---|")
             for q in gsc["rising"]:
+                if BRAND.search(q["query"]):
+                    continue  # people searching for the site by name
                 page = _covered_by(q["query"], posts)
                 md.append(f"| {q['query']} | {q['impressions']} | {q['before']} | {q['position']} | "
                           f"{'`' + page + '`' if page else '**none**'} |")
