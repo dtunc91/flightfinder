@@ -1,0 +1,47 @@
+name: Weekly search trends report
+
+# Every Wednesday, opens a GitHub issue with what people are searching for:
+# rising searches for this site (Google Search Console), the most-searched
+# flight destinations from UK and US cities (Aviasales), and trending travel
+# searches (Google Trends), plus ideas for pages to write or improve.
+# No AI calls. Sections whose secret isn't set are skipped with a note.
+on:
+  schedule:
+    - cron: '41 7 * * 3'   # Wednesdays 07:41 UTC
+  workflow_dispatch:       # "Run workflow" button to create this week's report now
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  report:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: pip install requests google-auth
+
+      - name: Build this week's report
+        id: build
+        env:
+          GSC_CREDENTIALS: ${{ secrets.GSC_CREDENTIALS }}
+          TRAVELPAYOUTS_TOKEN: ${{ secrets.TRAVELPAYOUTS_TOKEN }}
+        run: python scripts/search_trends.py
+
+      - name: Open the report issue (once per week)
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TITLE: ${{ steps.build.outputs.title }}
+        run: |
+          if gh issue list --state all --search "\"$TITLE\" in:title" --json title --jq '.[].title' | grep -Fxq "$TITLE"; then
+            echo "Report already exists: $TITLE"
+            exit 0
+          fi
+          gh issue create --title "$TITLE" --body-file trends.md
